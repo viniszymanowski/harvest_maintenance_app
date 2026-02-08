@@ -10,6 +10,9 @@ interface MachineStatus {
   operador: string | null;
   horasMotorDia: number | null;
   status: "completo" | "pendente";
+  needsOilChange?: boolean;
+  needs50hRevision?: boolean;
+  currentHm?: number | null;
 }
 
 export default function HomeScreen() {
@@ -23,7 +26,7 @@ export default function HomeScreen() {
   }, []);
 
   const { data: machines } = trpc.machines.list.useQuery();
-  const { data: dailyLogs, isLoading, refetch } = trpc.dailyLogs.getByDate.useQuery(
+  const { data: dailyLogs, isLoading } = trpc.dailyLogs.getByDate.useQuery(
     { date: todayDate },
     { enabled: !!todayDate }
   );
@@ -38,6 +41,19 @@ export default function HomeScreen() {
       status: log ? "completo" : "pendente",
     };
   });
+
+  // Buscar status de manutenção para cada máquina
+  const maintenanceQueries = machineStatuses.map((m) =>
+    trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: m.maquinaId })
+  );
+
+  // Combinar status de manutenção com status de lançamentos
+  const enrichedStatuses = machineStatuses.map((status, index) => ({
+    ...status,
+    needsOilChange: maintenanceQueries[index].data?.needsOilChange || false,
+    needs50hRevision: maintenanceQueries[index].data?.needs50hRevision || false,
+    currentHm: maintenanceQueries[index].data?.currentHm || null,
+  }));
 
   const handleNavigateToLancamento = () => {
     router.push("/(tabs)/lancamento" as any);
@@ -69,7 +85,7 @@ export default function HomeScreen() {
 
         {/* Machine Cards */}
         <FlatList
-          data={machineStatuses}
+          data={enrichedStatuses}
           keyExtractor={(item) => item.maquinaId}
           renderItem={({ item }) => (
             <Pressable
@@ -93,22 +109,46 @@ export default function HomeScreen() {
                 </View>
               </View>
 
-              {item.operador ? (
-                <View className="gap-1">
-                  <Text className="text-sm text-muted">Operador</Text>
-                  <Text className="text-base font-semibold text-foreground">{item.operador}</Text>
-                  {item.horasMotorDia !== null && (
-                    <>
-                      <Text className="text-sm text-muted mt-2">Horas Motor Dia</Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {item.horasMotorDia.toFixed(1)}h
-                      </Text>
-                    </>
-                  )}
-                </View>
-              ) : (
-                <Text className="text-sm text-muted">Nenhum lançamento registrado</Text>
-              )}
+              <View className="gap-2">
+                {item.operador ? (
+                  <View className="gap-1">
+                    <Text className="text-sm text-muted">Operador</Text>
+                    <Text className="text-base font-semibold text-foreground">{item.operador}</Text>
+                    {item.horasMotorDia !== null && (
+                      <>
+                        <Text className="text-sm text-muted mt-2">Horas Motor Dia</Text>
+                        <Text className="text-base font-semibold text-foreground">
+                          {item.horasMotorDia.toFixed(1)}h
+                        </Text>
+                      </>
+                    )}
+                  </View>
+                ) : (
+                  <Text className="text-sm text-muted">Nenhum lançamento registrado</Text>
+                )}
+
+                {/* Alertas de Manutenção */}
+                {(item.needsOilChange || item.needs50hRevision) && (
+                  <View className="flex-row gap-2 mt-2">
+                    {item.needsOilChange && (
+                      <View className="bg-error/20 px-3 py-1 rounded-full flex-row items-center gap-1">
+                        <Text className="text-xs font-semibold text-error">⚠️ Troca Óleo</Text>
+                      </View>
+                    )}
+                    {item.needs50hRevision && (
+                      <View className="bg-warning/20 px-3 py-1 rounded-full flex-row items-center gap-1">
+                        <Text className="text-xs font-semibold text-warning">⚠️ Revisão 50h</Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {item.currentHm !== null && item.currentHm !== undefined && (
+                  <View className="mt-2">
+                    <Text className="text-xs text-muted">Horímetro Atual: {item.currentHm.toFixed(1)}h</Text>
+                  </View>
+                )}
+              </View>
             </Pressable>
           )}
           ListFooterComponent={

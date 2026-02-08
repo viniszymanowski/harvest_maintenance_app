@@ -20,8 +20,12 @@ export default function ConfiguracoesScreen() {
   const [selectedMachine, setSelectedMachine] = useState<{
     id: string;
     nome: string | null;
+    intervaloTrocaOleoHm: number;
+    intervaloRevisao50hHm: number;
   } | null>(null);
   const [editName, setEditName] = useState("");
+  const [editIntervaloOleo, setEditIntervaloOleo] = useState("");
+  const [editIntervaloRevisao, setEditIntervaloRevisao] = useState("");
   const [newId, setNewId] = useState("");
   const [newName, setNewName] = useState("");
 
@@ -68,9 +72,11 @@ export default function ConfiguracoesScreen() {
     },
   });
 
-  const handleEditPress = (machine: { id: string; nome: string | null }) => {
+  const handleEditPress = (machine: any) => {
     setSelectedMachine(machine);
     setEditName(machine.nome || "");
+    setEditIntervaloOleo(machine.intervaloTrocaOleoHm.toString());
+    setEditIntervaloRevisao(machine.intervaloRevisao50hHm.toString());
     setEditModalVisible(true);
   };
 
@@ -79,7 +85,20 @@ export default function ConfiguracoesScreen() {
       Alert.alert("Erro", "Digite um nome para a máquina");
       return;
     }
-    updateNameMutation.mutate({ id: selectedMachine.id, nome: editName.trim() });
+    const intervaloOleo = parseFloat(editIntervaloOleo);
+    const intervaloRevisao = parseFloat(editIntervaloRevisao);
+    
+    if (isNaN(intervaloOleo) || intervaloOleo <= 0 || isNaN(intervaloRevisao) || intervaloRevisao <= 0) {
+      Alert.alert("Erro", "Intervalos devem ser números positivos");
+      return;
+    }
+    
+    updateNameMutation.mutate({ 
+      id: selectedMachine.id, 
+      nome: editName.trim(),
+      intervaloTrocaOleoHm: intervaloOleo,
+      intervaloRevisao50hHm: intervaloRevisao,
+    });
   };
 
   const handleCreateMachine = () => {
@@ -201,7 +220,7 @@ export default function ConfiguracoesScreen() {
       >
         <View className="flex-1 bg-black/50 items-center justify-center p-6">
           <View className="bg-background rounded-3xl p-6 w-full max-w-md">
-            <Text className="text-2xl font-bold text-foreground mb-4">Editar Nome</Text>
+            <Text className="text-2xl font-bold text-foreground mb-4">Editar Máquina</Text>
 
             <View className="gap-2 mb-6">
               <Text className="text-sm font-medium text-muted">ID da Máquina</Text>
@@ -210,7 +229,7 @@ export default function ConfiguracoesScreen() {
               </View>
             </View>
 
-            <View className="gap-2 mb-6">
+            <View className="gap-2 mb-4">
               <Text className="text-sm font-medium text-muted">Nome</Text>
               <TextInput
                 value={editName}
@@ -218,6 +237,28 @@ export default function ConfiguracoesScreen() {
                 className="bg-surface border border-border rounded-xl px-4 py-3 text-foreground"
                 placeholder="Digite o nome da máquina"
                 autoFocus
+              />
+            </View>
+
+            <View className="gap-2 mb-4">
+              <Text className="text-sm font-medium text-muted">Intervalo Troca Óleo (horas)</Text>
+              <TextInput
+                value={editIntervaloOleo}
+                onChangeText={setEditIntervaloOleo}
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-foreground"
+                placeholder="250"
+                keyboardType="decimal-pad"
+              />
+            </View>
+
+            <View className="gap-2 mb-6">
+              <Text className="text-sm font-medium text-muted">Intervalo Revisão 50h (horas)</Text>
+              <TextInput
+                value={editIntervaloRevisao}
+                onChangeText={setEditIntervaloRevisao}
+                className="bg-surface border border-border rounded-xl px-4 py-3 text-foreground"
+                placeholder="50"
+                keyboardType="decimal-pad"
               />
             </View>
 

@@ -54,10 +54,13 @@ export const appRouter = router({
         z.object({
           id: z.string(),
           nome: z.string().min(1),
+          intervaloTrocaOleoHm: z.number().optional(),
+          intervaloRevisao50hHm: z.number().optional(),
         })
       )
       .mutation(async ({ input }) => {
-        await db.updateMachine(input.id, { nome: input.nome });
+        const { id, ...updateData } = input;
+        await db.updateMachine(id, updateData);
         return { success: true };
       }),
 
@@ -177,6 +180,39 @@ export const appRouter = router({
     list: publicProcedure.query(async () => {
       return db.getAllMaintenance();
     }),
+
+    getMaintenanceStatus: publicProcedure
+      .input(z.object({ maquinaId: z.string() }))
+      .query(async ({ input }) => {
+        const latestMaintenance = await db.getLatestMaintenanceByMachine(input.maquinaId);
+        const currentHm = await db.getCurrentHorimeter(input.maquinaId);
+        
+        if (!latestMaintenance || !currentHm) {
+          return {
+            needsOilChange: false,
+            needs50hRevision: false,
+            currentHm,
+            nextOilChangeHm: latestMaintenance?.proximaTrocaOleoHm || null,
+            next50hRevisionHm: latestMaintenance?.proximaRevisao50hHm || null,
+          };
+        }
+        
+        const needsOilChange = latestMaintenance.proximaTrocaOleoHm 
+          ? currentHm >= latestMaintenance.proximaTrocaOleoHm 
+          : false;
+        
+        const needs50hRevision = latestMaintenance.proximaRevisao50hHm
+          ? currentHm >= latestMaintenance.proximaRevisao50hHm
+          : false;
+        
+        return {
+          needsOilChange,
+          needs50hRevision,
+          currentHm,
+          nextOilChangeHm: latestMaintenance.proximaTrocaOleoHm || null,
+          next50hRevisionHm: latestMaintenance.proximaRevisao50hHm || null,
+        };
+      }),
 
     create: publicProcedure
       .input(

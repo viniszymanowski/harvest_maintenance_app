@@ -365,6 +365,38 @@ export async function getAllMaintenance() {
   return db.select().from(maintenance).orderBy(desc(maintenance.data));
 }
 
+export async function getLatestMaintenanceByMachine(maquinaId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db
+    .select()
+    .from(maintenance)
+    .where(eq(maintenance.maquinaId, maquinaId))
+    .orderBy(desc(maintenance.data))
+    .limit(1);
+  return result[0] || null;
+}
+
+export async function getCurrentHorimeter(maquinaId: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  // Buscar último lançamento com horímetro final
+  const result = await db
+    .select()
+    .from(dailyLogs)
+    .where(
+      and(
+        eq(dailyLogs.maquinaId, maquinaId),
+        sql`${dailyLogs.hmMotorFinal} IS NOT NULL`
+      )
+    )
+    .orderBy(desc(dailyLogs.data))
+    .limit(1);
+  
+  return result[0]?.hmMotorFinal || null;
+}
+
 export async function getAllMaintenanceByPeriod(from: string, to: string) {
   const db = await getDb();
   if (!db) return [];

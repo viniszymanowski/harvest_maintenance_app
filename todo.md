@@ -112,3 +112,13 @@
 - [x] Adicionar campo de observações
 - [x] Integrar com API para salvar manutenção e peças
 - [ ] Exibir próximas manutenções previstas
+
+## Integração e Melhorias Finais
+- [x] Adicionar campos de edição de intervalos de manutenção na tela de Configurações
+- [x] Implementar atualização de intervalos de troca de óleo
+- [x] Implementar atualização de intervalos de revisão 50h
+- [x] Integrar cálculo de próxima manutenção com horímetro dos lançamentos diários
+- [x] Exibir indicador de próxima manutenção na tela Home
+- [x] Testar fluxo completo: lançamento → atualização horímetro → cálculo próxima manutenção
+- [x] Testar edição de intervalos e recálculo automático
+- [x] Validar consistência de dados entre todos os módulos
