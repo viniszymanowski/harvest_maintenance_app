@@ -106,6 +106,21 @@ export default function LancamentoScreen() {
     return false;
   }, [horasMotorDia, prodH, manH, chuvaH, deslocH, esperaH]);
 
+  // Cálculo automático de horas de produção
+  useEffect(() => {
+    if (horasMotorDia !== null && horasMotorDia > 0) {
+      // Se nenhum campo de horas foi preenchido ainda, preencher automaticamente
+      const somaAtual = parseFloat(prodH || "0") + parseFloat(manH || "0") + 
+                        parseFloat(chuvaH || "0") + parseFloat(deslocH || "0") + 
+                        parseFloat(esperaH || "0");
+      
+      if (somaAtual === 0) {
+        // Preencher produção automaticamente com o total de horas motor
+        setProdH(horasMotorDia.toFixed(1));
+      }
+    }
+  }, [horasMotorDia, prodH, manH, chuvaH, deslocH, esperaH]);
+
   const handleSave = async (saveAndNew: boolean = false) => {
     if (!fazenda || !talhao || !operador) {
       Alert.alert("Erro", "Preencha os campos obrigatórios: Fazenda, Talhão e Operador");

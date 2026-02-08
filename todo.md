@@ -257,8 +257,25 @@
 - [x] Testar exportação de PDF de manutenções
 
 ## Upload para GitHub
-- [ ] Configurar repositório Git local
-- [ ] Criar repositório no GitHub
-- [ ] Fazer commit de todos os arquivos
-- [ ] Fazer push para GitHub
-- [ ] Entregar URL do repositório
+- [x] Configurar repositório Git local
+- [x] Criar repositório no GitHub
+- [x] Fazer commit de todos os arquivos
+- [x] Fazer push para GitHub
+- [x] Entregar URL do repositório
+
+## Cálculo Automático de Horas do Dia
+- [x] Implementar cálculo automático de Produção (h) = HM Motor Final - HM Motor Inicial
+- [x] Implementar cálculo automático de Manutenção/Chuva/Deslocamento/Espera baseado em HM Trilha
+- [x] Adicionar useEffect para recalcular quando horímetros mudarem
+- [x] Manter campos editáveis para ajustes manuais
+- [x] Testar cálculos com diferentes valores
+
+## Reestruturação: Análise Completa de Tempo e Produtividade (Visão ERP)
+- [x] Adicionar cálculo de Tempo de Deslocamento (Chegada Lavoura - Saída Real)
+- [x] Adicionar cálculo de Tempo Produtivo na Lavoura (Saída Lavoura - Chegada Lavoura)
+- [x] Calcular % de Eficiência (Tempo Produtivo / Horas Motor Total)- [x] Criar dashboard na tela inicial com KPIs visuais (cards coloridos)
+- [x] Adicionar indicadores: Total Máquinas Ativas, Horas Produtivas Hoje, Área Colhida Hoje
+- [x] Atualizar relatório diário com análise de tempo completa
+- [x] Adicionar detalhamento por máquina com eficiência, tempo deslocamento e tempo na lavoura
+- [x] Melhorar visualização de dados nos relatórios (cards coloridos e badges)
+- [x] Adicionar alertas visuais para baixa eficiência (<70%)

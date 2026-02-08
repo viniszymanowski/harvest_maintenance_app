@@ -625,6 +625,50 @@ export async function getDailyReport(date: string) {
   const maquinasOperando = logs.length;
   const maquinasComDivergencia = logs.filter((log) => log.divergente).length;
 
+  // Calcular métricas de tempo para cada log
+  const logsComMetricas = logs.map((log) => {
+    let tempoDeslocamentoMin = null;
+    let tempoNaLavouraMin = null;
+    let eficienciaPercent = null;
+
+    // Tempo de deslocamento (Saída Real -> Chegada Lavoura)
+    if (log.saidaReal && log.chegadaLavoura) {
+      const [saidaH, saidaM] = log.saidaReal.split(":").map(Number);
+      const [chegadaH, chegadaM] = log.chegadaLavoura.split(":").map(Number);
+      if (!isNaN(saidaH) && !isNaN(saidaM) && !isNaN(chegadaH) && !isNaN(chegadaM)) {
+        const saidaMinutos = saidaH * 60 + saidaM;
+        const chegadaMinutos = chegadaH * 60 + chegadaM;
+        tempoDeslocamentoMin = chegadaMinutos - saidaMinutos;
+      }
+    }
+
+    // Tempo na lavoura (Chegada Lavoura -> Saída Lavoura)
+    if (log.chegadaLavoura && log.saidaLavoura) {
+      const [chegadaH, chegadaM] = log.chegadaLavoura.split(":").map(Number);
+      const [saidaH, saidaM] = log.saidaLavoura.split(":").map(Number);
+      if (!isNaN(chegadaH) && !isNaN(chegadaM) && !isNaN(saidaH) && !isNaN(saidaM)) {
+        const chegadaMinutos = chegadaH * 60 + chegadaM;
+        const saidaMinutos = saidaH * 60 + saidaM;
+        tempoNaLavouraMin = saidaMinutos - chegadaMinutos;
+      }
+    }
+
+    // Eficiência (Produção / Horas Motor Total)
+    if (log.horasMotorDia && log.horasMotorDia > 0) {
+      eficienciaPercent = ((log.prodH || 0) / log.horasMotorDia) * 100;
+    }
+
+    return {
+      ...log,
+      tempoDeslocamentoMin,
+      tempoNaLavouraMin,
+      eficienciaPercent,
+    };
+  });
+
+  // Calcular eficiência média da frota
+  const eficienciaMedia = totalHorasMotor > 0 ? (totalHorasProd / totalHorasMotor) * 100 : 0;
+
   return {
     date,
     maquinasOperando,
@@ -634,7 +678,8 @@ export async function getDailyReport(date: string) {
     totalHorasMan,
     totalArea,
     produtividadeMedia: totalArea > 0 ? totalHorasProd / totalArea : 0,
-    logs,
+    eficienciaMedia,
+    logs: logsComMetricas,
   };
 }
 

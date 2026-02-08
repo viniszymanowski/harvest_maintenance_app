@@ -277,7 +277,79 @@ export default function RelatoriosScreen() {
                     {dailyReport.data.produtividadeMedia.toFixed(2)} ha/h
                   </Text>
                 </View>
+                <View className="flex-row justify-between border-t border-border pt-3 mt-3">
+                  <Text className="text-sm text-muted">Eficiência Média</Text>
+                  <Text className={`text-sm font-semibold ${
+                    dailyReport.data.eficienciaMedia >= 70 ? "text-success" : "text-error"
+                  }`}>
+                    {dailyReport.data.eficienciaMedia.toFixed(1)}%
+                  </Text>
+                </View>
               </View>
+            </View>
+
+            {/* Detalhamento por Máquina */}
+            <View className="bg-surface rounded-2xl p-4 border border-border">
+              <Text className="text-lg font-bold text-foreground mb-4">Detalhamento por Máquina</Text>
+              {dailyReport.data.logs.map((log: any, index: number) => (
+                <View key={index} className="mb-4 pb-4 border-b border-border last:border-b-0 last:pb-0 last:mb-0">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-base font-bold text-foreground">{log.maquinaId}</Text>
+                    <View className={`px-2 py-1 rounded-full ${
+                      log.eficienciaPercent && log.eficienciaPercent >= 70 
+                        ? "bg-success/20" 
+                        : "bg-error/20"
+                    }`}>
+                      <Text className={`text-xs font-semibold ${
+                        log.eficienciaPercent && log.eficienciaPercent >= 70 
+                          ? "text-success" 
+                          : "text-error"
+                      }`}>
+                        {log.eficienciaPercent ? `${log.eficienciaPercent.toFixed(0)}%` : "N/A"}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text className="text-sm text-muted mb-2">Operador: {log.operador}</Text>
+                  <View className="gap-1">
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Horas Motor:</Text>
+                      <Text className="text-xs font-semibold text-foreground">
+                        {log.horasMotorDia ? `${log.horasMotorDia.toFixed(1)}h` : "N/A"}
+                      </Text>
+                    </View>
+                    <View className="flex-row justify-between">
+                      <Text className="text-xs text-muted">Horas Produção:</Text>
+                      <Text className="text-xs font-semibold text-success">
+                        {log.prodH ? `${log.prodH.toFixed(1)}h` : "0.0h"}
+                      </Text>
+                    </View>
+                    {log.tempoDeslocamentoMin !== null && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Tempo Deslocamento:</Text>
+                        <Text className="text-xs font-semibold text-warning">
+                          {log.tempoDeslocamentoMin} min
+                        </Text>
+                      </View>
+                    )}
+                    {log.tempoNaLavouraMin !== null && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Tempo na Lavoura:</Text>
+                        <Text className="text-xs font-semibold text-primary">
+                          {Math.floor(log.tempoNaLavouraMin / 60)}h {log.tempoNaLavouraMin % 60}min
+                        </Text>
+                      </View>
+                    )}
+                    {log.areaHa && (
+                      <View className="flex-row justify-between">
+                        <Text className="text-xs text-muted">Área Colhida:</Text>
+                        <Text className="text-xs font-semibold text-primary">
+                          {log.areaHa.toFixed(2)} ha
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              ))}
             </View>
           </View>
         )}

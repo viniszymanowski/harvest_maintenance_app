@@ -30,6 +30,10 @@ export default function HomeScreen() {
     { date: todayDate },
     { enabled: !!todayDate }
   );
+  const { data: dailyReport } = trpc.reports.daily.useQuery(
+    { date: todayDate },
+    { enabled: !!todayDate }
+  );
 
   // Buscar status de manutenção para M1, M2, M3, M4 (queries fixas)
   const m1Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M1" });
@@ -87,6 +91,53 @@ export default function HomeScreen() {
             })}
           </Text>
         </View>
+
+        {/* KPIs Dashboard */}
+        {dailyReport && (
+          <View className="gap-3">
+            <View className="flex-row gap-3">
+              {/* Máquinas Ativas */}
+              <View className="flex-1 bg-primary/10 rounded-xl p-4 border border-primary/20">
+                <Text className="text-2xl font-bold text-primary">
+                  {dailyReport.maquinasOperando}
+                </Text>
+                <Text className="text-xs text-muted mt-1">Máquinas Ativas</Text>
+              </View>
+
+              {/* Horas Produtivas */}
+              <View className="flex-1 bg-success/10 rounded-xl p-4 border border-success/20">
+                <Text className="text-2xl font-bold text-success">
+                  {dailyReport.totalHorasProd.toFixed(1)}h
+                </Text>
+                <Text className="text-xs text-muted mt-1">Horas Produtivas</Text>
+              </View>
+            </View>
+
+            <View className="flex-row gap-3">
+              {/* Área Colhida */}
+              <View className="flex-1 bg-warning/10 rounded-xl p-4 border border-warning/20">
+                <Text className="text-2xl font-bold text-warning">
+                  {dailyReport.totalArea.toFixed(1)} ha
+                </Text>
+                <Text className="text-xs text-muted mt-1">Área Colhida Hoje</Text>
+              </View>
+
+              {/* Eficiência Média */}
+              <View className={`flex-1 rounded-xl p-4 border ${
+                dailyReport.eficienciaMedia >= 70 
+                  ? "bg-success/10 border-success/20" 
+                  : "bg-error/10 border-error/20"
+              }`}>
+                <Text className={`text-2xl font-bold ${
+                  dailyReport.eficienciaMedia >= 70 ? "text-success" : "text-error"
+                }`}>
+                  {dailyReport.eficienciaMedia.toFixed(0)}%
+                </Text>
+                <Text className="text-xs text-muted mt-1">Eficiência Média</Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Machine Cards */}
         <FlatList
