@@ -359,6 +359,12 @@ export async function getMaintenanceByMachineAndPeriod(
     .orderBy(desc(maintenance.data));
 }
 
+export async function getAllMaintenance() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(maintenance).orderBy(desc(maintenance.data));
+}
+
 export async function getAllMaintenanceByPeriod(from: string, to: string) {
   const db = await getDb();
   if (!db) return [];

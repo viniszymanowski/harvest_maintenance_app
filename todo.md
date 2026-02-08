@@ -98,3 +98,17 @@
 - [x] Adicionar formulário de cadastro de nova máquina
 - [x] Atualizar tela Home para exibir nomes personalizados
 - [x] Testar funcionalidades de edição e cadastro
+
+## Implementação - Tela de Manutenção
+- [x] Criar lista de manutenções com cards informativos
+- [x] Adicionar filtro por máquina
+- [ ] Adicionar filtro por período (data inicial e final)
+- [x] Criar modal de nova manutenção
+- [x] Implementar seletor de máquina
+- [x] Implementar campos de data, tipo, horímetro, tempo parado
+- [x] Adicionar checkboxes para troca de óleo e revisão 50h
+- [x] Criar lista dinâmica de peças com botões +/-
+- [x] Implementar cálculo automático de valor total das peças
+- [x] Adicionar campo de observações
+- [x] Integrar com API para salvar manutenção e peças
+- [ ] Exibir próximas manutenções previstas

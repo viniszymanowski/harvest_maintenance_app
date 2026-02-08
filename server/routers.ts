@@ -174,22 +174,45 @@ export const appRouter = router({
   // Maintenance
   // ============================================================================
   maintenance: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllMaintenance();
+    }),
+
     create: publicProcedure
       .input(
         z.object({
           data: z.string(),
-          maquinaId: z.enum(["M1", "M2", "M3", "M4"]),
+          maquinaId: z.string(),
           tipo: z.enum(["preventiva", "corretiva_leve", "corretiva_pesada"]),
           hmMotorNoServico: z.number(),
           tempoParadoH: z.number(),
           trocaOleo: z.boolean().default(false),
           revisao50h: z.boolean().default(false),
           observacao: z.string().optional(),
+          parts: z.array(z.object({
+            nomePeca: z.string(),
+            qtde: z.number(),
+            valorUnit: z.number(),
+          })).optional(),
         })
       )
       .mutation(async ({ input }) => {
         const id = crypto.randomUUID();
-        return db.createMaintenance({ id, ...input } as any);
+        const { parts, ...maintenanceData } = input;
+        const maintenance = await db.createMaintenance({ id, ...maintenanceData } as any);
+        
+        // Create parts if provided
+        if (parts && parts.length > 0) {
+          for (const part of parts) {
+            await db.createMaintenancePart({
+              id: crypto.randomUUID(),
+              maintenanceId: id,
+              ...part,
+            });
+          }
+        }
+        
+        return maintenance;
       }),
 
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
