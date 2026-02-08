@@ -132,15 +132,27 @@ export async function sendDailyReport(date: string, recipientEmail: string): Pro
     // Gerar HTML do relatório
     const htmlContent = generateDailyReportHTML(report);
 
+    // Gerar PDF do relatório
+    const { generateReportPDF } = await import("./pdf");
+    const pdfData = await generateReportPDF("daily", { date });
+    const pdfBuffer = Buffer.from(pdfData.buffer, "base64");
+
     // Criar transporter
     const transporter = createTransporter();
 
-    // Enviar email
+    // Enviar email com PDF anexado
     const info = await transporter.sendMail({
       from: EMAIL_CONFIG.from,
       to: recipientEmail,
       subject: `${EMAIL_CONFIG.subject} - ${new Date(date).toLocaleDateString("pt-BR")}`,
       html: htmlContent,
+      attachments: [
+        {
+          filename: pdfData.filename,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
     });
 
     console.log("[Email] Relatório enviado com sucesso:", info.messageId);
@@ -171,15 +183,27 @@ export async function sendTestReport(email: string): Promise<{ success: boolean;
     // Gerar HTML do relatório
     const htmlContent = generateDailyReportHTML(report);
 
+    // Gerar PDF do relatório
+    const { generateReportPDF } = await import("./pdf");
+    const pdfData = await generateReportPDF("daily", { date: today });
+    const pdfBuffer = Buffer.from(pdfData.buffer, "base64");
+
     // Criar transporter
     const transporter = createTransporter();
 
-    // Enviar email de teste
+    // Enviar email de teste com PDF anexado
     const info = await transporter.sendMail({
       from: EMAIL_CONFIG.from,
       to: email,
       subject: `[TESTE] ${EMAIL_CONFIG.subject} - ${new Date(today).toLocaleDateString("pt-BR")}`,
       html: htmlContent,
+      attachments: [
+        {
+          filename: `relatorio-diario-${today}.pdf`,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
     });
 
     console.log("[Email] Email de teste enviado:", info.messageId);

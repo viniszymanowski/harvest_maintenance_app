@@ -377,6 +377,13 @@ export const appRouter = router({
         const csv = db.exportToCSV(input.data, input.filename);
         return { csv, filename: input.filename };
       }),
+
+    generatePDF: publicProcedure
+      .input(z.object({ type: z.enum(["daily", "operators", "maintenance"]), date: z.string().optional(), from: z.string().optional(), to: z.string().optional() }))
+      .mutation(async ({ input }) => {
+        const { generateReportPDF } = await import("./pdf");
+        return generateReportPDF(input.type, { date: input.date, from: input.from, to: input.to });
+      }),
   }),
 
   // ============================================================================

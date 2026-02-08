@@ -219,3 +219,12 @@
 - [x] Adicionar fallback para Ethereal quando variáveis não estiverem configuradas
 - [x] Documentar como configurar Gmail/Outlook/SendGrid
 - [x] Testar envio com credenciais reais
+
+## Integração de PDF
+- [x] Criar rota API para gerar PDF de relatório diário
+- [x] Criar rota API para gerar PDF de relatório de operadores
+- [x] Criar rota API para gerar PDF de relatório de manutenções
+- [x] Adicionar botão "Exportar PDF" na tela de Relatórios
+- [x] Implementar download de PDF no mobile
+- [x] Integrar PDF como anexo nos emails automáticos
+- [ ] Testar geração e visualização de PDF

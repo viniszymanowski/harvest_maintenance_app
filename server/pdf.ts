@@ -285,3 +285,64 @@ export async function generateMaintenanceReportPDF(
     doc.end();
   });
 }
+
+/**
+ * Wrapper para gerar PDF baseado no tipo de relatório
+ */
+export async function generateReportPDF(
+  type: "daily" | "operators" | "maintenance",
+  params: { date?: string; from?: string; to?: string }
+): Promise<{ buffer: string; filename: string }> {
+  const { getDailyReport, getOperatorReport, getMaintenanceReportDetailed } = await import("./db");
+
+  let pdfBuffer: Buffer;
+  let filename: string;
+
+  if (type === "daily" && params.date) {
+    const data = await getDailyReport(params.date);
+    if (!data) throw new Error("Relatório não encontrado");
+
+    const reportData = {
+      date: params.date,
+      machines: data.logs.map((log: any) => ({
+        maquinaId: log.maquinaId,
+        nome: log.maquinaNome,
+        operador: log.operador,
+        horasMotorDia: log.horasMotorDia || 0,
+        areaHa: log.areaHa || 0,
+        prodH: log.prodH || 0,
+      })),
+      totals: {
+        totalHorasMotor: data.totalHorasMotor,
+        totalArea: data.totalArea,
+        totalProdH: data.totalHorasProd,
+      },
+    };
+
+    pdfBuffer = await generateDailyReportPDF(reportData);
+    filename = `relatorio-diario-${params.date}.pdf`;
+  } else if (type === "operators" && params.from && params.to) {
+    const data = await getOperatorReport(params.from, params.to);
+    if (!data) throw new Error("Relatório de operadores não encontrado");
+    pdfBuffer = await generateOperatorsReportPDF({ from: params.from, to: params.to, operators: data });
+    filename = `relatorio-operadores-${params.from}-${params.to}.pdf`;
+  } else if (type === "maintenance" && params.from && params.to) {
+    const data = await getMaintenanceReportDetailed(params.from, params.to);
+    if (!data) throw new Error("Relatório de manutenções não encontrado");
+    pdfBuffer = await generateMaintenanceReportPDF({
+      from: params.from,
+      to: params.to,
+      maintenanceRecords: data.maintenanceRecords,
+      totalCustoPecas: data.totalCustoPecas,
+    });
+    filename = `relatorio-manutencoes-${params.from}-${params.to}.pdf`;
+  } else {
+    throw new Error("Parâmetros inválidos para geração de PDF");
+  }
+
+  // Converter buffer para base64 para transmissão via tRPC
+  return {
+    buffer: pdfBuffer.toString("base64"),
+    filename,
+  };
+}

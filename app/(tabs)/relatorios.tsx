@@ -30,6 +30,63 @@ export default function RelatoriosScreen() {
     { enabled: tipoRelatorio === "manutencao" }
   );
 
+  const handleExportPDF = async () => {
+    try {
+      let type: "daily" | "operators" | "maintenance";
+      let params: any = {};
+
+      if (tipoRelatorio === "diario") {
+        type = "daily";
+        params = { date: periodo.to };
+      } else if (tipoRelatorio === "operador") {
+        type = "operators";
+        params = { from: periodo.from, to: periodo.to };
+      } else if (tipoRelatorio === "manutencao") {
+        type = "maintenance";
+        params = { from: periodo.from, to: periodo.to };
+      } else {
+        alert("Tipo de relatório inválido");
+        return;
+      }
+
+      // Chamar rota API para gerar PDF
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/reports/pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, params }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao gerar PDF");
+      }
+
+      // Obter blob do PDF
+      const blob = await response.blob();
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = async () => {
+        const base64data = reader.result as string;
+        const base64 = base64data.split(",")[1];
+
+        // Salvar arquivo
+        const filename = `relatorio_${tipoRelatorio}_${Date.now()}.pdf`;
+        const fileUri = FileSystem.documentDirectory + filename;
+        await FileSystem.writeAsStringAsync(fileUri, base64, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        // Compartilhar
+        await Sharing.shareAsync(fileUri, {
+          mimeType: "application/pdf",
+          dialogTitle: "Exportar Relatório PDF",
+        });
+      };
+    } catch (error) {
+      console.error("Erro ao exportar PDF:", error);
+      alert("Erro ao exportar PDF. Tente novamente.");
+    }
+  };
+
   const handleExportCSV = async () => {
     let data: any[] = [];
     let filename = "";
@@ -322,13 +379,19 @@ export default function RelatoriosScreen() {
           </View>
         )}
 
-        {/* Botão de Exportação */}
-        <View className="mt-6 mb-8">
+        {/* Botões de Exportação */}
+        <View className="mt-6 mb-8 gap-3">
           <TouchableOpacity
-            onPress={handleExportCSV}
+            onPress={handleExportPDF}
             className="bg-primary py-4 rounded-full items-center"
           >
-            <Text className="text-white font-bold text-base">📊 Exportar CSV</Text>
+            <Text className="text-white font-bold text-base">📄 Exportar PDF</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleExportCSV}
+            className="bg-surface border border-primary py-4 rounded-full items-center"
+          >
+            <Text className="text-primary font-bold text-base">📊 Exportar CSV</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
