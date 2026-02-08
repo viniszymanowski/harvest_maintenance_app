@@ -207,3 +207,8 @@
 - [x] Adicionar botão "Enviar Teste" na tela de Notificações
 - [x] Implementar feedback visual de sucesso/erro
 - [x] Testar envio de email com PDF anexado
+
+## Correção de Envio de Email
+- [x] Corrigir implementação do serviço de email (remover chamada HTTP incorreta)
+- [x] Configurar Nodemailer corretamente
+- [x] Testar envio de email de teste
