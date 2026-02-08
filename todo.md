@@ -173,3 +173,30 @@
 - [ ] Adicionar confirmações antes de ações destrutivas
 - [ ] Implementar busca/filtro em listas longas
 - [ ] Adicionar indicadores de progresso em uploads
+
+## Configuração de Email e WhatsApp
+- [x] Criar schema de configurações no banco de dados
+- [x] Criar tela de Configurações de Notificações
+- [x] Adicionar formulário de cadastro de email
+- [x] Adicionar toggle para ativar/desativar envio automático
+- [x] Adicionar seletor de horário de envio
+- [x] Adicionar formulário de cadastro de número WhatsApp
+- [x] Adicionar toggle para ativar/desativar WhatsApp
+- [ ] Implementar botão de teste de envio
+
+## Exportação PDF
+- [x] Instalar biblioteca de geração de PDF (jsPDF ou PDFKit)
+- [x] Criar template de relatório em PDF
+- [x] Adicionar logo John Deere no cabeçalho do PDF
+- [x] Implementar exportação de relatório diário em PDF
+- [x] Implementar exportação de relatório de operadores em PDF
+- [x] Implementar exportação de relatório de manutenções em PDF
+- [ ] Adicionar anexo PDF no email automático
+
+## Integração WhatsApp
+- [ ] Escolher método de integração (Twilio ou Baileys)
+- [ ] Configurar credenciais da API
+- [ ] Implementar envio de mensagem via WhatsApp
+- [ ] Implementar envio de PDF via WhatsApp
+- [ ] Adicionar agendamento automático para WhatsApp
+- [ ] Testar envio automático

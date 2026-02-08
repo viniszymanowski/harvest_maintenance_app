@@ -1,7 +1,9 @@
 import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
+  appSettings,
   dailyLogs,
+  InsertAppSettings,
   InsertDailyLog,
   InsertMachine,
   InsertMaintenance,
@@ -731,4 +733,54 @@ export function exportToCSV(data: any[], filename: string): string {
   ];
 
   return csvRows.join("\n");
+}
+
+// ============================================================================
+// App Settings Functions
+// ============================================================================
+
+/**
+ * Buscar configurações do aplicativo
+ */
+export async function getSettings() {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  const settings = await dbInstance.select().from(appSettings).limit(1);
+  
+  if (settings.length === 0) {
+    // Criar configurações padrão se não existir
+    const defaultSettings = {
+      emailDestinatario: null,
+      envioEmailAtivo: false,
+      horarioEnvioEmail: "18:00",
+      whatsappNumero: null,
+      envioWhatsappAtivo: false,
+      horarioEnvioWhatsapp: "18:00",
+      twilioAccountSid: null,
+      twilioAuthToken: null,
+      twilioWhatsappFrom: null,
+    };
+    
+    await dbInstance.insert(appSettings).values(defaultSettings);
+    return defaultSettings;
+  }
+  
+  return settings[0];
+}
+
+/**
+ * Atualizar configurações do aplicativo
+ */
+export async function updateSettings(data: Partial<InsertAppSettings>) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  const existing = await dbInstance.select().from(appSettings).limit(1);
+  
+  if (existing.length === 0) {
+    // Criar se não existir
+    await dbInstance.insert(appSettings).values(data);
+  } else {
+    // Atualizar existente
+    await dbInstance.update(appSettings).set(data).where(eq(appSettings.id, existing[0].id));
+  }
 }

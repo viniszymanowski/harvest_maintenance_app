@@ -127,6 +127,27 @@ export const maintenanceParts = mysqlTable("maintenance_parts", {
 });
 
 // ============================================================================
+// App Settings Table - Configurações do aplicativo
+// ============================================================================
+export const appSettings = mysqlTable("app_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  // Email settings
+  emailDestinatario: varchar("emailDestinatario", { length: 320 }),
+  envioEmailAtivo: boolean("envioEmailAtivo").default(false).notNull(),
+  horarioEnvioEmail: varchar("horarioEnvioEmail", { length: 5 }).default("18:00").notNull(), // HH:MM
+  // WhatsApp settings
+  whatsappNumero: varchar("whatsappNumero", { length: 20 }),
+  envioWhatsappAtivo: boolean("envioWhatsappAtivo").default(false).notNull(),
+  horarioEnvioWhatsapp: varchar("horarioEnvioWhatsapp", { length: 5 }).default("18:00").notNull(),
+  // Twilio credentials (opcional)
+  twilioAccountSid: text("twilioAccountSid"),
+  twilioAuthToken: text("twilioAuthToken"),
+  twilioWhatsappFrom: varchar("twilioWhatsappFrom", { length: 20 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ============================================================================
 // Type Exports
 // ============================================================================
 export type Machine = typeof machines.$inferSelect;
@@ -140,3 +161,6 @@ export type InsertMaintenance = typeof maintenance.$inferInsert;
 
 export type MaintenancePart = typeof maintenanceParts.$inferSelect;
 export type InsertMaintenancePart = typeof maintenanceParts.$inferInsert;
+
+export type AppSettings = typeof appSettings.$inferSelect;
+export type InsertAppSettings = typeof appSettings.$inferInsert;

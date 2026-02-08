@@ -378,6 +378,31 @@ export const appRouter = router({
         return { csv, filename: input.filename };
       }),
   }),
+
+  // ============================================================================
+  // Settings
+  // ============================================================================
+  settings: router({
+    get: publicProcedure.query(async () => {
+      return db.getSettings();
+    }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          emailDestinatario: z.string().optional(),
+          envioEmailAtivo: z.boolean().optional(),
+          horarioEnvioEmail: z.string().optional(),
+          whatsappNumero: z.string().optional(),
+          envioWhatsappAtivo: z.boolean().optional(),
+          horarioEnvioWhatsapp: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateSettings(input);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
