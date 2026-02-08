@@ -332,3 +332,50 @@
 - [ ] Redesenhar tela de relatórios com visualização ampla
 - [ ] Adicionar ícones grandes e visuais em todos os botões
 - [ ] Testar em diferentes tamanhos de tablet
+
+## Sistema Totalmente Funcional (CRUD Completo + UX Profissional)
+
+### Calendário e Filtros de Data
+- [x] Instalar biblioteca de date picker (react-native-calendars ou similar)
+- [x] Criar componente DatePicker reutilizável
+- [x] Adicionar calendário suspenso na tela de Registros
+- [ ] Adicionar calendário suspenso na tela de Relatórios
+- [x] Adicionar botões rápidos: Hoje, Ontem, 7 dias atrás
+- [ ] Implementar filtro por período (data inicial e final)
+- [x] Mostrar contador de registros encontrados
+
+### Edição de Registros
+- [x] Criar modal de edição de registro
+- [x] Implementar rota tRPC dailyLogs.update (já existia)
+- [x] Adicionar função updateDailyLog no db.ts (já existia)
+- [x] Tornar registros clicáveis (onPress abre modal de edição)
+- [x] Preencher modal com dados do registro selecionado
+- [x] Validar campos antes de salvar
+- [x] Feedback visual de salvamento (loading + sucesso)
+- [x] Atualizar lista automaticamente após edição
+
+### Exclusão de Registros
+- [x] Implementar rota tRPC dailyLogs.delete (já existia)
+- [x] Adicionar função deleteDailyLog no db.ts (já existia)
+- [x] Adicionar botão de excluir em cada registro
+- [x] Modal de confirmação antes de excluir
+- [x] Feedback háptico ao excluir
+- [x] Atualizar lista automaticamente após exclusão
+
+### Funcionalidades Avançadas
+- [ ] Botão "Duplicar Registro" (copiar dados para novo lançamento)
+- [ ] Filtro por máquina (dropdown)
+- [ ] Filtro por operador (dropdown)
+- [ ] Busca por texto (operador, fazenda, observações)
+- [ ] Ordenação: Mais recente, Mais antigo, Por máquina
+- [ ] Exportar registros filtrados (CSV/PDF)
+- [ ] Contador de registros: "Mostrando X de Y registros"
+
+### Melhorias de UX
+- [ ] Swipe para editar/excluir (react-native-swipeable)
+- [ ] Long press para menu contextual
+- [ ] Animações de transição suaves
+- [ ] Estados de loading em todas as operações
+- [ ] Mensagens de erro amigáveis
+- [ ] Empty state quando não há registros
+- [ ] Pull to refresh na lista de registros
