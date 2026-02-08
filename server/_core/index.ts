@@ -75,8 +75,21 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
+  server.listen(port, async () => {
     console.log(`[api] server listening on port ${port}`);
+    
+    // Agendar envios automáticos de relatórios
+    try {
+      const { scheduleDailyReport } = await import("../email");
+      const { scheduleDailyReportWhatsApp } = await import("../whatsapp");
+      
+      await scheduleDailyReport();
+      await scheduleDailyReportWhatsApp();
+      
+      console.log("[scheduler] Agendamentos de relatórios configurados");
+    } catch (error) {
+      console.error("[scheduler] Erro ao configurar agendamentos:", error);
+    }
   });
 }
 

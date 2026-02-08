@@ -21,7 +21,20 @@ export default function NotificacoesScreen() {
     },
   });
 
-  const testMutation = trpc.settings.sendTestEmail.useMutation({
+  const testEmailMutation = trpc.settings.sendTestEmail.useMutation({
+    onSuccess: (result) => {
+      if (result.success) {
+        Alert.alert("Sucesso", result.message);
+      } else {
+        Alert.alert("Erro", result.message);
+      }
+    },
+    onError: (error) => {
+      Alert.alert("Erro", `Falha ao enviar: ${error.message}`);
+    },
+  });
+
+  const testWhatsAppMutation = trpc.settings.sendTestWhatsApp.useMutation({
     onSuccess: (result) => {
       if (result.success) {
         Alert.alert("Sucesso", result.message);
@@ -63,7 +76,7 @@ export default function NotificacoesScreen() {
     });
   };
 
-  const handleSendTest = () => {
+  const handleSendTestEmail = () => {
     if (!emailDestinatario) {
       Alert.alert("Atenção", "Por favor, preencha o email destinatário primeiro.");
       return;
@@ -76,7 +89,26 @@ export default function NotificacoesScreen() {
         { text: "Cancelar", style: "cancel" },
         {
           text: "Enviar",
-          onPress: () => testMutation.mutate({ email: emailDestinatario }),
+          onPress: () => testEmailMutation.mutate({ email: emailDestinatario }),
+        },
+      ]
+    );
+  };
+
+  const handleSendTestWhatsApp = () => {
+    if (!whatsappNumero) {
+      Alert.alert("Atenção", "Por favor, preencha o número WhatsApp primeiro.");
+      return;
+    }
+    
+    Alert.alert(
+      "Enviar Teste WhatsApp",
+      `Deseja enviar um relatório de teste para ${whatsappNumero}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Enviar",
+          onPress: () => testWhatsAppMutation.mutate({ phoneNumber: whatsappNumero }),
         },
       ]
     );
@@ -176,10 +208,12 @@ export default function NotificacoesScreen() {
             className="mt-4"
           />
 
-          <View className="bg-warning/10 p-3 rounded-lg mt-4">
+          <View className="bg-primary/10 p-3 rounded-lg mt-4">
             <Text className="text-xs text-foreground">
-              ℹ️ <Text className="font-semibold">Importante:</Text> O envio via WhatsApp requer
-              configuração adicional da API do Twilio. Entre em contato para ativar.
+              ℹ️ <Text className="font-semibold">Configuração Twilio:</Text> Para ativar o WhatsApp, configure as variáveis de ambiente TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN e TWILIO_WHATSAPP_FROM no servidor.
+            </Text>
+            <Text className="text-xs text-muted mt-2">
+              Acesse console.twilio.com para obter suas credenciais e ativar o WhatsApp Sandbox.
             </Text>
           </View>
         </View>
@@ -194,11 +228,19 @@ export default function NotificacoesScreen() {
           />
           
           <Button
-            title="📧 Enviar Relatório de Teste"
-            onPress={handleSendTest}
-            loading={testMutation.isPending}
+            title="📧 Enviar Teste Email"
+            onPress={handleSendTestEmail}
+            loading={testEmailMutation.isPending}
             variant="secondary"
             disabled={!emailDestinatario}
+          />
+          
+          <Button
+            title="📱 Enviar Teste WhatsApp"
+            onPress={handleSendTestWhatsApp}
+            loading={testWhatsAppMutation.isPending}
+            variant="secondary"
+            disabled={!whatsappNumero}
           />
         </View>
       </ScrollView>

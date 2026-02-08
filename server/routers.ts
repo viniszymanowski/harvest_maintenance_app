@@ -416,6 +416,13 @@ export const appRouter = router({
         const { sendTestReport } = await import("./email");
         return sendTestReport(input.email);
       }),
+
+    sendTestWhatsApp: publicProcedure
+      .input(z.object({ phoneNumber: z.string() }))
+      .mutation(async ({ input }) => {
+        const { sendTestReportWhatsApp } = await import("./whatsapp");
+        return sendTestReportWhatsApp(input.phoneNumber);
+      }),
   }),
 });
 

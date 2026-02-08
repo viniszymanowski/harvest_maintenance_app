@@ -228,3 +228,15 @@
 - [x] Implementar download de PDF no mobile
 - [x] Integrar PDF como anexo nos emails automáticos
 - [ ] Testar geração e visualização de PDF
+
+## Integração WhatsApp com Twilio
+- [x] Instalar biblioteca twilio
+- [x] Criar serviço whatsapp.ts para envio de mensagens
+- [x] Configurar variáveis de ambiente TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM
+- [x] Implementar função de envio de mensagem de texto
+- [x] Implementar função de envio de mensagem com mídia (PDF)
+- [x] Criar rota API para teste de envio WhatsApp
+- [x] Adicionar botão "Enviar Teste WhatsApp" na tela de Notificações
+- [x] Integrar envio automático de relatório via WhatsApp
+- [x] Testar envio com credenciais reais do Twilio
+- [x] Documentar processo de configuração do Twilio WhatsApp Sandbox
