@@ -1,7 +1,12 @@
+import { z } from "zod";
 import { COOKIE_NAME } from "../shared/const.js";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
+import * as db from "./db";
+
+// Inicializar máquinas ao iniciar o servidor
+db.initializeMachines().catch((err) => console.error("Failed to initialize machines:", err));
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -17,12 +22,252 @@ export const appRouter = router({
     }),
   }),
 
-  // TODO: add feature routers here, e.g.
-  // todo: router({
-  //   list: protectedProcedure.query(({ ctx }) =>
-  //     db.getUserTodos(ctx.user.id)
-  //   ),
-  // }),
+  // ============================================================================
+  // Machines
+  // ============================================================================
+  machines: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllMachines();
+    }),
+
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+      return db.getMachineById(input.id);
+    }),
+
+    updateConfig: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          config: z.object({
+            intervaloTrocaOleoHm: z.number().positive(),
+            intervaloRevisao50hHm: z.number().positive(),
+          }),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateMachine(input.id, input.config);
+        return { success: true };
+      }),
+  }),
+
+  // ============================================================================
+  // Daily Logs
+  // ============================================================================
+  dailyLogs: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          data: z.string(),
+          fazenda: z.string().min(1),
+          talhao: z.string().min(1),
+          maquinaId: z.enum(["M1", "M2", "M3", "M4"]),
+          operador: z.string().min(1),
+          saidaProgramada: z.string().optional(),
+          saidaReal: z.string().optional(),
+          chegadaLavoura: z.string().optional(),
+          hmMotorInicial: z.number().optional(),
+          hmMotorFinal: z.number().optional(),
+          hmTrilhaInicial: z.number().optional(),
+          hmTrilhaFinal: z.number().optional(),
+          prodH: z.number().default(0),
+          manH: z.number().default(0),
+          chuvaH: z.number().default(0),
+          deslocH: z.number().default(0),
+          esperaH: z.number().default(0),
+          abasteceu: z.boolean().default(false),
+          areaHa: z.number().optional(),
+          observacoes: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const id = crypto.randomUUID();
+        return db.createDailyLog({ id, ...input } as any);
+      }),
+
+    getByDate: publicProcedure.input(z.object({ date: z.string() })).query(async ({ input }) => {
+      return db.getDailyLogsByDate(input.date);
+    }),
+
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+      return db.getDailyLogById(input.id);
+    }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          data: z
+            .object({
+              data: z.string().optional(),
+              fazenda: z.string().optional(),
+              talhao: z.string().optional(),
+              maquinaId: z.enum(["M1", "M2", "M3", "M4"]).optional(),
+              operador: z.string().optional(),
+              saidaProgramada: z.string().optional(),
+              saidaReal: z.string().optional(),
+              chegadaLavoura: z.string().optional(),
+              hmMotorInicial: z.number().optional(),
+              hmMotorFinal: z.number().optional(),
+              hmTrilhaInicial: z.number().optional(),
+              hmTrilhaFinal: z.number().optional(),
+              prodH: z.number().optional(),
+              manH: z.number().optional(),
+              chuvaH: z.number().optional(),
+              deslocH: z.number().optional(),
+              esperaH: z.number().optional(),
+              abasteceu: z.boolean().optional(),
+              areaHa: z.number().optional(),
+              observacoes: z.string().optional(),
+            })
+            .partial(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.updateDailyLog(input.id, input.data as any);
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+      await db.deleteDailyLog(input.id);
+      return { success: true };
+    }),
+
+    getByPeriod: publicProcedure
+      .input(z.object({ from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getDailyLogsByPeriod(input.from, input.to);
+      }),
+  }),
+
+  // ============================================================================
+  // Maintenance
+  // ============================================================================
+  maintenance: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          data: z.string(),
+          maquinaId: z.enum(["M1", "M2", "M3", "M4"]),
+          tipo: z.enum(["preventiva", "corretiva_leve", "corretiva_pesada"]),
+          hmMotorNoServico: z.number(),
+          tempoParadoH: z.number(),
+          trocaOleo: z.boolean().default(false),
+          revisao50h: z.boolean().default(false),
+          observacao: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const id = crypto.randomUUID();
+        return db.createMaintenance({ id, ...input } as any);
+      }),
+
+    getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+      return db.getMaintenanceById(input.id);
+    }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          updateData: z
+            .object({
+              data: z.string().optional(),
+              maquinaId: z.enum(["M1", "M2", "M3", "M4"]).optional(),
+              tipo: z.enum(["preventiva", "corretiva_leve", "corretiva_pesada"]).optional(),
+              hmMotorNoServico: z.number().optional(),
+              tempoParadoH: z.number().optional(),
+              trocaOleo: z.boolean().optional(),
+              revisao50h: z.boolean().optional(),
+              observacao: z.string().optional(),
+            })
+            .partial(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.updateMaintenance(input.id, input.updateData as any);
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+      await db.deleteMaintenance(input.id);
+      return { success: true };
+    }),
+
+    getByMachineAndPeriod: publicProcedure
+      .input(z.object({ maquinaId: z.string(), from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getMaintenanceByMachineAndPeriod(input.maquinaId, input.from, input.to);
+      }),
+
+    getByPeriod: publicProcedure
+      .input(z.object({ from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getAllMaintenanceByPeriod(input.from, input.to);
+      }),
+  }),
+
+  // ============================================================================
+  // Maintenance Parts
+  // ============================================================================
+  maintenanceParts: router({
+    create: publicProcedure
+      .input(
+        z.object({
+          maintenanceId: z.string().uuid(),
+          nomePeca: z.string().min(1),
+          qtde: z.number(),
+          valorUnit: z.number().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const id = crypto.randomUUID();
+        return db.createMaintenancePart({ id, ...input });
+      }),
+
+    getByMaintenanceId: publicProcedure
+      .input(z.object({ maintenanceId: z.string() }))
+      .query(async ({ input }) => {
+        return db.getMaintenancePartsByMaintenanceId(input.maintenanceId);
+      }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          data: z
+            .object({
+              nomePeca: z.string().optional(),
+              qtde: z.number().optional(),
+              valorUnit: z.number().optional(),
+            })
+            .partial(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateMaintenancePart(input.id, input.data);
+        return { success: true };
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
+      await db.deleteMaintenancePart(input.id);
+      return { success: true };
+    }),
+  }),
+
+  // ============================================================================
+  // Reports
+  // ============================================================================
+  reports: router({
+    machine: publicProcedure
+      .input(z.object({ maquinaId: z.string(), from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getMachineReport(input.maquinaId, input.from, input.to);
+      }),
+
+    operators: publicProcedure
+      .input(z.object({ from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getOperatorReport(input.from, input.to);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
