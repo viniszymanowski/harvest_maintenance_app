@@ -319,3 +319,16 @@
 - [ ] Adicionar comparativo: Hoje vs Ontem vs Média Semanal
 - [ ] Implementar filtros de período (Hoje, Semana, Mês)
 - [ ] Adicionar cards de alertas inteligentes (manutenção, baixa eficiência)
+
+## Redesign Tema John Deere + Otimização Tablet
+- [x] Atualizar theme.config.js com paleta John Deere (#367C2B verde, #FFDE00 amarelo)
+- [x] Configurar modo escuro otimizado
+- [x] Aumentar tamanhos de fonte para tablet (base 16px → 18px)
+- [x] Aumentar altura mínima de botões (48px → 56px)
+- [x] Aumentar espaçamentos e padding para toque preciso
+- [x] Redesenhar tela inicial com cards maiores
+- [ ] Redesenhar formulário de lançamento (inputs maiores, labels claros)
+- [ ] Redesenhar tela de registros com lista otimizada
+- [ ] Redesenhar tela de relatórios com visualização ampla
+- [ ] Adicionar ícones grandes e visuais em todos os botões
+- [ ] Testar em diferentes tamanhos de tablet
