@@ -402,6 +402,13 @@ export const appRouter = router({
         await db.updateSettings(input);
         return { success: true };
       }),
+
+    sendTestEmail: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const { sendTestReport } = await import("./email");
+        return sendTestReport(input.email);
+      }),
   }),
 });
 

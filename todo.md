@@ -200,3 +200,10 @@
 - [ ] Implementar envio de PDF via WhatsApp
 - [ ] Adicionar agendamento automático para WhatsApp
 - [ ] Testar envio automático
+
+## Botão de Teste de Envio
+- [x] Criar rota API para envio de teste de relatório
+- [x] Atualizar serviço de email para suportar envio manual
+- [x] Adicionar botão "Enviar Teste" na tela de Notificações
+- [x] Implementar feedback visual de sucesso/erro
+- [x] Testar envio de email com PDF anexado

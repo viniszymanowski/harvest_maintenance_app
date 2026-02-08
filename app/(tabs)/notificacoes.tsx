@@ -21,6 +21,19 @@ export default function NotificacoesScreen() {
     },
   });
 
+  const testMutation = trpc.settings.sendTestEmail.useMutation({
+    onSuccess: (result) => {
+      if (result.success) {
+        Alert.alert("Sucesso", result.message);
+      } else {
+        Alert.alert("Erro", result.message);
+      }
+    },
+    onError: (error) => {
+      Alert.alert("Erro", `Falha ao enviar: ${error.message}`);
+    },
+  });
+
   const [emailDestinatario, setEmailDestinatario] = useState("");
   const [envioEmailAtivo, setEnvioEmailAtivo] = useState(false);
   const [horarioEnvioEmail, setHorarioEnvioEmail] = useState("18:00");
@@ -48,6 +61,25 @@ export default function NotificacoesScreen() {
       envioWhatsappAtivo,
       horarioEnvioWhatsapp,
     });
+  };
+
+  const handleSendTest = () => {
+    if (!emailDestinatario) {
+      Alert.alert("Atenção", "Por favor, preencha o email destinatário primeiro.");
+      return;
+    }
+    
+    Alert.alert(
+      "Enviar Teste",
+      `Deseja enviar um relatório de teste para ${emailDestinatario}?`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Enviar",
+          onPress: () => testMutation.mutate({ email: emailDestinatario }),
+        },
+      ]
+    );
   };
 
   if (isLoading) {
@@ -159,6 +191,14 @@ export default function NotificacoesScreen() {
             onPress={handleSave}
             loading={updateMutation.isPending}
             variant="primary"
+          />
+          
+          <Button
+            title="📧 Enviar Relatório de Teste"
+            onPress={handleSendTest}
+            loading={testMutation.isPending}
+            variant="secondary"
+            disabled={!emailDestinatario}
           />
         </View>
       </ScrollView>

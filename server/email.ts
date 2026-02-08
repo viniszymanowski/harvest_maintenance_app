@@ -144,6 +144,62 @@ export async function sendDailyReport(date: string): Promise<boolean> {
 }
 
 /**
+ * Enviar relatório de teste
+ */
+export async function sendTestReport(email: string): Promise<{ success: boolean; message: string }> {
+  try {
+    // Buscar dados do relatório de hoje
+    const today = new Date().toISOString().split("T")[0];
+    const report = await db.getDailyReport(today);
+    
+    if (!report) {
+      return {
+        success: false,
+        message: "Não há dados para gerar relatório de teste. Adicione lançamentos primeiro."
+      };
+    }
+
+    // Gerar HTML do relatório
+    const htmlContent = generateDailyReportHTML(report);
+
+    // Enviar email de teste
+    const response = await fetch(`${process.env.API_URL || "http://localhost:3000"}/api/send-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        to: email,
+        from: EMAIL_CONFIG.from,
+        subject: `[TESTE] ${EMAIL_CONFIG.subject} - ${new Date(today).toLocaleDateString("pt-BR")}`,
+        html: htmlContent,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[Email] Erro ao enviar email de teste:", errorText);
+      return {
+        success: false,
+        message: `Erro ao enviar email: ${errorText}`
+      };
+    }
+
+    console.log("[Email] Email de teste enviado com sucesso para", email);
+    return {
+      success: true,
+      message: `Relatório de teste enviado com sucesso para ${email}`
+    };
+  } catch (error) {
+    console.error("[Email] Erro ao enviar relatório de teste:", error);
+    return {
+      success: false,
+      message: `Erro ao enviar email: ${error instanceof Error ? error.message : "Erro desconhecido"}`
+    };
+  }
+}
+
+/**
  * Agendar envio automático diário
  * Esta função deve ser chamada no servidor ao iniciar
  */
