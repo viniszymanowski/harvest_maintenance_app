@@ -86,3 +86,15 @@
 - [x] Corrigir arquivos de ícone para resolver erro de build Android
 - [x] Verificar que todos os ícones estão válidos e não vazios
 - [x] Testar build novamente
+
+## Melhorias - Gerenciamento de Máquinas
+- [x] Atualizar schema machines para adicionar campo nome personalizado
+- [x] Criar migration para adicionar coluna nome
+- [x] Atualizar funções do banco para suportar nomes personalizados
+- [x] Criar rota API para editar nome da máquina
+- [x] Criar rota API para cadastrar nova máquina
+- [x] Criar tela de Configurações com lista de máquinas
+- [x] Adicionar formulário de edição de nome de máquina
+- [x] Adicionar formulário de cadastro de nova máquina
+- [x] Atualizar tela Home para exibir nomes personalizados
+- [x] Testar funcionalidades de edição e cadastro

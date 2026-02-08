@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 interface MachineStatus {
   maquinaId: string;
+  nome: string | null;
   operador: string | null;
   horasMotorDia: number | null;
   status: "completo" | "pendente";
@@ -21,15 +22,17 @@ export default function HomeScreen() {
     setTodayDate(formatted);
   }, []);
 
+  const { data: machines } = trpc.machines.list.useQuery();
   const { data: dailyLogs, isLoading, refetch } = trpc.dailyLogs.getByDate.useQuery(
     { date: todayDate },
     { enabled: !!todayDate }
   );
 
-  const machineStatuses: MachineStatus[] = ["M1", "M2", "M3", "M4"].map((maquinaId) => {
-    const log = dailyLogs?.find((l) => l.maquinaId === maquinaId);
+  const machineStatuses: MachineStatus[] = (machines || []).map((machine) => {
+    const log = dailyLogs?.find((l) => l.maquinaId === machine.id);
     return {
-      maquinaId,
+      maquinaId: machine.id,
+      nome: machine.nome,
       operador: log?.operador || null,
       horasMotorDia: log?.horasMotorDia || null,
       status: log ? "completo" : "pendente",
@@ -54,7 +57,7 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="gap-2">
           <Text className="text-3xl font-bold text-foreground">Controle de Colheita</Text>
-          <Text className="text-base text-muted">
+          <Text className="text-sm text-muted">
             {new Date().toLocaleDateString("pt-BR", {
               weekday: "long",
               year: "numeric",
@@ -75,7 +78,10 @@ export default function HomeScreen() {
               className="bg-surface rounded-2xl p-5 mb-4 border border-border"
             >
               <View className="flex-row items-center justify-between mb-3">
-                <Text className="text-2xl font-bold text-foreground">{item.maquinaId}</Text>
+                <View className="flex-1">
+                  <Text className="text-2xl font-bold text-foreground">{item.maquinaId}</Text>
+                  <Text className="text-sm text-muted">{item.nome || "Sem nome"}</Text>
+                </View>
                 <View
                   className={`px-3 py-1 rounded-full ${
                     item.status === "completo" ? "bg-success" : "bg-warning"

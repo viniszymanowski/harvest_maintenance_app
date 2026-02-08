@@ -123,6 +123,32 @@ export async function updateMachine(id: string, data: Partial<InsertMachine>) {
   await db.update(machines).set(data).where(eq(machines.id, id));
 }
 
+export async function createMachine(data: InsertMachine) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se já existe
+  const existing = await getMachineById(data.id);
+  if (existing) {
+    throw new Error(`Máquina ${data.id} já existe`);
+  }
+  
+  await db.insert(machines).values(data);
+  return data;
+}
+
+export async function deleteMachine(id: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Verificar se é uma das máquinas padrão
+  if (["M1", "M2", "M3", "M4"].includes(id)) {
+    throw new Error("Não é possível excluir máquinas padrão");
+  }
+  
+  await db.delete(machines).where(eq(machines.id, id));
+}
+
 export async function initializeMachines() {
   const db = await getDb();
   if (!db) throw new Error("Database not available");

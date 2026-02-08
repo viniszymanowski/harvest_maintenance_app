@@ -48,6 +48,38 @@ export const appRouter = router({
         await db.updateMachine(input.id, input.config);
         return { success: true };
       }),
+
+    updateName: publicProcedure
+      .input(
+        z.object({
+          id: z.string(),
+          nome: z.string().min(1),
+        })
+      )
+      .mutation(async ({ input }) => {
+        await db.updateMachine(input.id, { nome: input.nome });
+        return { success: true };
+      }),
+
+    create: publicProcedure
+      .input(
+        z.object({
+          id: z.string().min(1).max(10),
+          nome: z.string().min(1),
+          intervaloTrocaOleoHm: z.number().positive().default(250),
+          intervaloRevisao50hHm: z.number().positive().default(50),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.createMachine(input as any);
+      }),
+
+    delete: publicProcedure
+      .input(z.object({ id: z.string() }))
+      .mutation(async ({ input }) => {
+        await db.deleteMachine(input.id);
+        return { success: true };
+      }),
   }),
 
   // ============================================================================

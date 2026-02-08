@@ -18,7 +18,6 @@ const MAPPING = {
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
-  "plus.circle.fill": "add-circle",
   "list.bullet": "list",
   "wrench.fill": "build",
   "chart.bar.fill": "bar-chart",
