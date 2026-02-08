@@ -10,6 +10,7 @@ import {
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { trpc } from "@/lib/trpc";
+import { router } from "expo-router";
 import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 
@@ -95,7 +96,7 @@ export default function RegistrosScreen() {
                 {item.log && (
                   <View className="flex-row gap-2">
                     <Pressable
-                      onPress={() => {}}
+                      onPress={() => router.push(`/editar-lancamento?id=${item.log!.id}`)}
                       style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
                       className="bg-primary/20 p-2 rounded-lg"
                     >

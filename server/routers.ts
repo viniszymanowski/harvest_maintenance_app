@@ -347,6 +347,12 @@ export const appRouter = router({
   // Reports
   // ============================================================================
   reports: router({
+    daily: publicProcedure
+      .input(z.object({ date: z.string() }))
+      .query(async ({ input }) => {
+        return db.getDailyReport(input.date);
+      }),
+
     machine: publicProcedure
       .input(z.object({ maquinaId: z.string(), from: z.string(), to: z.string() }))
       .query(async ({ input }) => {
@@ -357,6 +363,19 @@ export const appRouter = router({
       .input(z.object({ from: z.string(), to: z.string() }))
       .query(async ({ input }) => {
         return db.getOperatorReport(input.from, input.to);
+      }),
+
+    maintenance: publicProcedure
+      .input(z.object({ from: z.string(), to: z.string() }))
+      .query(async ({ input }) => {
+        return db.getMaintenanceReportDetailed(input.from, input.to);
+      }),
+
+    exportCSV: publicProcedure
+      .input(z.object({ data: z.array(z.any()), filename: z.string() }))
+      .mutation(async ({ input }) => {
+        const csv = db.exportToCSV(input.data, input.filename);
+        return { csv, filename: input.filename };
       }),
   }),
 });

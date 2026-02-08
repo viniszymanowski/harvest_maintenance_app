@@ -602,3 +602,133 @@ export async function getOperatorReport(from: string, to: string) {
 
   return operators;
 }
+
+
+/**
+ * Relatório diário consolidado - resumo de todas as máquinas
+ */
+export async function getDailyReport(date: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const logs = await db
+    .select()
+    .from(dailyLogs)
+    .where(eq(dailyLogs.data, date as any));
+
+  const totalHorasMotor = logs.reduce((sum, log) => sum + (log.horasMotorDia || 0), 0);
+  const totalHorasProd = logs.reduce((sum, log) => sum + (log.prodH || 0), 0);
+  const totalHorasMan = logs.reduce((sum, log) => sum + (log.manH || 0), 0);
+  const totalArea = logs.reduce((sum, log) => sum + (log.areaHa || 0), 0);
+  const maquinasOperando = logs.length;
+  const maquinasComDivergencia = logs.filter((log) => log.divergente).length;
+
+  return {
+    date,
+    maquinasOperando,
+    maquinasComDivergencia,
+    totalHorasMotor,
+    totalHorasProd,
+    totalHorasMan,
+    totalArea,
+    produtividadeMedia: totalArea > 0 ? totalHorasProd / totalArea : 0,
+    logs,
+  };
+}
+
+/**
+ * Relatório de manutenções - custos e peças
+ */
+export async function getMaintenanceReportDetailed(dateFrom: string, dateTo: string) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const maintenanceRecords = await db
+    .select()
+    .from(maintenance)
+    .where(
+      and(
+        sql`${maintenance.data} >= ${dateFrom}`,
+        sql`${maintenance.data} <= ${dateTo}`
+      )
+    )
+    .orderBy(maintenance.data);
+
+  // Buscar peças de todas as manutenções
+  const maintenanceIds = maintenanceRecords.map((m) => m.id);
+  let parts: any[] = [];
+  
+  if (maintenanceIds.length > 0) {
+    parts = await db
+      .select()
+      .from(maintenanceParts)
+      .where(sql`${maintenanceParts.maintenanceId} IN (${sql.join(maintenanceIds.map(id => sql`${id}`), sql`, `)})`);
+  }
+
+  // Calcular custos totais
+  const totalCustoPecas = parts.reduce((sum, part) => {
+    return sum + (part.qtde || 0) * (part.valorUnit || 0);
+  }, 0);
+
+  const totalTempoParado = maintenanceRecords.reduce((sum, m) => sum + (m.tempoParadoH || 0), 0);
+
+  // Agrupar por tipo de manutenção
+  const byType = {
+    preventiva: maintenanceRecords.filter((m) => m.tipo === "preventiva").length,
+    corretiva_leve: maintenanceRecords.filter((m) => m.tipo === "corretiva_leve").length,
+    corretiva_pesada: maintenanceRecords.filter((m) => m.tipo === "corretiva_pesada").length,
+  };
+
+  // Agrupar por máquina
+  const byMachine = new Map<string, any>();
+  maintenanceRecords.forEach((m) => {
+    if (!byMachine.has(m.maquinaId)) {
+      byMachine.set(m.maquinaId, {
+        maquinaId: m.maquinaId,
+        totalManutencoes: 0,
+        tempoParado: 0,
+      });
+    }
+    const data = byMachine.get(m.maquinaId)!;
+    data.totalManutencoes++;
+    data.tempoParado += m.tempoParadoH || 0;
+  });
+
+  return {
+    periodo: { from: dateFrom, to: dateTo },
+    totalManutencoes: maintenanceRecords.length,
+    totalCustoPecas,
+    totalTempoParado,
+    byType,
+    byMachine: Array.from(byMachine.values()),
+    maintenanceRecords,
+    parts,
+  };
+}
+
+/**
+ * Exportar dados para CSV
+ */
+export function exportToCSV(data: any[], filename: string): string {
+  if (data.length === 0) return "";
+
+  // Extrair headers
+  const headers = Object.keys(data[0]);
+  
+  // Criar linhas CSV
+  const csvRows = [
+    headers.join(","), // Header row
+    ...data.map((row) =>
+      headers.map((header) => {
+        const value = row[header];
+        // Escapar vírgulas e aspas
+        if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value ?? "";
+      }).join(",")
+    ),
+  ];
+
+  return csvRows.join("\n");
+}

@@ -122,3 +122,36 @@
 - [x] Testar fluxo completo: lançamento → atualização horímetro → cálculo próxima manutenção
 - [x] Testar edição de intervalos e recálculo automático
 - [x] Validar consistência de dados entre todos os módulos
+
+## Sistema de Relatórios
+- [x] Criar funções de agregação de dados para relatórios
+- [x] Implementar relatório diário consolidado (resumo de todas as máquinas)
+- [x] Implementar relatório por máquina (produtividade, horas, manutenções)
+- [x] Implementar relatório por operador (ranking, performance)
+- [x] Implementar relatório de manutenções (custos, peças, tempo parado)
+- [x] Criar função de exportação CSV
+
+## Envio Automático de Email
+- [x] Configurar serviço de envio de email no backend
+- [x] Criar template HTML de relatório diário
+- [x] Implementar agendamento automático (cron job) para envio diário
+- [x] Adicionar configuração de email do destinatário
+- [ ] Testar envio automático de relatório
+
+## Tela de Relatórios
+- [x] Criar interface de seleção de tipo de relatório
+- [x] Implementar filtros (período, máquina, operador)
+- [x] Exibir métricas principais (cards com totais)
+- [ ] Criar visualizações de dados (gráficos)
+- [x] Adicionar botão de exportação CSV
+- [ ] Adicionar botão de envio manual por email
+
+## Funcionalidades Extras
+- [x] Implementar edição de lançamentos diários
+- [ ] Adicionar dashboard com gráficos de produtividade
+- [ ] Implementar filtros avançados em todas as telas
+- [ ] Adicionar histórico de alterações (audit log)
+- [ ] Implementar backup automático de dados
+- [ ] Adicionar modo offline com sincronização
+- [ ] Criar sistema de notificações push para alertas
+- [ ] Implementar comparação de períodos (mês atual vs anterior)
