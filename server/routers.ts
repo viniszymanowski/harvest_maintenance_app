@@ -454,7 +454,7 @@ export const appRouter = router({
     update: publicProcedure
       .input(
         z.object({
-          id: z.number(),
+          id: z.string().transform(Number),
           nome: z.string(),
           localizacao: z.string().nullable().optional(),
           areaTotal: z.number().nullable().optional(),
@@ -465,7 +465,7 @@ export const appRouter = router({
         return db.updateFazenda(id, data);
       }),
 
-    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+    delete: publicProcedure.input(z.object({ id: z.string().transform(Number) })).mutation(async ({ input }) => {
       return db.deleteFazenda(input.id);
     }),
   }),

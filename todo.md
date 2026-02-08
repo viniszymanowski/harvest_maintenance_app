@@ -379,3 +379,38 @@
 - [ ] Mensagens de erro amigáveis
 - [ ] Empty state quando não há registros
 - [ ] Pull to refresh na lista de registros
+
+## Melhoria da Tela de Configurações - Gerenciamento Completo
+
+### Gerenciamento de Máquinas
+- [x] Adicionar campos na tabela machines: tipo (enum), modelo, chassi, ano, fabricante
+- [x] Executar migration para atualizar tabela machines
+- [x] Criar modal de criação/edição de máquina com todos os campos
+- [x] Implementar validação de chassi único
+- [x] Adicionar dropdown de tipo: Colheitadeira, Plataforma, Trator, Pulverizador
+- [x] Exibir lista de máquinas com cards informativos
+- [x] Adicionar botões de editar e excluir em cada máquina
+- [x] Implementar confirmação antes de excluir máquina
+
+### Gerenciamento de Operadores
+- [ ] Criar modal de criação/edição de operador
+- [ ] Adicionar validação de CPF
+- [ ] Formatar telefone automaticamente
+- [ ] Exibir lista de operadores com cards
+- [ ] Adicionar status ativo/inativo
+- [ ] Implementar busca por nome
+
+### Gerenciamento de Talhões
+- [ ] Criar modal de criação/edição de talhão
+- [ ] Adicionar dropdown de fazenda (vinculação)
+- [ ] Validar área em hectares
+- [ ] Exibir lista de talhões agrupados por fazenda
+- [ ] Adicionar campo cultura plantada
+
+### Melhorias de UX
+- [ ] Redesenhar layout das abas (mais visual e intuitivo)
+- [ ] Adicionar ícones nas abas
+- [ ] Implementar empty state quando não há registros
+- [ ] Adicionar contador de registros em cada aba
+- [ ] Feedback visual ao salvar/excluir
+- [ ] Animações suaves de transição

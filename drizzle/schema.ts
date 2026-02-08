@@ -42,6 +42,11 @@ export type InsertUser = typeof users.$inferInsert;
 export const machines = mysqlTable("machines", {
   id: varchar("id", { length: 10 }).primaryKey(), // M1, M2, M3, M4
   nome: varchar("nome", { length: 100 }),
+  tipo: mysqlEnum("tipo", ["Colheitadeira", "Plataforma", "Trator", "Pulverizador"]).default("Colheitadeira"),
+  modelo: varchar("modelo", { length: 100 }),
+  chassi: varchar("chassi", { length: 50 }),
+  ano: int("ano"),
+  fabricante: varchar("fabricante", { length: 100 }),
   intervaloTrocaOleoHm: real("intervaloTrocaOleoHm").default(250).notNull(),
   intervaloRevisao50hHm: real("intervaloRevisao50hHm").default(50).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
