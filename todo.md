@@ -255,3 +255,10 @@
 - [x] Investigar erro na exportação de PDF do relatório de manutenções
 - [x] Corrigir função generateMaintenanceReportPDF (substituir fetch por tRPC)
 - [x] Testar exportação de PDF de manutenções
+
+## Upload para GitHub
+- [ ] Configurar repositório Git local
+- [ ] Criar repositório no GitHub
+- [ ] Fazer commit de todos os arquivos
+- [ ] Fazer push para GitHub
+- [ ] Entregar URL do repositório
