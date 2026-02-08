@@ -212,3 +212,10 @@
 - [x] Corrigir implementação do serviço de email (remover chamada HTTP incorreta)
 - [x] Configurar Nodemailer corretamente
 - [x] Testar envio de email de teste
+
+## Configuração SMTP Personalizável
+- [x] Adicionar variáveis de ambiente SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
+- [x] Atualizar server/email.ts para usar variáveis de ambiente
+- [x] Adicionar fallback para Ethereal quando variáveis não estiverem configuradas
+- [x] Documentar como configurar Gmail/Outlook/SendGrid
+- [x] Testar envio com credenciais reais
