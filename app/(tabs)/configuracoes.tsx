@@ -327,6 +327,23 @@ function MaquinasTab() {
                   {item.intervaloTrocaOleoHm}h
                 </Text>
               </View>
+              
+              {/* Horímetros Atuais */}
+              <View className="mt-3 pt-3 border-t border-border gap-2">
+                <View className="flex-row justify-between">
+                  <Text className="text-base font-bold text-primary">🕒 HM Motor Atual:</Text>
+                  <Text className="text-base font-bold text-primary">
+                    {item.hmMotorAtual?.toFixed(1) || "0.0"}h
+                  </Text>
+                </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-base font-bold text-warning">⚙️ HM Trilha Atual:</Text>
+                  <Text className="text-base font-bold text-warning">
+                    {item.hmTrilhaAtual?.toFixed(1) || "0.0"}h
+                  </Text>
+                </View>
+              </View>
+              
               <View className="flex-row justify-between">
                 <Text className="text-sm text-muted">Revisão 50h:</Text>
                 <Text className="text-sm font-semibold text-foreground">
@@ -532,17 +549,285 @@ function MaquinasTab() {
 }
 
 // ============================================================================
-// Operadores Tab (Placeholder)
+// Operadores Tab
 // ============================================================================
 function OperadoresTab() {
+  const [showModal, setShowModal] = useState(false);
+  const [editingOperador, setEditingOperador] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    nome: "",
+    cpf: "",
+    telefone: "",
+  });
+
+  const utils = trpc.useUtils();
+  const { data: operadores, isLoading } = trpc.operadores.list.useQuery();
+
+  const createMutation = trpc.operadores.create.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.operadores.list.invalidate();
+      setShowModal(false);
+      resetForm();
+      Alert.alert("Sucesso", "Operador cadastrado com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const updateMutation = trpc.operadores.update.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.operadores.list.invalidate();
+      setShowModal(false);
+      resetForm();
+      Alert.alert("Sucesso", "Operador atualizado com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const deleteMutation = trpc.operadores.delete.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.operadores.list.invalidate();
+      Alert.alert("Sucesso", "Operador excluído com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({
+      nome: "",
+      cpf: "",
+      telefone: "",
+    });
+    setEditingOperador(null);
+  };
+
+  const formatCPF = (text: string) => {
+    const numbers = text.replace(/\D/g, "");
+    if (numbers.length <= 11) {
+      return numbers
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    }
+    return text;
+  };
+
+  const formatPhone = (text: string) => {
+    const numbers = text.replace(/\D/g, "");
+    if (numbers.length <= 11) {
+      return numbers
+        .replace(/(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d{5})(\d)/, "$1-$2");
+    }
+    return text;
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleEdit = (operador: any) => {
+    setEditingOperador(operador);
+    setFormData({
+      nome: operador.nome || "",
+      cpf: operador.cpf || "",
+      telefone: operador.telefone || "",
+    });
+    setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleDelete = (id: number) => {
+    Alert.alert("Confirmar Exclusão", "Deseja realmente excluir este operador?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => deleteMutation.mutate({ id: id.toString() }),
+      },
+    ]);
+  };
+
+  const handleSave = () => {
+    if (!formData.nome) {
+      Alert.alert("Erro", "Preencha o nome do operador");
+      return;
+    }
+
+    if (editingOperador) {
+      updateMutation.mutate({
+        id: editingOperador.id.toString(),
+        nome: formData.nome,
+        cpf: formData.cpf || null,
+        telefone: formData.telefone || null,
+      });
+    } else {
+      createMutation.mutate({
+        nome: formData.nome,
+        cpf: formData.cpf || null,
+        telefone: formData.telefone || null,
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#367C2B" />
+      </View>
+    );
+  }
+
   return (
-    <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-6xl mb-4">👤</Text>
-      <Text className="text-xl font-bold text-foreground mb-2">Em Desenvolvimento</Text>
-      <Text className="text-base text-muted text-center">
-        Gerenciamento de operadores será implementado em breve
-      </Text>
-    </View>
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      {/* Add Button */}
+      <Pressable
+        onPress={handleAdd}
+        className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+      >
+        <Text className="text-xl font-bold text-white text-center">➕ Adicionar Operador</Text>
+      </Pressable>
+
+      {/* Operador List */}
+      {!operadores || operadores.length === 0 ? (
+        <View className="flex-1 items-center justify-center p-8">
+          <Text className="text-6xl mb-4">👤</Text>
+          <Text className="text-xl font-bold text-foreground mb-2">Nenhum operador cadastrado</Text>
+          <Text className="text-base text-muted text-center">
+            Clique em "Adicionar Operador" para começar
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={operadores}
+          keyExtractor={(item) => item.id.toString()}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View className="bg-surface rounded-2xl p-5 mb-4 border-2 border-border">
+              <View className="flex-row items-start justify-between mb-3">
+                <View className="flex-1">
+                  <Text className="text-2xl font-bold text-foreground mb-1">{item.nome}</Text>
+                  {item.cpf && (
+                    <Text className="text-base text-muted">CPF: {item.cpf}</Text>
+                  )}
+                  {item.telefone && (
+                    <Text className="text-base text-muted">Tel: {item.telefone}</Text>
+                  )}
+
+                </View>
+                <View className="flex-row gap-3">
+                  <TouchableOpacity
+                    onPress={() => handleEdit(item)}
+                    className="bg-warning/20 p-3 rounded-xl"
+                  >
+                    <Text className="text-2xl">✏️</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleDelete(item.id)}
+                    className="bg-error/20 p-3 rounded-xl"
+                  >
+                    <Text className="text-2xl">🗑️</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+        />
+      )}
+
+      {/* Modal */}
+      <Modal visible={showModal} animationType="slide" transparent>
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-background rounded-t-3xl p-6 max-h-[90%]">
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text className="text-2xl font-bold text-foreground mb-6">
+                {editingOperador ? "Editar Operador" : "Novo Operador"}
+              </Text>
+
+              {/* Nome */}
+              <View className="mb-4">
+                <Text className="text-base font-semibold text-foreground mb-2">Nome *</Text>
+                <TextInput
+                  value={formData.nome}
+                  onChangeText={(text) => setFormData({ ...formData, nome: text })}
+                  placeholder="Nome completo"
+                  placeholderTextColor="#9BA1A6"
+                  className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+                />
+              </View>
+
+              {/* CPF */}
+              <View className="mb-4">
+                <Text className="text-base font-semibold text-foreground mb-2">CPF</Text>
+                <TextInput
+                  value={formData.cpf}
+                  onChangeText={(text) => setFormData({ ...formData, cpf: formatCPF(text) })}
+                  placeholder="000.000.000-00"
+                  placeholderTextColor="#9BA1A6"
+                  keyboardType="numeric"
+                  maxLength={14}
+                  className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+                />
+              </View>
+
+              {/* Telefone */}
+              <View className="mb-4">
+                <Text className="text-base font-semibold text-foreground mb-2">Telefone</Text>
+                <TextInput
+                  value={formData.telefone}
+                  onChangeText={(text) => setFormData({ ...formData, telefone: formatPhone(text) })}
+                  placeholder="(00) 00000-0000"
+                  placeholderTextColor="#9BA1A6"
+                  keyboardType="phone-pad"
+                  maxLength={15}
+                  className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+                />
+              </View>
+
+
+
+              {/* Buttons */}
+              <View className="flex-row gap-3">
+                <Pressable
+                  onPress={() => {
+                    setShowModal(false);
+                    resetForm();
+                  }}
+                  className="flex-1 bg-surface border-2 border-border rounded-xl p-4"
+                >
+                  <Text className="text-lg font-bold text-foreground text-center">Cancelar</Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleSave}
+                  className="flex-1 bg-primary rounded-xl p-4"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                >
+                  {createMutation.isPending || updateMutation.isPending ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text className="text-lg font-bold text-white text-center">Salvar</Text>
+                  )}
+                </Pressable>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 }
 

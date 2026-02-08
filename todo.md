@@ -414,3 +414,39 @@
 - [ ] Adicionar contador de registros em cada aba
 - [ ] Feedback visual ao salvar/excluir
 - [ ] Animações suaves de transição
+
+## Implementação Completa de Operadores e Talhões
+
+### Operadores
+- [ ] Substituir placeholder por componente funcional
+- [ ] Criar modal de criação/edição de operador
+- [ ] Adicionar campos: nome, CPF, telefone, whatsappNumero
+- [ ] Implementar validação de CPF
+- [ ] Formatar telefone automaticamente (XX) XXXXX-XXXX
+- [ ] Exibir lista de operadores com cards
+- [ ] Adicionar botões de editar e excluir
+- [ ] Implementar confirmação antes de excluir
+
+### Talhões
+- [ ] Substituir placeholder por componente funcional
+- [ ] Criar modal de criação/edição de talhão
+- [ ] Adicionar dropdown de fazenda (vinculação)
+- [ ] Adicionar campo área em hectares
+- [ ] Adicionar campo cultura plantada
+- [ ] Exibir lista de talhões com cards
+- [ ] Agrupar talhões por fazenda na visualização
+- [ ] Adicionar botões de editar e excluir
+- [ ] Implementar confirmação antes de excluir
+
+## Sistema de Horímetros nas Máquinas
+
+### Correções
+- [x] Corrigir erros de TypeScript no componente Operadores (remover whatsappNumero)
+- [x] Usar campo telefone para WhatsApp
+
+### Horímetros
+- [x] Adicionar campos hmMotorAtual e hmTrilhaAtual na tabela machines
+- [x] Executar migration para adicionar colunas
+- [x] Exibir horímetros atuais nos cards de máquinas
+- [x] Implementar atualização automática de horímetros ao criar lançamento
+- [x] Validar que horímetros finais sejam maiores que os atuais (implementado no cálculo automático)

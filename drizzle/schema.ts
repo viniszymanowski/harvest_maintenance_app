@@ -49,6 +49,8 @@ export const machines = mysqlTable("machines", {
   fabricante: varchar("fabricante", { length: 100 }),
   intervaloTrocaOleoHm: real("intervaloTrocaOleoHm").default(250).notNull(),
   intervaloRevisao50hHm: real("intervaloRevisao50hHm").default(50).notNull(),
+  hmMotorAtual: real("hmMotorAtual").default(0).notNull(), // Horímetro motor atual
+  hmTrilhaAtual: real("hmTrilhaAtual").default(0).notNull(), // Horímetro trilha atual
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

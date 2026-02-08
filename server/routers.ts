@@ -544,7 +544,7 @@ export const appRouter = router({
     update: publicProcedure
       .input(
         z.object({
-          id: z.number(),
+          id: z.string().transform(Number),
           nome: z.string(),
           cpf: z.string().nullable().optional(),
           telefone: z.string().nullable().optional(),
@@ -556,7 +556,7 @@ export const appRouter = router({
         return db.updateOperador(id, data);
       }),
 
-    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+    delete: publicProcedure.input(z.object({ id: z.string().transform(Number) })).mutation(async ({ input }) => {
       return db.deleteOperador(input.id);
     }),
   }),

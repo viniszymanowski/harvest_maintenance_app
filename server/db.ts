@@ -225,6 +225,20 @@ export async function createDailyLog(data: InsertDailyLog) {
   const finalData = { ...data, ...calculated };
 
   await db.insert(dailyLogs).values(finalData);
+  
+  // Atualizar horímetros da máquina automaticamente
+  if (data.maquinaId) {
+    const hmMotorFinal = parseFloat(data.hmMotorFinal?.toString() || "0");
+    const hmTrilhaFinal = parseFloat(data.hmTrilhaFinal?.toString() || "0");
+    
+    await db.update(machines)
+      .set({
+        hmMotorAtual: hmMotorFinal,
+        hmTrilhaAtual: hmTrilhaFinal,
+      })
+      .where(eq(machines.id, data.maquinaId));
+  }
+  
   return finalData;
 }
 
