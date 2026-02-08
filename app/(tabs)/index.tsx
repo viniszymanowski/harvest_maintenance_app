@@ -31,29 +31,34 @@ export default function HomeScreen() {
     { enabled: !!todayDate }
   );
 
+  // Buscar status de manutenção para M1, M2, M3, M4 (queries fixas)
+  const m1Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M1" });
+  const m2Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M2" });
+  const m3Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M3" });
+  const m4Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M4" });
+
+  const maintenanceStatusMap: Record<string, any> = {
+    M1: m1Status.data,
+    M2: m2Status.data,
+    M3: m3Status.data,
+    M4: m4Status.data,
+  };
+
   const machineStatuses: MachineStatus[] = (machines || []).map((machine) => {
     const log = dailyLogs?.find((l) => l.maquinaId === machine.id);
+    const maintenanceStatus = maintenanceStatusMap[machine.id];
+    
     return {
       maquinaId: machine.id,
       nome: machine.nome,
       operador: log?.operador || null,
       horasMotorDia: log?.horasMotorDia || null,
       status: log ? "completo" : "pendente",
+      needsOilChange: maintenanceStatus?.needsOilChange || false,
+      needs50hRevision: maintenanceStatus?.needs50hRevision || false,
+      currentHm: maintenanceStatus?.currentHm || null,
     };
   });
-
-  // Buscar status de manutenção para cada máquina
-  const maintenanceQueries = machineStatuses.map((m) =>
-    trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: m.maquinaId })
-  );
-
-  // Combinar status de manutenção com status de lançamentos
-  const enrichedStatuses = machineStatuses.map((status, index) => ({
-    ...status,
-    needsOilChange: maintenanceQueries[index].data?.needsOilChange || false,
-    needs50hRevision: maintenanceQueries[index].data?.needs50hRevision || false,
-    currentHm: maintenanceQueries[index].data?.currentHm || null,
-  }));
 
   const handleNavigateToLancamento = () => {
     router.push("/(tabs)/lancamento" as any);
@@ -85,7 +90,7 @@ export default function HomeScreen() {
 
         {/* Machine Cards */}
         <FlatList
-          data={enrichedStatuses}
+          data={machineStatuses}
           keyExtractor={(item) => item.maquinaId}
           renderItem={({ item }) => (
             <Pressable
