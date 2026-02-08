@@ -81,3 +81,8 @@
 - [x] Atualizar app.config.ts com nome e logo
 - [x] Testar fluxos completos end-to-end
 - [x] Criar checkpoint final
+
+## Correção de Build
+- [x] Corrigir arquivos de ícone para resolver erro de build Android
+- [x] Verificar que todos os ícones estão válidos e não vazios
+- [x] Testar build novamente
