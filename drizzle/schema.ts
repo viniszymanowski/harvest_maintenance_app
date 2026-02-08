@@ -149,6 +149,47 @@ export const appSettings = mysqlTable("app_settings", {
 });
 
 // ============================================================================
+// Fazendas Table - Cadastro de Fazendas
+// ============================================================================
+export const fazendas = mysqlTable("fazendas", {
+  id: int("id").autoincrement().primaryKey(),
+  nome: varchar("nome", { length: 100 }).notNull(),
+  localizacao: varchar("localizacao", { length: 200 }),
+  areaTotal: real("areaTotal"), // área total em hectares
+  ativo: boolean("ativo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ============================================================================
+// Talhões Table - Cadastro de Talhões por Fazenda
+// ============================================================================
+export const talhoes = mysqlTable("talhoes", {
+  id: int("id").autoincrement().primaryKey(),
+  fazendaId: int("fazendaId").notNull(),
+  nome: varchar("nome", { length: 100 }).notNull(),
+  areaHa: real("areaHa").notNull(), // área em hectares
+  cultura: varchar("cultura", { length: 50 }), // soja, milho, etc
+  ativo: boolean("ativo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ============================================================================
+// Operadores Table - Cadastro de Operadores
+// ============================================================================
+export const operadores = mysqlTable("operadores", {
+  id: int("id").autoincrement().primaryKey(),
+  nome: varchar("nome", { length: 100 }).notNull(),
+  cpf: varchar("cpf", { length: 14 }),
+  telefone: varchar("telefone", { length: 20 }),
+  email: varchar("email", { length: 100 }),
+  ativo: boolean("ativo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ============================================================================
 // Type Exports
 // ============================================================================
 export type Machine = typeof machines.$inferSelect;
@@ -165,3 +206,12 @@ export type InsertMaintenancePart = typeof maintenanceParts.$inferInsert;
 
 export type AppSettings = typeof appSettings.$inferSelect;
 export type InsertAppSettings = typeof appSettings.$inferInsert;
+
+export type Fazenda = typeof fazendas.$inferSelect;
+export type InsertFazenda = typeof fazendas.$inferInsert;
+
+export type Talhao = typeof talhoes.$inferSelect;
+export type InsertTalhao = typeof talhoes.$inferInsert;
+
+export type Operador = typeof operadores.$inferSelect;
+export type InsertOperador = typeof operadores.$inferInsert;

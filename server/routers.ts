@@ -426,6 +426,140 @@ export const appRouter = router({
         return sendTestReportWhatsApp(input.phoneNumber);
       }),
   }),
+
+  // ============================================================================
+  // Fazendas
+  // ============================================================================
+  fazendas: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllFazendas();
+    }),
+
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+      return db.getFazendaById(input.id);
+    }),
+
+    create: publicProcedure
+      .input(
+        z.object({
+          nome: z.string(),
+          localizacao: z.string().nullable().optional(),
+          areaTotal: z.number().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.createFazenda(input);
+      }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          nome: z.string(),
+          localizacao: z.string().nullable().optional(),
+          areaTotal: z.number().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return db.updateFazenda(id, data);
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+      return db.deleteFazenda(input.id);
+    }),
+  }),
+
+  // ============================================================================
+  // Talhões
+  // ============================================================================
+  talhoes: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllTalhoes();
+    }),
+
+    getByFazenda: publicProcedure
+      .input(z.object({ fazendaId: z.number() }))
+      .query(async ({ input }) => {
+        return db.getTalhoesByFazenda(input.fazendaId);
+      }),
+
+    create: publicProcedure
+      .input(
+        z.object({
+          fazendaId: z.number(),
+          nome: z.string(),
+          areaHa: z.number(),
+          cultura: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.createTalhao(input);
+      }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          nome: z.string(),
+          areaHa: z.number(),
+          cultura: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return db.updateTalhao(id, data);
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+      return db.deleteTalhao(input.id);
+    }),
+  }),
+
+  // ============================================================================
+  // Operadores
+  // ============================================================================
+  operadores: router({
+    list: publicProcedure.query(async () => {
+      return db.getAllOperadores();
+    }),
+
+    getById: publicProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+      return db.getOperadorById(input.id);
+    }),
+
+    create: publicProcedure
+      .input(
+        z.object({
+          nome: z.string(),
+          cpf: z.string().nullable().optional(),
+          telefone: z.string().nullable().optional(),
+          email: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return db.createOperador(input);
+      }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          nome: z.string(),
+          cpf: z.string().nullable().optional(),
+          telefone: z.string().nullable().optional(),
+          email: z.string().nullable().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return db.updateOperador(id, data);
+      }),
+
+    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+      return db.deleteOperador(input.id);
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

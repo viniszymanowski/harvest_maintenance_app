@@ -279,3 +279,43 @@
 - [x] Adicionar detalhamento por máquina com eficiência, tempo deslocamento e tempo na lavoura
 - [x] Melhorar visualização de dados nos relatórios (cards coloridos e badges)
 - [x] Adicionar alertas visuais para baixa eficiência (<70%)
+
+## Transformação em ERP Agrícola Profissional
+
+### Sistema de Cadastros
+- [x] Criar tabela `fazendas` (id, nome, localizacao)
+- [x] Criar tabela `talhoes` (id, fazendaId, nome, areaHa)
+- [x] Criar tabela `operadores` (id, nome, cpf, telefone)
+- [x] Executar migration no banco de dados
+- [x] Criar tela de Configurações com abas: Fazendas, Talhões, Máquinas, Operadores
+- [x] Implementar CRUD completo para Fazendas (criar, editar, excluir)
+- [x] Adicionar rotas tRPC e funções de banco para todas as entidades
+- [ ] Implementar abas de Talhões, Máquinas e Operadores
+- [x] Adicionar validações e feedback visual
+
+### Redesign Tema Agrícola Profissional
+- [ ] Atualizar paleta de cores (verde John Deere moderno + gradientes)
+- [ ] Criar tema escuro otimizado para uso externo
+- [ ] Aumentar tamanho de botões e áreas de toque (tablet-friendly)
+- [ ] Adicionar ícones personalizados para cada seção
+- [ ] Implementar animações suaves de transição
+- [ ] Redesign completo da tela inicial (dashboard executivo)
+- [ ] Melhorar hierarquia visual e espaçamento
+
+### Lançamento Ultra-Rápido
+- [ ] Transformar formulário em wizard com etapas (Máquina → Operador → Horímetros → Tempos → Produção)
+- [ ] Implementar dropdowns para Fazenda, Talhão, Máquina, Operador
+- [ ] Salvar "Último Lançamento" em AsyncStorage
+- [ ] Adicionar botão "Repetir Último Lançamento"
+- [ ] Implementar autocomplete inteligente
+- [ ] Adicionar teclado numérico otimizado para horímetros
+- [ ] Validação em tempo real com feedback visual
+- [ ] Atalhos visuais para máquinas mais usadas
+
+### Dashboard Executivo e Gráficos
+- [ ] Adicionar gráfico de barras: Produtividade por Máquina (últimos 7 dias)
+- [ ] Adicionar gráfico de linha: Evolução de Eficiência Semanal
+- [ ] Criar ranking visual de operadores com avatares
+- [ ] Adicionar comparativo: Hoje vs Ontem vs Média Semanal
+- [ ] Implementar filtros de período (Hoje, Semana, Mês)
+- [ ] Adicionar cards de alertas inteligentes (manutenção, baixa eficiência)

@@ -3,8 +3,14 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   appSettings,
   dailyLogs,
+  fazendas,
+  talhoes,
+  operadores,
   InsertAppSettings,
   InsertDailyLog,
+  InsertFazenda,
+  InsertTalhao,
+  InsertOperador,
   InsertMachine,
   InsertMaintenance,
   InsertMaintenancePart,
@@ -828,4 +834,124 @@ export async function updateSettings(data: Partial<InsertAppSettings>) {
     // Atualizar existente
     await dbInstance.update(appSettings).set(data).where(eq(appSettings.id, existing[0].id));
   }
+}
+
+// ============================================================================
+// Fazendas Functions
+// ============================================================================
+
+export async function getAllFazendas() {
+  const dbInstance = await getDb();
+  if (!dbInstance) return [];
+  return dbInstance.select().from(fazendas).where(eq(fazendas.ativo, true)).orderBy(fazendas.nome);
+}
+
+export async function getFazendaById(id: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) return null;
+  const result = await dbInstance.select().from(fazendas).where(eq(fazendas.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function createFazenda(data: InsertFazenda) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  const result = await dbInstance.insert(fazendas).values(data);
+  return { id: result[0].insertId, ...data };
+}
+
+export async function updateFazenda(id: number, data: Partial<InsertFazenda>) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  await dbInstance.update(fazendas).set(data).where(eq(fazendas.id, id));
+  return { success: true };
+}
+
+export async function deleteFazenda(id: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  // Soft delete
+  await dbInstance.update(fazendas).set({ ativo: false }).where(eq(fazendas.id, id));
+  return { success: true };
+}
+
+// ============================================================================
+// Talhões Functions
+// ============================================================================
+
+export async function getAllTalhoes() {
+  const dbInstance = await getDb();
+  if (!dbInstance) return [];
+  return dbInstance.select().from(talhoes).where(eq(talhoes.ativo, true)).orderBy(talhoes.nome);
+}
+
+export async function getTalhoesByFazenda(fazendaId: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) return [];
+  return dbInstance
+    .select()
+    .from(talhoes)
+    .where(sql`${talhoes.fazendaId} = ${fazendaId} AND ${talhoes.ativo} = true`)
+    .orderBy(talhoes.nome);
+}
+
+export async function createTalhao(data: InsertTalhao) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  const result = await dbInstance.insert(talhoes).values(data);
+  return { id: result[0].insertId, ...data };
+}
+
+export async function updateTalhao(id: number, data: Partial<InsertTalhao>) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  await dbInstance.update(talhoes).set(data).where(eq(talhoes.id, id));
+  return { success: true };
+}
+
+export async function deleteTalhao(id: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  // Soft delete
+  await dbInstance.update(talhoes).set({ ativo: false }).where(eq(talhoes.id, id));
+  return { success: true };
+}
+
+// ============================================================================
+// Operadores Functions
+// ============================================================================
+
+export async function getAllOperadores() {
+  const dbInstance = await getDb();
+  if (!dbInstance) return [];
+  return dbInstance.select().from(operadores).where(eq(operadores.ativo, true)).orderBy(operadores.nome);
+}
+
+export async function getOperadorById(id: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) return null;
+  const result = await dbInstance.select().from(operadores).where(eq(operadores.id, id)).limit(1);
+  return result[0] || null;
+}
+
+export async function createOperador(data: InsertOperador) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  const result = await dbInstance.insert(operadores).values(data);
+  return { id: result[0].insertId, ...data };
+}
+
+export async function updateOperador(id: number, data: Partial<InsertOperador>) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  await dbInstance.update(operadores).set(data).where(eq(operadores.id, id));
+  return { success: true };
+}
+
+export async function deleteOperador(id: number) {
+  const dbInstance = await getDb();
+  if (!dbInstance) throw new Error("Database not available");
+  // Soft delete
+  await dbInstance.update(operadores).set({ ativo: false }).where(eq(operadores.id, id));
+  return { success: true };
 }
