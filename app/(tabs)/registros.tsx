@@ -170,6 +170,24 @@ export default function RegistrosScreen() {
                     </View>
                   </View>
 
+                  {item.log.chegadaLavoura && (
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm text-muted">Chegada Lavoura</Text>
+                      <Text className="text-base font-semibold text-foreground">
+                        {item.log.chegadaLavoura}
+                      </Text>
+                    </View>
+                  )}
+
+                  {item.log.saidaLavoura && (
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-sm text-muted">Saída Lavoura</Text>
+                      <Text className="text-base font-semibold text-foreground">
+                        {item.log.saidaLavoura}
+                      </Text>
+                    </View>
+                  )}
+
                   {item.log.atrasoMin !== null && (
                     <View className="flex-row items-center justify-between">
                       <Text className="text-sm text-muted">Atraso</Text>

@@ -7,6 +7,8 @@ interface DailyReportData {
     maquinaId: string;
     nome?: string | null;
     operador?: string | null;
+    chegadaLavoura?: string | null;
+    saidaLavoura?: string | null;
     horasMotorDia: number;
     areaHa: number;
     prodH: number;
@@ -56,8 +58,8 @@ export async function generateDailyReportPDF(data: DailyReportData): Promise<Buf
     doc.moveDown(0.5);
 
     const tableTop = doc.y;
-    const colWidths = [80, 120, 80, 80, 80];
-    const headers = ["Máquina", "Operador", "Horas Motor", "Área (ha)", "Prod. (h)"];
+    const colWidths = [60, 90, 60, 60, 70, 70, 60];
+    const headers = ["Máquina", "Operador", "Chegada", "Saída", "Horas Motor", "Área (ha)", "Prod. (h)"];
 
     // Header da tabela
     doc.font("Helvetica-Bold").fontSize(10);
@@ -80,6 +82,8 @@ export async function generateDailyReportPDF(data: DailyReportData): Promise<Buf
       const row = [
         `${machine.maquinaId}${machine.nome ? ` - ${machine.nome}` : ""}`,
         machine.operador || "N/A",
+        machine.chegadaLavoura || "-",
+        machine.saidaLavoura || "-",
         machine.horasMotorDia.toFixed(1),
         machine.areaHa.toFixed(2),
         machine.prodH.toFixed(1),
@@ -308,6 +312,8 @@ export async function generateReportPDF(
         maquinaId: log.maquinaId,
         nome: log.maquinaNome,
         operador: log.operador,
+        chegadaLavoura: log.chegadaLavoura,
+        saidaLavoura: log.saidaLavoura,
         horasMotorDia: log.horasMotorDia || 0,
         areaHa: log.areaHa || 0,
         prodH: log.prodH || 0,

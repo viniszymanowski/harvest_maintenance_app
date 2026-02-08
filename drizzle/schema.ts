@@ -63,6 +63,7 @@ export const dailyLogs = mysqlTable("daily_logs", {
   saidaProgramada: time("saidaProgramada"),
   saidaReal: time("saidaReal"),
   chegadaLavoura: time("chegadaLavoura"),
+  saidaLavoura: time("saidaLavoura"),
   
   // Horímetros
   hmMotorInicial: real("hmMotorInicial"),

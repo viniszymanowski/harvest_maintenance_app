@@ -240,3 +240,13 @@
 - [x] Integrar envio automático de relatório via WhatsApp
 - [x] Testar envio com credenciais reais do Twilio
 - [x] Documentar processo de configuração do Twilio WhatsApp Sandbox
+
+## Campo Horário de Saída da Lavoura
+- [x] Adicionar coluna horarioSaida na tabela registros (migration)
+- [x] Atualizar schema do banco de dados (db.ts)
+- [x] Adicionar campo "Horário de Saída" no formulário de lançamento
+- [x] Exibir horário de saída na lista de registros
+- [x] Incluir horário de saída nos relatórios (diário, operadores)
+- [x] Adicionar horário de saída na exportação CSV
+- [x] Adicionar horário de saída na exportação PDF
+- [x] Testar criação e edição de registros com horário de saída

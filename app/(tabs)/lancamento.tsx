@@ -28,6 +28,7 @@ export default function LancamentoScreen() {
   const [saidaProgramada, setSaidaProgramada] = useState("");
   const [saidaReal, setSaidaReal] = useState("");
   const [chegadaLavoura, setChegadaLavoura] = useState("");
+  const [saidaLavoura, setSaidaLavoura] = useState("");
   const [hmMotorInicial, setHmMotorInicial] = useState("");
   const [hmMotorFinal, setHmMotorFinal] = useState("");
   const [hmTrilhaInicial, setHmTrilhaInicial] = useState("");
@@ -120,6 +121,7 @@ export default function LancamentoScreen() {
       saidaProgramada: saidaProgramada || undefined,
       saidaReal: saidaReal || undefined,
       chegadaLavoura: chegadaLavoura || undefined,
+      saidaLavoura: saidaLavoura || undefined,
       hmMotorInicial: hmMotorInicial ? parseFloat(hmMotorInicial) : undefined,
       hmMotorFinal: hmMotorFinal ? parseFloat(hmMotorFinal) : undefined,
       hmTrilhaInicial: hmTrilhaInicial ? parseFloat(hmTrilhaInicial) : undefined,
@@ -142,6 +144,7 @@ export default function LancamentoScreen() {
       setSaidaProgramada("");
       setSaidaReal("");
       setChegadaLavoura("");
+      setSaidaLavoura("");
       setHmMotorInicial("");
       setHmMotorFinal("");
       setHmTrilhaInicial("");
@@ -271,6 +274,17 @@ export default function LancamentoScreen() {
                 onChangeText={setChegadaLavoura}
                 className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
                 placeholder="09:00"
+                keyboardType="numbers-and-punctuation"
+              />
+            </View>
+
+            <View className="gap-2">
+              <Text className="text-sm font-medium text-muted">Saída Lavoura (HH:MM)</Text>
+              <TextInput
+                value={saidaLavoura}
+                onChangeText={setSaidaLavoura}
+                className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
+                placeholder="18:00"
                 keyboardType="numbers-and-punctuation"
               />
             </View>

@@ -95,6 +95,8 @@ export default function RelatoriosScreen() {
       data = dailyReport.data.logs.map((log: any) => ({
         Maquina: log.maquinaId,
         Operador: log.operador || "-",
+        "Chegada Lavoura": log.chegadaLavoura || "-",
+        "Saída Lavoura": log.saidaLavoura || "-",
         "Horas Motor": log.horasMotorDia?.toFixed(1) || "0.0",
         "Horas Prod": log.prodH?.toFixed(1) || "0.0",
         "Área (ha)": log.areaHa?.toFixed(2) || "0.00",
