@@ -250,3 +250,8 @@
 - [x] Adicionar horário de saída na exportação CSV
 - [x] Adicionar horário de saída na exportação PDF
 - [x] Testar criação e edição de registros com horário de saída
+
+## Correção de Exportação PDF de Manutenções
+- [x] Investigar erro na exportação de PDF do relatório de manutenções
+- [x] Corrigir função generateMaintenanceReportPDF (substituir fetch por tRPC)
+- [x] Testar exportação de PDF de manutenções
