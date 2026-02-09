@@ -483,3 +483,13 @@
 - [x] Atualizar formulário de cadastro de máquinas com os novos campos
 - [x] Atualizar exibição de máquinas para mostrar Hora Motor e Hora Trilha (já estava implementado)
 - [x] Atualizar router tRPC para aceitar os novos campos
+
+## Melhorias no Formulário de Lançamento
+- [x] Substituir campo "Fazenda" por Picker com lista de fazendas cadastradas
+- [x] Substituir campo "Talhão" por Picker com lista de talhões da fazenda selecionada (filtrado)
+- [ ] Substituir campo "Máquina" por Picker com lista de máquinas cadastradas (mantém botões atuais)
+- [x] Substituir campo "Operador" por Picker com lista de operadores cadastrados
+- [x] Adicionar validação: alertar se HM Final < HM Atual da máquina
+- [x] Adicionar validação: alertar se HT Final < HT Atual da máquina
+- [x] Implementar atualização automática de hmMotorAtual da máquina após salvar lançamento
+- [x] Implementar atualização automática de hmTrilhaAtual da máquina após salvar lançamento

@@ -1,3 +1,4 @@
+
 import {
   ActivityIndicator,
   Alert,
@@ -7,6 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { ScreenContainer } from "@/components/screen-container";
 import { trpc } from "@/lib/trpc";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -17,6 +19,12 @@ export default function LancamentoScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const utils = trpc.useUtils();
+
+  // Buscar dados dos cadastros
+  const { data: fazendas } = trpc.fazendas.list.useQuery();
+  const { data: talhoes } = trpc.talhoes.list.useQuery();
+  const { data: machines } = trpc.machines.list.useQuery();
+  const { data: operadores } = trpc.operadores.list.useQuery();
 
   const [data, setData] = useState("");
   const [fazenda, setFazenda] = useState("");
@@ -47,6 +55,17 @@ export default function LancamentoScreen() {
     const formatted = today.toISOString().split("T")[0];
     setData(formatted);
   }, []);
+
+  // Encontrar fazenda selecionada
+  const fazendaSelecionada = useMemo(() => {
+    return (fazendas || []).find((f) => f.nome === fazenda);
+  }, [fazendas, fazenda]);
+
+  // Filtrar talhões da fazenda selecionada
+  const talhoesDisponiveis = useMemo(() => {
+    if (!fazendaSelecionada) return [];
+    return (talhoes || []).filter((t) => t.fazendaId === fazendaSelecionada.id);
+  }, [talhoes, fazendaSelecionada]);
 
   const createMutation = trpc.dailyLogs.create.useMutation({
     onSuccess: () => {
@@ -127,6 +146,50 @@ export default function LancamentoScreen() {
       return;
     }
 
+    // Buscar máquina selecionada para validar horímetros
+    const maquinaSelecionada = (machines || []).find((m) => m.id === maquinaId);
+    
+    if (maquinaSelecionada) {
+      // Validar HM Motor
+      if (hmMotorFinal && maquinaSelecionada.hmMotorAtual) {
+        const hmFinal = parseFloat(hmMotorFinal);
+        if (hmFinal < maquinaSelecionada.hmMotorAtual) {
+          Alert.alert(
+            "⚠️ Atenção: Horímetro Motor Inválido",
+            `HM Motor Final (${hmFinal.toFixed(1)}h) é menor que o HM Motor Atual da máquina (${maquinaSelecionada.hmMotorAtual.toFixed(1)}h).\n\nDeseja continuar mesmo assim?`,
+            [
+              { text: "Cancelar", style: "cancel" },
+              { text: "Continuar", onPress: () => salvarLancamento(saveAndNew) },
+            ]
+          );
+          return;
+        }
+      }
+
+      // Validar HM Trilha
+      if (hmTrilhaFinal && maquinaSelecionada.hmTrilhaAtual) {
+        const htFinal = parseFloat(hmTrilhaFinal);
+        if (htFinal < maquinaSelecionada.hmTrilhaAtual) {
+          Alert.alert(
+            "⚠️ Atenção: Horímetro Trilha Inválido",
+            `HM Trilha Final (${htFinal.toFixed(1)}h) é menor que o HM Trilha Atual da máquina (${maquinaSelecionada.hmTrilhaAtual.toFixed(1)}h).\n\nDeseja continuar mesmo assim?`,
+            [
+              { text: "Cancelar", style: "cancel" },
+              { text: "Continuar", onPress: () => salvarLancamento(saveAndNew) },
+            ]
+          );
+          return;
+        }
+      }
+    }
+
+    // Se passou nas validações, salvar diretamente
+    await salvarLancamento(saveAndNew);
+  };
+
+  const updateMachineMutation = trpc.machines.updateName.useMutation();
+
+  const salvarLancamento = async (saveAndNew: boolean) => {
     await createMutation.mutateAsync({
       data,
       fazenda,
@@ -150,6 +213,31 @@ export default function LancamentoScreen() {
       areaHa: areaHa ? parseFloat(areaHa) : undefined,
       observacoes: observacoes || undefined,
     });
+
+    // Atualizar horímetros da máquina automaticamente
+    if (hmMotorFinal || hmTrilhaFinal) {
+      const maquinaSelecionada = (machines || []).find((m) => m.id === maquinaId);
+      if (maquinaSelecionada) {
+        const updateData: any = {
+          id: maquinaId,
+          nome: maquinaSelecionada.nome || maquinaId,
+        };
+        
+        if (hmMotorFinal) {
+          updateData.hmMotorAtual = parseFloat(hmMotorFinal);
+        }
+        
+        if (hmTrilhaFinal) {
+          updateData.hmTrilhaAtual = parseFloat(hmTrilhaFinal);
+        }
+
+        // Atualizar máquina com novos horímetros
+        await updateMachineMutation.mutateAsync(updateData);
+        
+        // Invalidar cache para atualizar a UI
+        utils.machines.list.invalidate();
+      }
+    }
 
     if (saveAndNew) {
       // Limpar formulário
@@ -203,22 +291,42 @@ export default function LancamentoScreen() {
 
             <View className="gap-2">
               <Text className="text-sm font-medium text-muted">Fazenda *</Text>
-              <TextInput
-                value={fazenda}
-                onChangeText={setFazenda}
-                className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                placeholder="Nome da fazenda"
-              />
+              <View className="bg-background border border-border rounded-xl overflow-hidden">
+                <Picker
+                  selectedValue={fazenda}
+                  onValueChange={(value) => {
+                    setFazenda(value);
+                    setTalhao(""); // Resetar talhão ao mudar fazenda
+                  }}
+                  style={{ height: 50 }}
+                >
+                  <Picker.Item label="Selecione uma fazenda" value="" />
+                  {(fazendas || []).map((f) => (
+                    <Picker.Item key={f.id} label={f.nome || "Sem nome"} value={f.nome || ""} />
+                  ))}
+                </Picker>
+              </View>
             </View>
 
             <View className="gap-2">
               <Text className="text-sm font-medium text-muted">Talhão *</Text>
-              <TextInput
-                value={talhao}
-                onChangeText={setTalhao}
-                className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                placeholder="Número do talhão"
-              />
+              <View className="bg-background border border-border rounded-xl overflow-hidden">
+                <Picker
+                  selectedValue={talhao}
+                  onValueChange={setTalhao}
+                  style={{ height: 50 }}
+                  enabled={!!fazenda}
+                >
+                  <Picker.Item label={fazenda ? "Selecione um talhão" : "Selecione fazenda primeiro"} value="" />
+                  {talhoesDisponiveis.map((t) => (
+                    <Picker.Item 
+                      key={t.id} 
+                      label={`${t.nome || "Sem nome"} - ${t.areaHa || 0}ha`} 
+                      value={t.nome || ""} 
+                    />
+                  ))}
+                </Picker>
+              </View>
             </View>
 
             <View className="gap-2">
@@ -247,12 +355,18 @@ export default function LancamentoScreen() {
 
             <View className="gap-2">
               <Text className="text-sm font-medium text-muted">Operador *</Text>
-              <TextInput
-                value={operador}
-                onChangeText={setOperador}
-                className="bg-background border border-border rounded-xl px-4 py-3 text-foreground"
-                placeholder="Nome do operador"
-              />
+              <View className="bg-background border border-border rounded-xl overflow-hidden">
+                <Picker
+                  selectedValue={operador}
+                  onValueChange={setOperador}
+                  style={{ height: 50 }}
+                >
+                  <Picker.Item label="Selecione um operador" value="" />
+                  {(operadores || []).map((op) => (
+                    <Picker.Item key={op.id} label={op.nome || "Sem nome"} value={op.nome || ""} />
+                  ))}
+                </Picker>
+              </View>
             </View>
           </View>
 
