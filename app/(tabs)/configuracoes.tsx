@@ -692,62 +692,64 @@ function OperadoresTab() {
   }
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      {/* Add Button */}
-      <Pressable
-        onPress={handleAdd}
-        className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
-        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
-      >
-        <Text className="text-xl font-bold text-white text-center">➕ Adicionar Operador</Text>
-      </Pressable>
+    <View className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Add Button */}
+        <Pressable
+          onPress={handleAdd}
+          className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+        >
+          <Text className="text-xl font-bold text-white text-center">➕ Adicionar Operador</Text>
+        </Pressable>
 
-      {/* Operador List */}
-      {!operadores || operadores.length === 0 ? (
-        <View className="flex-1 items-center justify-center p-8">
-          <Text className="text-6xl mb-4">👤</Text>
-          <Text className="text-xl font-bold text-foreground mb-2">Nenhum operador cadastrado</Text>
-          <Text className="text-base text-muted text-center">
-            Clique em "Adicionar Operador" para começar
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={operadores}
-          keyExtractor={(item) => item.id.toString()}
-          scrollEnabled={false}
-          renderItem={({ item }) => (
-            <View className="bg-surface rounded-2xl p-5 mb-4 border-2 border-border">
-              <View className="flex-row items-start justify-between mb-3">
-                <View className="flex-1">
-                  <Text className="text-2xl font-bold text-foreground mb-1">{item.nome}</Text>
-                  {item.cpf && (
-                    <Text className="text-base text-muted">CPF: {item.cpf}</Text>
-                  )}
-                  {item.telefone && (
-                    <Text className="text-base text-muted">Tel: {item.telefone}</Text>
-                  )}
+        {/* Operador List */}
+        {!operadores || operadores.length === 0 ? (
+          <View className="flex-1 items-center justify-center p-8">
+            <Text className="text-6xl mb-4">👤</Text>
+            <Text className="text-xl font-bold text-foreground mb-2">Nenhum operador cadastrado</Text>
+            <Text className="text-base text-muted text-center">
+              Clique em "Adicionar Operador" para começar
+            </Text>
+          </View>
+        ) : (
+          <FlatList
+            data={operadores}
+            keyExtractor={(item) => item.id.toString()}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <View className="bg-surface rounded-2xl p-5 mb-4 border-2 border-border">
+                <View className="flex-row items-start justify-between mb-3">
+                  <View className="flex-1">
+                    <Text className="text-2xl font-bold text-foreground mb-1">{item.nome}</Text>
+                    {item.cpf && (
+                      <Text className="text-base text-muted">CPF: {item.cpf}</Text>
+                    )}
+                    {item.telefone && (
+                      <Text className="text-base text-muted">Tel: {item.telefone}</Text>
+                    )}
 
-                </View>
-                <View className="flex-row gap-3">
-                  <TouchableOpacity
-                    onPress={() => handleEdit(item)}
-                    className="bg-warning/20 p-3 rounded-xl"
-                  >
-                    <Text className="text-2xl">✏️</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleDelete(item.id)}
-                    className="bg-error/20 p-3 rounded-xl"
-                  >
-                    <Text className="text-2xl">🗑️</Text>
-                  </TouchableOpacity>
+                  </View>
+                  <View className="flex-row gap-3">
+                    <TouchableOpacity
+                      onPress={() => handleEdit(item)}
+                      className="bg-warning/20 p-3 rounded-xl"
+                    >
+                      <Text className="text-2xl">✏️</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleDelete(item.id)}
+                      className="bg-error/20 p-3 rounded-xl"
+                    >
+                      <Text className="text-2xl">🗑️</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
-        />
-      )}
+            )}
+          />
+        )}
+      </ScrollView>
 
       {/* Modal */}
       <Modal 
@@ -839,7 +841,7 @@ function OperadoresTab() {
           </ScrollView>
         </View>
       </Modal>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -1086,16 +1088,305 @@ function FazendasTab() {
 }
 
 // ============================================================================
-// Talhões Tab (Placeholder)
+// Talhões Tab
 // ============================================================================
 function TalhoesTab() {
+  const [showModal, setShowModal] = useState(false);
+  const [editingTalhao, setEditingTalhao] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    nome: "",
+    fazendaId: "",
+    areaHa: "",
+    cultura: "",
+  });
+
+  const utils = trpc.useUtils();
+  const { data: talhoes, isLoading } = trpc.talhoes.list.useQuery();
+  const { data: fazendas } = trpc.fazendas.list.useQuery();
+
+  const createMutation = trpc.talhoes.create.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.talhoes.list.invalidate();
+      setShowModal(false);
+      resetForm();
+      Alert.alert("Sucesso", "Talhão cadastrado com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const updateMutation = trpc.talhoes.update.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.talhoes.list.invalidate();
+      setShowModal(false);
+      resetForm();
+      Alert.alert("Sucesso", "Talhão atualizado com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const deleteMutation = trpc.talhoes.delete.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.talhoes.list.invalidate();
+      Alert.alert("Sucesso", "Talhão excluído com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const resetForm = () => {
+    setFormData({
+      nome: "",
+      fazendaId: "",
+      areaHa: "",
+      cultura: "",
+    });
+    setEditingTalhao(null);
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleEdit = (talhao: any) => {
+    setEditingTalhao(talhao);
+    setFormData({
+      nome: talhao.nome || "",
+      fazendaId: talhao.fazendaId?.toString() || "",
+      areaHa: talhao.areaHa?.toString() || "",
+      cultura: talhao.cultura || "",
+    });
+    setShowModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleDelete = (id: number) => {
+    Alert.alert("Confirmar Exclusão", "Deseja realmente excluir este talhão?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => deleteMutation.mutate({ id: id.toString() }),
+      },
+    ]);
+  };
+
+  const handleSave = () => {
+    if (!formData.nome) {
+      Alert.alert("Erro", "Preencha o nome do talhão");
+      return;
+    }
+    if (!formData.fazendaId) {
+      Alert.alert("Erro", "Selecione uma fazenda");
+      return;
+    }
+
+    if (editingTalhao) {
+      updateMutation.mutate({
+        id: editingTalhao.id.toString(),
+        nome: formData.nome,
+        fazendaId: formData.fazendaId,
+        areaHa: formData.areaHa ? parseFloat(formData.areaHa) : null,
+        cultura: formData.cultura || null,
+      });
+    } else {
+      createMutation.mutate({
+        nome: formData.nome,
+        fazendaId: formData.fazendaId,
+        areaHa: formData.areaHa ? parseFloat(formData.areaHa) : null,
+        cultura: formData.cultura || null,
+      });
+    }
+  };
+
+  const getFazendaNome = (fazendaId: number) => {
+    const fazenda = fazendas?.find((f) => f.id === fazendaId);
+    return fazenda?.nome || "Fazenda não encontrada";
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#367C2B" />
+      </View>
+    );
+  }
+
   return (
-    <View className="flex-1 items-center justify-center p-8">
-      <Text className="text-6xl mb-4">🗺️</Text>
-      <Text className="text-xl font-bold text-foreground mb-2">Em Desenvolvimento</Text>
-      <Text className="text-base text-muted text-center">
-        Gerenciamento de talhões será implementado em breve
-      </Text>
-    </View>
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      {/* Add Button */}
+      <Pressable
+        onPress={handleAdd}
+        className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
+        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+      >
+        <Text className="text-xl font-bold text-white text-center">➕ Adicionar Talhão</Text>
+      </Pressable>
+
+      {/* Talhão List */}
+      {!talhoes || talhoes.length === 0 ? (
+        <View className="flex-1 items-center justify-center p-8">
+          <Text className="text-6xl mb-4">🗺️</Text>
+          <Text className="text-xl font-bold text-foreground mb-2">Nenhum talhão cadastrado</Text>
+          <Text className="text-base text-muted text-center">
+            Clique em "Adicionar Talhão" para começar
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={talhoes}
+          keyExtractor={(item) => item.id.toString()}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View className="bg-surface rounded-2xl p-5 mb-4 border-2 border-border">
+              <View className="flex-row items-start justify-between mb-3">
+                <View className="flex-1">
+                  <Text className="text-2xl font-bold text-foreground mb-1">{item.nome}</Text>
+                  <Text className="text-base text-muted">🌾 {getFazendaNome(item.fazendaId)}</Text>
+                  {item.areaHa && (
+                    <Text className="text-base text-muted">📏 Área: {item.areaHa} ha</Text>
+                  )}
+                  {item.cultura && (
+                    <Text className="text-base text-muted">🌱 Cultura: {item.cultura}</Text>
+                  )}
+                </View>
+                <View className="flex-row gap-3">
+                  <TouchableOpacity
+                    onPress={() => handleEdit(item)}
+                    className="bg-warning/20 p-3 rounded-xl"
+                  >
+                    <Text className="text-2xl">✏️</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleDelete(item.id)}
+                    className="bg-error/20 p-3 rounded-xl"
+                  >
+                    <Text className="text-2xl">🗑️</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+        />
+      )}
+
+      {/* Modal */}
+      <Modal 
+        visible={showModal} 
+        animationType="slide" 
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowModal(false)}
+      >
+        <View className="flex-1 bg-background">
+          <View className="bg-primary p-4 flex-row items-center justify-between">
+            <Text className="text-2xl font-bold text-white">
+              {editingTalhao ? "Editar Talhão" : "Novo Talhão"}
+            </Text>
+            <Pressable
+              onPress={() => setShowModal(false)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              className="bg-white/20 px-4 py-2 rounded-lg"
+            >
+              <Text className="text-white font-semibold">✕</Text>
+            </Pressable>
+          </View>
+          <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
+            {/* Nome */}
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-foreground mb-2">Nome *</Text>
+              <TextInput
+                value={formData.nome}
+                onChangeText={(text) => setFormData({ ...formData, nome: text })}
+                placeholder="Ex: Talhão 01"
+                placeholderTextColor="#9BA1A6"
+                className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+              />
+            </View>
+
+            {/* Fazenda */}
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-foreground mb-2">Fazenda *</Text>
+              <View className="bg-surface border-2 border-border rounded-xl overflow-hidden">
+                <Picker
+                  selectedValue={formData.fazendaId}
+                  onValueChange={(value) => setFormData({ ...formData, fazendaId: value })}
+                  style={{ height: 56 }}
+                >
+                  <Picker.Item label="Selecione uma fazenda" value="" />
+                  {fazendas?.map((fazenda) => (
+                    <Picker.Item
+                      key={fazenda.id}
+                      label={fazenda.nome}
+                      value={fazenda.id.toString()}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            {/* Área */}
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-foreground mb-2">Área (hectares)</Text>
+              <TextInput
+                value={formData.areaHa}
+                onChangeText={(text) => setFormData({ ...formData, areaHa: text })}
+                placeholder="Ex: 50.5"
+                placeholderTextColor="#9BA1A6"
+                keyboardType="decimal-pad"
+                className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+              />
+            </View>
+
+            {/* Cultura */}
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-foreground mb-2">Cultura Plantada</Text>
+              <TextInput
+                value={formData.cultura}
+                onChangeText={(text) => setFormData({ ...formData, cultura: text })}
+                placeholder="Ex: Soja, Milho, Algodão"
+                placeholderTextColor="#9BA1A6"
+                className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+              />
+            </View>
+
+            {/* Buttons */}
+            <View className="flex-row gap-3 mt-4">
+              <Pressable
+                onPress={() => {
+                  setShowModal(false);
+                  resetForm();
+                }}
+                className="flex-1 bg-surface border-2 border-border rounded-xl p-4"
+              >
+                <Text className="text-lg font-bold text-foreground text-center">Cancelar</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSave}
+                className="flex-1 bg-primary rounded-xl p-4"
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text className="text-lg font-bold text-white text-center">Salvar</Text>
+                )}
+              </Pressable>
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 }

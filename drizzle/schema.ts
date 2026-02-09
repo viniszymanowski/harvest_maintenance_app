@@ -175,7 +175,7 @@ export const talhoes = mysqlTable("talhoes", {
   id: int("id").autoincrement().primaryKey(),
   fazendaId: int("fazendaId").notNull(),
   nome: varchar("nome", { length: 100 }).notNull(),
-  areaHa: real("areaHa").notNull(), // área em hectares
+  areaHa: real("areaHa"), // área em hectares (opcional)
   cultura: varchar("cultura", { length: 50 }), // soja, milho, etc
   ativo: boolean("ativo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

@@ -1,0 +1,1 @@
+ALTER TABLE `talhoes` MODIFY COLUMN `areaHa` real;

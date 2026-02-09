@@ -456,3 +456,8 @@
 - [x] Corrigir estado e handler do modal de Operadores (alterado de transparent para pageSheet)
 - [x] Testar abertura e fechamento do modal
 - [x] Testar criação de novo operador
+
+## Correções Urgentes Reportadas pelo Usuário (Fase 2)
+- [x] Corrigir botão "Adicionar Operador" - Modal reorganizado fora do ScrollView
+- [x] Implementar CRUD completo de Talhões na aba de Configurações
+- [x] Verificar e corrigir problemas gerais no sistema de cadastro

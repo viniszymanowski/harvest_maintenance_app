@@ -487,9 +487,9 @@ export const appRouter = router({
     create: publicProcedure
       .input(
         z.object({
-          fazendaId: z.number(),
+          fazendaId: z.string().transform((val) => parseInt(val)),
           nome: z.string(),
-          areaHa: z.number(),
+          areaHa: z.number().nullable().optional(),
           cultura: z.string().nullable().optional(),
         })
       )
@@ -500,9 +500,10 @@ export const appRouter = router({
     update: publicProcedure
       .input(
         z.object({
-          id: z.number(),
+          id: z.string().transform((val) => parseInt(val)),
+          fazendaId: z.string().transform((val) => parseInt(val)),
           nome: z.string(),
-          areaHa: z.number(),
+          areaHa: z.number().nullable().optional(),
           cultura: z.string().nullable().optional(),
         })
       )
@@ -511,7 +512,7 @@ export const appRouter = router({
         return db.updateTalhao(id, data);
       }),
 
-    delete: publicProcedure.input(z.object({ id: z.number() })).mutation(async ({ input }) => {
+    delete: publicProcedure.input(z.object({ id: z.string().transform((val) => parseInt(val)) })).mutation(async ({ input }) => {
       return db.deleteTalhao(input.id);
     }),
   }),
