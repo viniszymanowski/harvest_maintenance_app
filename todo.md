@@ -450,3 +450,9 @@
 - [x] Exibir horímetros atuais nos cards de máquinas
 - [x] Implementar atualização automática de horímetros ao criar lançamento
 - [x] Validar que horímetros finais sejam maiores que os atuais (implementado no cálculo automático)
+
+## Correção Botão Adicionar Operador
+- [x] Investigar por que o botão "Adicionar Operador" não abre o modal
+- [x] Corrigir estado e handler do modal de Operadores (alterado de transparent para pageSheet)
+- [x] Testar abertura e fechamento do modal
+- [x] Testar criação de novo operador
