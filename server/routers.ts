@@ -56,6 +56,8 @@ export const appRouter = router({
           nome: z.string().min(1),
           intervaloTrocaOleoHm: z.number().optional(),
           intervaloRevisao50hHm: z.number().optional(),
+          hmMotorAtual: z.number().optional(),
+          hmTrilhaAtual: z.number().optional(),
         })
       )
       .mutation(async ({ input }) => {
@@ -71,6 +73,8 @@ export const appRouter = router({
           nome: z.string().min(1),
           intervaloTrocaOleoHm: z.number().positive().default(250),
           intervaloRevisao50hHm: z.number().positive().default(50),
+          hmMotorAtual: z.number().default(0),
+          hmTrilhaAtual: z.number().default(0),
         })
       )
       .mutation(async ({ input }) => {

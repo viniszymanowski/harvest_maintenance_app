@@ -125,6 +125,8 @@ function MaquinasTab() {
     fabricante: "",
     intervaloTrocaOleoHm: "250",
     intervaloRevisao50hHm: "50",
+    hmMotorAtual: "0",
+    hmTrilhaAtual: "0",
   });
 
   const utils = trpc.useUtils();
@@ -181,6 +183,8 @@ function MaquinasTab() {
       fabricante: "",
       intervaloTrocaOleoHm: "250",
       intervaloRevisao50hHm: "50",
+      hmMotorAtual: "0",
+      hmTrilhaAtual: "0",
     });
     setEditingMachine(null);
   };
@@ -203,6 +207,8 @@ function MaquinasTab() {
       fabricante: machine.fabricante || "",
       intervaloTrocaOleoHm: machine.intervaloTrocaOleoHm?.toString() || "250",
       intervaloRevisao50hHm: machine.intervaloRevisao50hHm?.toString() || "50",
+      hmMotorAtual: machine.hmMotorAtual?.toString() || "0",
+      hmTrilhaAtual: machine.hmTrilhaAtual?.toString() || "0",
     });
     setShowModal(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -231,6 +237,8 @@ function MaquinasTab() {
         nome: formData.nome,
         intervaloTrocaOleoHm: parseFloat(formData.intervaloTrocaOleoHm) || 250,
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
+        hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
+        hmTrilhaAtual: parseFloat(formData.hmTrilhaAtual) || 0,
       });
     } else {
       createMutation.mutate({
@@ -238,6 +246,8 @@ function MaquinasTab() {
         nome: formData.nome,
         intervaloTrocaOleoHm: parseFloat(formData.intervaloTrocaOleoHm) || 250,
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
+        hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
+        hmTrilhaAtual: parseFloat(formData.hmTrilhaAtual) || 0,
       });
     }
   };
@@ -515,6 +525,41 @@ function MaquinasTab() {
                 </View>
               </View>
 
+              {/* Horímetros Atuais */}
+              <View className="mb-4">
+                <Text className="text-lg font-bold text-foreground mb-3">🕒 Horímetros Atuais</Text>
+                <View className="flex-row gap-3">
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-foreground mb-2">
+                      Hora Motor (HM)
+                    </Text>
+                    <TextInput
+                      value={formData.hmMotorAtual}
+                      onChangeText={(text) =>
+                        setFormData({ ...formData, hmMotorAtual: text })
+                      }
+                      className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+                      placeholder="0.0"
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-foreground mb-2">
+                      Hora Trilha (HT)
+                    </Text>
+                    <TextInput
+                      value={formData.hmTrilhaAtual}
+                      onChangeText={(text) =>
+                        setFormData({ ...formData, hmTrilhaAtual: text })
+                      }
+                      className="bg-surface border-2 border-border rounded-xl px-4 py-4 text-lg text-foreground"
+                      placeholder="0.0"
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+              </View>
+
               {/* Buttons */}
               <View className="gap-3 mt-4 mb-8">
                 <Pressable
@@ -634,8 +679,11 @@ function OperadoresTab() {
   };
 
   const handleAdd = () => {
+    console.log('[DEBUG Operadores] Botão clicado, chamando handleAdd');
     resetForm();
+    console.log('[DEBUG Operadores] Antes de setShowModal(true)');
     setShowModal(true);
+    console.log('[DEBUG Operadores] Depois de setShowModal(true)');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
@@ -693,15 +741,27 @@ function OperadoresTab() {
 
   return (
     <View className="flex-1">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        className="flex-1" 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingVertical: 4 }}
+      >
         {/* Add Button */}
-        <Pressable
-          onPress={handleAdd}
-          className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
-          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+        <TouchableOpacity
+          onPress={() => {
+            console.log('[DEBUG Operadores] TouchableOpacity pressionado');
+            handleAdd();
+          }}
+          style={{
+            backgroundColor: '#367C2B',
+            borderRadius: 16,
+            padding: 20,
+            marginBottom: 24,
+          }}
+          activeOpacity={0.7}
         >
-          <Text className="text-xl font-bold text-white text-center">➕ Adicionar Operador</Text>
-        </Pressable>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>➕ Adicionar Operador</Text>
+        </TouchableOpacity>
 
         {/* Operador List */}
         {!operadores || operadores.length === 0 ? (

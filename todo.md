@@ -461,3 +461,25 @@
 - [x] Corrigir botão "Adicionar Operador" - Modal reorganizado fora do ScrollView
 - [x] Implementar CRUD completo de Talhões na aba de Configurações
 - [x] Verificar e corrigir problemas gerais no sistema de cadastro
+
+## Correção Urgente - Modal de Operadores Não Abre
+- [ ] Investigar por que o botão "Adicionar Operador" não abre o modal (usuário confirmou que ainda não funciona)
+- [ ] Adicionar console.log para debug do estado showModal
+- [ ] Testar com TouchableOpacity em vez de Pressable
+- [ ] Verificar se há conflito de eventos ou z-index
+- [ ] Validar que handleAdd está sendo chamado corretamente
+
+## PROBLEMA CRÍTICO - Botão Não Clicável
+- [ ] Botão "Adicionar Operador" não está clicável (usuário confirmou com screenshot)
+- [ ] Verificar se há sobreposição de elementos (z-index)
+- [ ] Verificar se ScrollView está bloqueando o toque
+- [ ] Verificar se há View com pointerEvents="none" ou similar
+- [ ] Testar remover className e usar apenas style
+
+## Adicionar Campos de Horímetro nas Máquinas
+- [x] Adicionar campo "horaMotor" (decimal) no schema de machines (já existia como hmMotorAtual)
+- [x] Adicionar campo "horaTrilha" (decimal) no schema de machines (já existia como hmTrilhaAtual)
+- [x] Executar migration do banco de dados (schema já estava correto)
+- [x] Atualizar formulário de cadastro de máquinas com os novos campos
+- [x] Atualizar exibição de máquinas para mostrar Hora Motor e Hora Trilha (já estava implementado)
+- [x] Atualizar router tRPC para aceitar os novos campos
