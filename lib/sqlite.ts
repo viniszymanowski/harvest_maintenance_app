@@ -26,6 +26,7 @@ export const initDatabase = () => {
         attempts INTEGER DEFAULT 0,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
         last_error TEXT,
+        last_attempt_at TEXT,
         CHECK (status IN ('pending', 'sent', 'error'))
       );
     `);
@@ -93,7 +94,8 @@ export const initDatabase = () => {
 };
 
 /**
- * Adicionar item à fila de sincronização
+ * Adicionar ou atualizar item na fila de sincronização (UPSERT)
+ * Se já existe item pending/error para mesma entidade, atualiza payload e reseta status
  */
 export const addToSyncQueue = (
   entityType: string,
@@ -101,12 +103,39 @@ export const addToSyncQueue = (
   payload: any
 ) => {
   try {
-    const result = db.runSync(
-      `INSERT INTO sync_queue (entity_type, entity_id, payload_json, status, updated_at)
-       VALUES (?, ?, ?, 'pending', datetime('now'))`,
-      [entityType, entityId, JSON.stringify(payload)]
+    const payloadJson = JSON.stringify(payload);
+    
+    // Verificar se já existe item pending/error para esta entidade
+    const existing = db.getFirstSync<{ id: number; status: string }>(
+      `SELECT id, status FROM sync_queue 
+       WHERE entity_type = ? AND entity_id = ? 
+       AND status IN ('pending', 'error')
+       LIMIT 1`,
+      [entityType, entityId || '']
     );
-    return result.lastInsertRowId;
+
+    if (existing) {
+      // UPSERT: Atualizar payload e resetar status para pending
+      db.runSync(
+        `UPDATE sync_queue 
+         SET payload_json = ?, 
+             status = 'pending', 
+             attempts = 0,
+             last_error = NULL,
+             updated_at = datetime('now')
+         WHERE id = ?`,
+        [payloadJson, existing.id]
+      );
+      return existing.id;
+    } else {
+      // INSERT: Novo item
+      const result = db.runSync(
+        `INSERT INTO sync_queue (entity_type, entity_id, payload_json, status, updated_at)
+         VALUES (?, ?, ?, 'pending', datetime('now'))`,
+        [entityType, entityId || '', payloadJson]
+      );
+      return result.lastInsertRowId;
+    }
   } catch (error) {
     console.error('Error adding to sync queue:', error);
     throw error;
@@ -114,7 +143,8 @@ export const addToSyncQueue = (
 };
 
 /**
- * Obter itens pendentes da fila
+ * Obter itens pendentes da fila (pending + error com attempts < 5 e cooldown)
+ * Cooldown: 30 segundos entre tentativas
  */
 export const getPendingSyncItems = () => {
   try {
@@ -124,10 +154,13 @@ export const getPendingSyncItems = () => {
       entity_id: string | null;
       payload_json: string;
       attempts: number;
+      status: string;
     }>(
-      `SELECT id, entity_type, entity_id, payload_json, attempts
+      `SELECT id, entity_type, entity_id, payload_json, attempts, status
        FROM sync_queue
-       WHERE status = 'pending'
+       WHERE (status = 'pending' OR (status = 'error' AND attempts < 5))
+       AND (last_attempt_at IS NULL OR 
+            datetime(last_attempt_at, '+30 seconds') < datetime('now'))
        ORDER BY updated_at ASC
        LIMIT 50`
     );
@@ -156,7 +189,7 @@ export const markAsSynced = (id: number) => {
 };
 
 /**
- * Marcar item como erro
+ * Marcar item como erro e incrementar tentativas
  */
 export const markAsError = (id: number, error: string) => {
   try {
@@ -165,6 +198,7 @@ export const markAsError = (id: number, error: string) => {
        SET status = 'error', 
            attempts = attempts + 1,
            last_error = ?,
+           last_attempt_at = datetime('now'),
            updated_at = datetime('now')
        WHERE id = ?`,
       [error, id]
@@ -176,17 +210,25 @@ export const markAsError = (id: number, error: string) => {
 };
 
 /**
- * Contar itens pendentes
+ * Contar itens pendentes e erros separadamente
  */
-export const countPendingItems = (): number => {
+export const countPendingItems = (): { pending: number; errors: number } => {
   try {
-    const result = db.getFirstSync<{ count: number }>(
+    const pendingResult = db.getFirstSync<{ count: number }>(
       `SELECT COUNT(*) as count FROM sync_queue WHERE status = 'pending'`
     );
-    return result?.count || 0;
+    
+    const errorResult = db.getFirstSync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM sync_queue WHERE status = 'error' AND attempts < 5`
+    );
+    
+    return {
+      pending: pendingResult?.count || 0,
+      errors: errorResult?.count || 0,
+    };
   } catch (error) {
     console.error('Error counting pending items:', error);
-    return 0;
+    return { pending: 0, errors: 0 };
   }
 };
 
@@ -202,5 +244,168 @@ export const cleanupOldSyncedItems = () => {
     );
   } catch (error) {
     console.error('Error cleaning up old synced items:', error);
+  }
+};
+
+/**
+ * Resetar itens com erro para pending (retry manual)
+ */
+export const retryFailedItems = () => {
+  try {
+    const result = db.runSync(
+      `UPDATE sync_queue 
+       SET status = 'pending', 
+           attempts = 0, 
+           last_error = NULL,
+           last_attempt_at = NULL,
+           updated_at = datetime('now')
+       WHERE status = 'error'`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error('Error retrying failed items:', error);
+    return 0;
+  }
+};
+
+/**
+ * Limpar todos os erros permanentemente
+ */
+export const clearErrorItems = () => {
+  try {
+    const result = db.runSync(
+      `DELETE FROM sync_queue WHERE status = 'error'`
+    );
+    return result.changes;
+  } catch (error) {
+    console.error('Error clearing error items:', error);
+    return 0;
+  }
+};
+
+// ============================================================================
+// Funções de Espelho Local - Daily Logs
+// ============================================================================
+
+/**
+ * Salvar daily log localmente
+ */
+export const saveDailyLogLocal = (log: any) => {
+  try {
+    const id = log.id || `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    db.runSync(
+      `INSERT OR REPLACE INTO daily_logs_local (
+        id, data, fazenda, talhao, maquinaId, operador,
+        saidaProgramada, saidaReal, chegadaLavoura, saidaLavoura,
+        hmMotorInicial, hmMotorFinal, hmTrilhaInicial, hmTrilhaFinal,
+        prodH, manH, chuvaH, deslocH, esperaH, abasteceu, areaHa, observacoes,
+        synced, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, datetime('now'))`,
+      [
+        id, log.data, log.fazenda, log.talhao, log.maquinaId, log.operador,
+        log.saidaProgramada, log.saidaReal, log.chegadaLavoura, log.saidaLavoura,
+        log.hmMotorInicial, log.hmMotorFinal, log.hmTrilhaInicial, log.hmTrilhaFinal,
+        log.prodH, log.manH, log.chuvaH, log.deslocH, log.esperaH,
+        log.abasteceu ? 1 : 0, log.areaHa, log.observacoes
+      ]
+    );
+    
+    return id;
+  } catch (error) {
+    console.error('Error saving daily log locally:', error);
+    throw error;
+  }
+};
+
+/**
+ * Buscar daily logs locais não sincronizados
+ */
+export const getLocalDailyLogs = (date?: string) => {
+  try {
+    let query = `SELECT * FROM daily_logs_local WHERE synced = 0`;
+    const params: any[] = [];
+    
+    if (date) {
+      query += ` AND data = ?`;
+      params.push(date);
+    }
+    
+    query += ` ORDER BY updated_at DESC`;
+    
+    return db.getAllSync(query, params);
+  } catch (error) {
+    console.error('Error getting local daily logs:', error);
+    return [];
+  }
+};
+
+/**
+ * Marcar daily log como sincronizado
+ */
+export const markDailyLogSynced = (id: string) => {
+  try {
+    db.runSync(
+      `UPDATE daily_logs_local SET synced = 1, updated_at = datetime('now') WHERE id = ?`,
+      [id]
+    );
+  } catch (error) {
+    console.error('Error marking daily log as synced:', error);
+  }
+};
+
+// ============================================================================
+// Funções de Espelho Local - Maintenance
+// ============================================================================
+
+/**
+ * Salvar maintenance localmente
+ */
+export const saveMaintenanceLocal = (maintenance: any) => {
+  try {
+    const id = maintenance.id || `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    db.runSync(
+      `INSERT OR REPLACE INTO maintenance_local (
+        id, maquinaId, data, tipo, hmMotor, synced, updated_at
+      ) VALUES (?, ?, ?, ?, ?, 0, datetime('now'))`,
+      [
+        id, maintenance.maquinaId, maintenance.data, maintenance.tipo,
+        maintenance.hmMotor
+      ]
+    );
+    
+    return id;
+  } catch (error) {
+    console.error('Error saving maintenance locally:', error);
+    throw error;
+  }
+};
+
+/**
+ * Buscar maintenances locais não sincronizados
+ */
+export const getLocalMaintenances = () => {
+  try {
+    return db.getAllSync(
+      `SELECT * FROM maintenance_local WHERE synced = 0 ORDER BY updated_at DESC`
+    );
+  } catch (error) {
+    console.error('Error getting local maintenances:', error);
+    return [];
+  }
+};
+
+/**
+ * Marcar maintenance como sincronizado
+ */
+export const markMaintenanceSynced = (id: string) => {
+  try {
+    db.runSync(
+      `UPDATE maintenance_local SET synced = 1, updated_at = datetime('now') WHERE id = ?`,
+      [id]
+    );
+  } catch (error) {
+    console.error('Error marking maintenance as synced:', error);
   }
 };
