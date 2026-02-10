@@ -13,7 +13,7 @@ import {
 import { ScreenContainer } from "@/components/screen-container";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 
 interface Part {
@@ -43,6 +43,16 @@ export default function ManutencaoScreen() {
   const utils = trpc.useUtils();
   const { data: machines } = trpc.machines.list.useQuery();
   const { data: maintenances, isLoading } = trpc.maintenance.list.useQuery();
+
+  // Pré-preencher horímetro ao selecionar máquina
+  useEffect(() => {
+    if (maquinaId && machines) {
+      const maquinaSelecionada = machines.find((m) => m.id === maquinaId);
+      if (maquinaSelecionada) {
+        setHmMotorNoServico(maquinaSelecionada.hmMotorAtual?.toString() || "0");
+      }
+    }
+  }, [maquinaId, machines]);
 
   const createMutation = trpc.maintenance.create.useMutation({
     onSuccess: () => {

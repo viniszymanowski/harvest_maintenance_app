@@ -25,6 +25,7 @@ export default function LancamentoScreen() {
   const { data: talhoes } = trpc.talhoes.list.useQuery();
   const { data: machines } = trpc.machines.list.useQuery();
   const { data: operadores } = trpc.operadores.list.useQuery();
+  const { data: lastLog } = trpc.dailyLogs.getLast.useQuery();
 
   const [data, setData] = useState("");
   const [fazenda, setFazenda] = useState("");
@@ -55,6 +56,17 @@ export default function LancamentoScreen() {
     const formatted = today.toISOString().split("T")[0];
     setData(formatted);
   }, []);
+
+  // Pré-preencher horímetros ao selecionar máquina
+  useEffect(() => {
+    if (maquinaId && machines) {
+      const maquinaSelecionada = machines.find((m) => m.id === maquinaId);
+      if (maquinaSelecionada) {
+        setHmMotorInicial(maquinaSelecionada.hmMotorAtual?.toString() || "0");
+        setHmTrilhaInicial(maquinaSelecionada.hmTrilhaAtual?.toString() || "0");
+      }
+    }
+  }, [maquinaId, machines]);
 
   // Encontrar fazenda selecionada
   const fazendaSelecionada = useMemo(() => {
@@ -189,6 +201,36 @@ export default function LancamentoScreen() {
 
   const updateMachineMutation = trpc.machines.updateName.useMutation();
 
+  const repetirUltimo = () => {
+    if (!lastLog) {
+      Alert.alert("Aviso", "Nenhum lançamento anterior encontrado");
+      return;
+    }
+    // Preencher todos os campos com o último lançamento (exceto data)
+    setFazenda(lastLog.fazenda || "");
+    setTalhao(lastLog.talhao || "");
+    setMaquinaId(lastLog.maquinaId || "");
+    setOperador(lastLog.operador || "");
+    setSaidaProgramada(lastLog.saidaProgramada || "");
+    setSaidaReal(lastLog.saidaReal || "");
+    setChegadaLavoura(lastLog.chegadaLavoura || "");
+    setSaidaLavoura(lastLog.saidaLavoura || "");
+    setHmMotorInicial(lastLog.hmMotorInicial?.toString() || "");
+    setHmMotorFinal(lastLog.hmMotorFinal?.toString() || "");
+    setHmTrilhaInicial(lastLog.hmTrilhaInicial?.toString() || "");
+    setHmTrilhaFinal(lastLog.hmTrilhaFinal?.toString() || "");
+    setProdH(lastLog.prodH?.toString() || "");
+    setManH(lastLog.manH?.toString() || "");
+    setChuvaH(lastLog.chuvaH?.toString() || "");
+    setDeslocH(lastLog.deslocH?.toString() || "");
+    setEsperaH(lastLog.esperaH?.toString() || "");
+    setAbasteceu(lastLog.abasteceu || false);
+    setAreaHa(lastLog.areaHa?.toString() || "");
+    setObservacoes(lastLog.observacoes || "");
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Alert.alert("Sucesso", "Dados do último lançamento carregados!");
+  };
+
   const salvarLancamento = async (saveAndNew: boolean) => {
     await createMutation.mutateAsync({
       data,
@@ -270,9 +312,27 @@ export default function LancamentoScreen() {
       <ScrollView className="flex-1 p-6" contentContainerStyle={{ paddingBottom: 40 }}>
         <View className="gap-6">
           {/* Header */}
-          <View className="gap-2">
-            <Text className="text-3xl font-bold text-foreground">Lançamento Rápido</Text>
-            <Text className="text-base text-muted">Registre as informações da colheita</Text>
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <Text className="text-3xl font-bold text-foreground">Lançamento Rápido</Text>
+                <Text className="text-base text-muted">Registre as informações da colheita</Text>
+              </View>
+              {lastLog && (
+                <Pressable
+                  onPress={repetirUltimo}
+                  style={({ pressed }) => [{
+                    backgroundColor: pressed ? '#0a7ea4' : '#0a7ea4',
+                    opacity: pressed ? 0.8 : 1,
+                    paddingHorizontal: 16,
+                    paddingVertical: 12,
+                    borderRadius: 12,
+                  }]}
+                >
+                  <Text className="text-white font-semibold text-sm">🔄 Repetir Último</Text>
+                </Pressable>
+              )}
+            </View>
           </View>
 
           {/* Informações Básicas */}

@@ -127,6 +127,7 @@ function MaquinasTab() {
     intervaloRevisao50hHm: "50",
     hmMotorAtual: "0",
     hmTrilhaAtual: "0",
+    implementoAgregadoId: "",
   });
 
   const utils = trpc.useUtils();
@@ -185,6 +186,7 @@ function MaquinasTab() {
       intervaloRevisao50hHm: "50",
       hmMotorAtual: "0",
       hmTrilhaAtual: "0",
+      implementoAgregadoId: "",
     });
     setEditingMachine(null);
   };
@@ -209,6 +211,7 @@ function MaquinasTab() {
       intervaloRevisao50hHm: machine.intervaloRevisao50hHm?.toString() || "50",
       hmMotorAtual: machine.hmMotorAtual?.toString() || "0",
       hmTrilhaAtual: machine.hmTrilhaAtual?.toString() || "0",
+      implementoAgregadoId: machine.implementoAgregadoId || "",
     });
     setShowModal(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

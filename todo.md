@@ -536,3 +536,35 @@
 - [x] Corrigir função getOperatorReport para retornar dados esperados pelo frontend
 - [x] Atualizar campos retornados (totalDias, totalHorasMotor, totalArea, produtividadeMedia, taxaDivergencia)
 - [x] Testar após correção
+
+## Sistema de Agregação de Implementos
+- [x] Adicionar campo "implementoAgregadoId" no schema de machines (string opcional)
+- [x] Executar migration do banco de dados
+- [ ] Adicionar dropdown "Implemento Agregado" no formulário de máquinas
+- [ ] Filtrar apenas plataformas disponíveis (não agregadas a outras máquinas)
+- [ ] Ao selecionar colheitadeira no lançamento, mostrar plataforma agregada automaticamente
+- [ ] Adicionar opção de "desagregar" implemento
+- [ ] Validar que uma plataforma só pode estar agregada a uma colheitadeira por vez
+
+## Pré-preenchimento de Horímetros
+- [x] Ao selecionar máquina no lançamento, buscar hmMotorAtual e hmTrilhaAtual
+- [x] Preencher automaticamente HM Motor Inicial e HM Trilha Inicial
+- [x] Permitir edição manual caso necessário
+- [x] Aplicar mesmo pré-preenchimento na tela de Manutenções
+
+## Botão Repetir Último Lançamento
+- [x] Criar query para buscar último lançamento do usuário
+- [x] Adicionar botão "Repetir Último" na tela de lançamento
+- [x] Preencher todos os campos com valores do último lançamento
+- [x] Manter data atual (não copiar data antiga)
+
+## Corrigir Botão Adicionar Operador
+- [ ] Investigar por que o modal não abre
+- [ ] Aplicar mesma correção usada em Talhões (TouchableOpacity)
+- [ ] Testar funcionamento completo
+
+## Editar e Excluir Manutenções
+- [ ] Adicionar botões Editar e Excluir nos cards de manutenções
+- [ ] Implementar modal de edição de manutenção
+- [ ] Implementar confirmação de exclusão
+- [ ] Atualizar lista após edição/exclusão

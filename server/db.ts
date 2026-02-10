@@ -248,6 +248,13 @@ export async function getDailyLogsByDate(date: string) {
   return db.select().from(dailyLogs).where(eq(dailyLogs.data, sql`${date}`));
 }
 
+export async function getLastDailyLog() {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(dailyLogs).orderBy(sql`${dailyLogs.data} DESC, ${dailyLogs.createdAt} DESC`).limit(1);
+  return result[0] || null;
+}
+
 export async function getDailyLogById(id: string) {
   const db = await getDb();
   if (!db) return null;

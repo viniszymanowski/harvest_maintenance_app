@@ -138,6 +138,10 @@ export const appRouter = router({
       return db.getDailyLogsByDate(input.date);
     }),
 
+    getLast: publicProcedure.query(async () => {
+      return db.getLastDailyLog();
+    }),
+
     getById: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
       return db.getDailyLogById(input.id);
     }),

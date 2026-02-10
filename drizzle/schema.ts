@@ -51,6 +51,7 @@ export const machines = mysqlTable("machines", {
   intervaloRevisao50hHm: real("intervaloRevisao50hHm").default(50).notNull(),
   hmMotorAtual: real("hmMotorAtual").default(0).notNull(), // Horímetro motor atual
   hmTrilhaAtual: real("hmTrilhaAtual").default(0).notNull(), // Horímetro trilha atual
+  implementoAgregadoId: varchar("implementoAgregadoId", { length: 10 }), // ID da plataforma agregada (se for colheitadeira)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
