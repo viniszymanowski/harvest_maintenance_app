@@ -184,6 +184,23 @@ export const talhoes = mysqlTable("talhoes", {
 });
 
 // ============================================================================
+// Maintenance Plans Table - Planos de Manutenção Preventiva
+// ============================================================================
+export const maintenancePlans = mysqlTable("maintenance_plans", {
+  id: int("id").autoincrement().primaryKey(),
+  maquinaId: varchar("maquinaId", { length: 10 })
+    .notNull()
+    .references(() => machines.id),
+  tipo: varchar("tipo", { length: 100 }).notNull(), // "Troca de Óleo", "Revisão 50h", "Troca de Filtro", etc
+  intervaloHoras: real("intervaloHoras").notNull(), // Intervalo em horas para próxima manutenção
+  alertaAntecipadoHoras: real("alertaAntecipadoHoras").default(10).notNull(), // Horas antes para alertar
+  ultimaManutencaoHm: real("ultimaManutencaoHm").default(0).notNull(), // HM da última manutenção deste tipo
+  ativo: boolean("ativo").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ============================================================================
 // Operadores Table - Cadastro de Operadores
 // ============================================================================
 export const operadores = mysqlTable("operadores", {
@@ -223,3 +240,6 @@ export type InsertTalhao = typeof talhoes.$inferInsert;
 
 export type Operador = typeof operadores.$inferSelect;
 export type InsertOperador = typeof operadores.$inferInsert;
+
+export type MaintenancePlan = typeof maintenancePlans.$inferSelect;
+export type InsertMaintenancePlan = typeof maintenancePlans.$inferInsert;
