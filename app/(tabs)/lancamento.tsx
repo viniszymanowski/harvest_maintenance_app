@@ -475,56 +475,6 @@ export default function LancamentoScreen() {
 
             <View className="gap-2">
               <Text className="text-sm font-medium text-muted">Máquina *</Text>
-              
-              {/* Botões Rápidos M1-M4 */}
-              <View className="flex-row gap-3 mb-3">
-                {['M1', 'M2', 'M3', 'M4'].map((machineId) => {
-                  const machine = (machines || []).find((m) => m.id === machineId);
-                  const isSelected = maquinaId === machineId;
-                  
-                  return (
-                    <Pressable
-                      key={machineId}
-                      onPress={() => {
-                        setMaquinaId(machineId);
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }}
-                      style={({ pressed }) => [{
-                        flex: 1,
-                        backgroundColor: isSelected ? '#367C2B' : (pressed ? '#f5f5f5' : '#ffffff'),
-                        borderWidth: 2,
-                        borderColor: isSelected ? '#367C2B' : '#E5E7EB',
-                        borderRadius: 16,
-                        paddingVertical: 16,
-                        paddingHorizontal: 12,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: pressed ? 0.8 : 1,
-                      }]}
-                    >
-                      <Text style={{
-                        fontSize: 20,
-                        fontWeight: '700',
-                        color: isSelected ? '#ffffff' : '#367C2B',
-                        marginBottom: 4,
-                      }}>
-                        {machineId}
-                      </Text>
-                      {machine && (
-                        <Text style={{
-                          fontSize: 11,
-                          color: isSelected ? '#ffffff' : '#687076',
-                          textAlign: 'center',
-                        }} numberOfLines={1}>
-                          {machine.nome || machine.tipo}
-                        </Text>
-                      )}
-                    </Pressable>
-                  );
-                })}
-              </View>
-              
-              {/* Dropdown Completo */}
               <View className="bg-background border border-border rounded-xl overflow-hidden">
                 <Picker
                   selectedValue={maquinaId}
