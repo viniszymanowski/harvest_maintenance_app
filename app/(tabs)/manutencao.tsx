@@ -26,6 +26,7 @@ interface Part {
 export default function ManutencaoScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [filterMachine, setFilterMachine] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
   const [maquinaId, setMaquinaId] = useState("M1");
@@ -68,7 +69,35 @@ export default function ManutencaoScreen() {
     },
   });
 
+  const updateMutation = trpc.maintenance.update.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.maintenance.list.invalidate();
+      resetForm();
+      setModalVisible(false);
+      setEditingId(null);
+      Alert.alert("Sucesso", "Manutenção atualizada com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
+  const deleteMutation = trpc.maintenance.delete.useMutation({
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      utils.maintenance.list.invalidate();
+      Alert.alert("Sucesso", "Manutenção excluída com sucesso!");
+    },
+    onError: (error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Erro", error.message);
+    },
+  });
+
   const resetForm = () => {
+    setEditingId(null);
     setMaquinaId("M1");
     setData(new Date().toISOString().split("T")[0]);
     setTipo("preventiva");
@@ -127,7 +156,45 @@ export default function ManutencaoScreen() {
         })),
     };
 
-    createMutation.mutate(maintenanceData as any);
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, updateData: maintenanceData as any });
+    } else {
+      createMutation.mutate(maintenanceData as any);
+    }
+  };
+
+  const handleEdit = (maintenance: any) => {
+    setEditingId(maintenance.id);
+    setMaquinaId(maintenance.maquinaId);
+    setData(maintenance.data);
+    setTipo(maintenance.tipo);
+    setHmMotorNoServico(maintenance.hmMotorNoServico?.toString() || "");
+    setTempoParadoH(maintenance.tempoParadoH?.toString() || "");
+    setTrocaOleo(maintenance.trocaOleo || false);
+    setRevisao50h(maintenance.revisao50h || false);
+    setObservacao(maintenance.observacao || "");
+    setParts((maintenance.parts || []).map((p: any, idx: number) => ({
+      tempId: `edit-${idx}`,
+      nomePeca: p.nomePeca,
+      qtde: p.qtde.toString(),
+      valorUnit: p.valorUnit.toString(),
+    })));
+    setModalVisible(true);
+  };
+
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Tem certeza que deseja excluir esta manutenção?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: () => deleteMutation.mutate({ id }),
+        },
+      ]
+    );
   };
 
   const filteredMaintenances = maintenances?.filter((m) =>
@@ -223,22 +290,38 @@ export default function ManutencaoScreen() {
                     {new Date(item.data).toLocaleDateString("pt-BR")}
                   </Text>
                 </View>
-                <View
-                  className={`px-3 py-1 rounded-full ${
-                    item.tipo === "preventiva"
-                      ? "bg-success"
-                      : item.tipo === "corretiva_leve"
-                        ? "bg-warning"
-                        : "bg-error"
-                  }`}
-                >
-                  <Text className="text-xs font-semibold text-white">
-                    {item.tipo === "preventiva"
-                      ? "Preventiva"
-                      : item.tipo === "corretiva_leve"
-                        ? "Corretiva Leve"
-                        : "Corretiva Pesada"}
-                  </Text>
+                <View className="flex-row items-center gap-2">
+                  <View
+                    className={`px-3 py-1 rounded-full ${
+                      item.tipo === "preventiva"
+                        ? "bg-success"
+                        : item.tipo === "corretiva_leve"
+                          ? "bg-warning"
+                          : "bg-error"
+                    }`}
+                  >
+                    <Text className="text-xs font-semibold text-white">
+                      {item.tipo === "preventiva"
+                        ? "Preventiva"
+                        : item.tipo === "corretiva_leve"
+                          ? "Corretiva Leve"
+                          : "Corretiva Pesada"}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => handleEdit(item)}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+                    className="p-2"
+                  >
+                    <Text className="text-2xl">✏️</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => handleDelete(item.id)}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+                    className="p-2"
+                  >
+                    <Text className="text-2xl">🗑️</Text>
+                  </Pressable>
                 </View>
               </View>
 

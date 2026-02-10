@@ -247,6 +247,7 @@ function MaquinasTab() {
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
         hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
         hmTrilhaAtual: parseFloat(formData.hmTrilhaAtual) || 0,
+        implementoAgregadoId: formData.implementoAgregadoId || undefined,
       });
     } else {
       createMutation.mutate({
@@ -261,6 +262,7 @@ function MaquinasTab() {
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
         hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
         hmTrilhaAtual: parseFloat(formData.hmTrilhaAtual) || 0,
+        implementoAgregadoId: formData.implementoAgregadoId || undefined,
       });
     }
   };
@@ -538,6 +540,34 @@ function MaquinasTab() {
                 </View>
               </View>
 
+              {/* Implemento Agregado */}
+              {formData.tipo === 'Colheitadeira' && (
+                <View className="mb-4">
+                  <Text className="text-base font-semibold text-foreground mb-2">
+                    🔗 Implemento Agregado (Plataforma)
+                  </Text>
+                  <View className="bg-surface border-2 border-border rounded-xl overflow-hidden">
+                    <Picker
+                      selectedValue={formData.implementoAgregadoId}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, implementoAgregadoId: value })
+                      }
+                      style={{ color: '#11181C' }}
+                    >
+                      <Picker.Item label="Nenhuma plataforma" value="" />
+                      {machines
+                        ?.filter((m: any) => m.tipo === 'Plataforma' && m.id !== formData.id)
+                        .map((m: any) => (
+                          <Picker.Item key={m.id} label={`${m.id} - ${m.nome}`} value={m.id} />
+                        ))}
+                    </Picker>
+                  </View>
+                  <Text className="text-sm text-muted mt-1">
+                    Vincule uma plataforma a esta colheitadeira
+                  </Text>
+                </View>
+              )}
+
               {/* Horímetros Atuais */}
               <View className="mb-4">
                 <Text className="text-lg font-bold text-foreground mb-3">🕒 Horímetros Atuais</Text>
@@ -754,27 +784,28 @@ function OperadoresTab() {
 
   return (
     <View className="flex-1">
+      {/* Add Button - FORA do ScrollView */}
+      <TouchableOpacity
+        onPress={() => {
+          console.log('[DEBUG Operadores] TouchableOpacity pressionado');
+          handleAdd();
+        }}
+        style={{
+          backgroundColor: '#367C2B',
+          borderRadius: 16,
+          padding: 20,
+          marginBottom: 16,
+        }}
+        activeOpacity={0.7}
+      >
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>➥ Adicionar Operador</Text>
+      </TouchableOpacity>
+
       <ScrollView 
         className="flex-1" 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 4 }}
       >
-        {/* Add Button */}
-        <TouchableOpacity
-          onPress={() => {
-            console.log('[DEBUG Operadores] TouchableOpacity pressionado');
-            handleAdd();
-          }}
-          style={{
-            backgroundColor: '#367C2B',
-            borderRadius: 16,
-            padding: 20,
-            marginBottom: 24,
-          }}
-          activeOpacity={0.7}
-        >
-          <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>➕ Adicionar Operador</Text>
-        </TouchableOpacity>
 
         {/* Operador List */}
         {!operadores || operadores.length === 0 ? (

@@ -540,6 +540,10 @@
 ## Sistema de Agregação de Implementos
 - [x] Adicionar campo "implementoAgregadoId" no schema de machines (string opcional)
 - [x] Executar migration do banco de dados
+- [x] Adicionar dropdown "Implemento Agregado" no formulário de máquinas (apenas para Colheitadeiras)
+- [x] Filtrar apenas Plataformas no dropdown
+- [x] Atualizar router para aceitar implementoAgregadoId em create e updateName
+- [x] Sistema completo: colheitadeiras podem ser vinculadas a plataformas
 - [ ] Adicionar dropdown "Implemento Agregado" no formulário de máquinas
 - [ ] Filtrar apenas plataformas disponíveis (não agregadas a outras máquinas)
 - [ ] Ao selecionar colheitadeira no lançamento, mostrar plataforma agregada automaticamente
@@ -559,12 +563,12 @@
 - [x] Manter data atual (não copiar data antiga)
 
 ## Corrigir Botão Adicionar Operador
-- [ ] Investigar por que o modal não abre
-- [ ] Aplicar mesma correção usada em Talhões (TouchableOpacity)
-- [ ] Testar funcionamento completo
+- [x] Investigar por que o modal não abre (ScrollView bloqueando toque)
+- [x] Mover botão para fora do ScrollView
+- [x] Botão agora deve estar clicável
 
 ## Editar e Excluir Manutenções
-- [ ] Adicionar botões Editar e Excluir nos cards de manutenções
-- [ ] Implementar modal de edição de manutenção
-- [ ] Implementar confirmação de exclusão
-- [ ] Atualizar lista após edição/exclusão
+- [x] Adicionar botões Editar e Excluir nos cards de manutenções
+- [x] Implementar modal de edição de manutenção (reutiliza modal existente)
+- [x] Implementar confirmação de exclusão
+- [x] Atualizar lista após edição/exclusão
