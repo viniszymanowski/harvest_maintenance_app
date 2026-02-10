@@ -55,7 +55,13 @@ export default function LancamentoScreen() {
     const today = new Date();
     const formatted = today.toISOString().split("T")[0];
     setData(formatted);
-  }, []);
+
+    // Auto-preencher operador e fazenda com último usado
+    if (lastLog) {
+      setOperador(lastLog.operador || "");
+      setFazenda(lastLog.fazenda || "");
+    }
+  }, [lastLog]);
 
   // Pré-preencher horímetros ao selecionar máquina
   useEffect(() => {
@@ -153,9 +159,35 @@ export default function LancamentoScreen() {
   }, [horasMotorDia, prodH, manH, chuvaH, deslocH, esperaH]);
 
   const handleSave = async (saveAndNew: boolean = false) => {
+    // Validação de campos obrigatórios
     if (!fazenda || !talhao || !operador) {
       Alert.alert("Erro", "Preencha os campos obrigatórios: Fazenda, Talhão e Operador");
       return;
+    }
+
+    // Validação rigorosa: horímetro final deve ser maior que inicial
+    if (hmMotorInicial && hmMotorFinal) {
+      const inicial = parseFloat(hmMotorInicial);
+      const final = parseFloat(hmMotorFinal);
+      if (final < inicial) {
+        Alert.alert(
+          "❌ Erro: Horímetro Inválido",
+          `HM Motor Final (${final.toFixed(1)}h) não pode ser menor que HM Motor Inicial (${inicial.toFixed(1)}h).\n\nVerifique os valores e tente novamente.`
+        );
+        return;
+      }
+    }
+
+    if (hmTrilhaInicial && hmTrilhaFinal) {
+      const inicial = parseFloat(hmTrilhaInicial);
+      const final = parseFloat(hmTrilhaFinal);
+      if (final < inicial) {
+        Alert.alert(
+          "❌ Erro: Horímetro Inválido",
+          `HM Trilha Final (${final.toFixed(1)}h) não pode ser menor que HM Trilha Inicial (${inicial.toFixed(1)}h).\n\nVerifique os valores e tente novamente.`
+        );
+        return;
+      }
     }
 
     // Buscar máquina selecionada para validar horímetros
@@ -282,10 +314,11 @@ export default function LancamentoScreen() {
     }
 
     if (saveAndNew) {
-      // Limpar formulário
-      setFazenda("");
+      // Salvar e Novo: limpar apenas horímetros, manter fazenda e operador
+      const fazendaAtual = fazenda;
+      const operadorAtual = operador;
+      
       setTalhao("");
-      setOperador("");
       setSaidaProgramada("");
       setSaidaReal("");
       setChegadaLavoura("");
@@ -302,6 +335,19 @@ export default function LancamentoScreen() {
       setAbasteceu(false);
       setAreaHa("");
       setObservacoes("");
+      
+      // Manter fazenda e operador
+      setFazenda(fazendaAtual);
+      setOperador(operadorAtual);
+      
+      // Pré-preencher horímetros da máquina selecionada
+      if (maquinaId && machines) {
+        const maquinaSelecionada = machines.find((m) => m.id === maquinaId);
+        if (maquinaSelecionada) {
+          setHmMotorInicial(maquinaSelecionada.hmMotorAtual?.toString() || "0");
+          setHmTrilhaInicial(maquinaSelecionada.hmTrilhaAtual?.toString() || "0");
+        }
+      }
     } else {
       router.back();
     }

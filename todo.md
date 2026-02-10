@@ -582,3 +582,67 @@
 - [x] Filtrar dados no servidor baseado no período selecionado (getDailyLogsByPeriod)
 - [x] Exibir período selecionado na interface (card com datas)
 - [x] Sistema completo: filtros funcionando para Semana, Mês, Safra e Personalizado
+
+## MELHORIAS PROFISSIONAIS - SISTEMA DE GESTÃO DE COLHEITA TERCEIRIZADA
+
+### 1) Melhorar Tela "Lançamento Rápido" ✅ CONCLUÍDA
+- [x] Data automática (default: hoje)
+- [x] Auto-preencher operador com último usado
+- [x] Auto-preencher fazenda com último usado
+- [x] Botões grandes para seleção de máquina (Picker dinâmico)
+- [x] Cálculo automático: horas_trabalhadas = horimetro_final - horimetro_inicial
+- [x] Validação: impedir salvar se horimetro_final < horimetro_inicial
+- [x] Validação: impedir salvar se campos obrigatórios vazios
+- [x] Botão "Salvar e Novo": salva, limpa apenas horímetro, mantém fazenda e operador
+
+### 2) Sistema Offline com Sincronização
+- [ ] Instalar e configurar SQLite local (expo-sqlite)
+- [ ] Criar schema SQLite espelhando schema do servidor
+- [ ] Implementar fila de sincronização (tabela sync_queue)
+- [ ] Detectar status online/offline (NetInfo)
+- [ ] Salvar registros localmente quando offline
+- [ ] Sincronizar automaticamente ao reconectar
+- [ ] Resolver conflitos por "última atualização vence"
+- [ ] Criar indicador visual de status (Offline/Sincronizado/Pendências: X)
+
+### 3) Alertas Automáticos de Manutenção
+- [ ] Criar tabela maintenance_plans no schema
+- [ ] Campos: machine_id, tipo, intervalo_horas, intervalo_dias, alerta_antecipado_horas
+- [ ] Implementar lógica de cálculo de status (VENCIDO/ALERTA/OK)
+- [ ] Criar tela "Manutenção Pendente"
+- [ ] Ordenar por: Vencido → Próximo → OK
+- [ ] Adicionar badge de notificação no menu
+
+### 4) Dashboard Principal
+- [ ] Criar nova tela Dashboard
+- [ ] Card: Horas hoje por máquina
+- [ ] Card: Horas semana
+- [ ] Card: Máquina com maior parada
+- [ ] Card: Próximas manutenções
+- [ ] Card: Total horas produtivas
+- [ ] Card: Total horas improdutivas
+- [ ] Calcular e exibir eficiência: horas_produtivas / (horas_produtivas + horas_improdutivas)
+
+### 5) Controle de Custo
+- [ ] Criar tabela maintenance_costs
+- [ ] Campos: maintenance_id, valor_pecas, valor_mao_obra, valor_combustivel, valor_total
+- [ ] Calcular valor_total automaticamente
+- [ ] Adicionar campos de custo no formulário de manutenção
+- [ ] Criar indicador: custo_por_hora = total_custos_mes / total_horas_mes
+- [ ] Exibir custos no dashboard
+
+### 6) Permissões de Usuário
+- [ ] Criar tabela users com campo role (ADMIN/OPERADOR/MECANICO)
+- [ ] Implementar middleware de autenticação
+- [ ] Restringir rotas por role
+- [ ] Operador: apenas lançar produção
+- [ ] Mecânico: registrar manutenção
+- [ ] Admin: controle total
+- [ ] Criar tela de gerenciamento de usuários (apenas Admin)
+
+### 7) Relatórios Automáticos
+- [ ] Gerar PDF diário automaticamente
+- [ ] Implementar exportação Excel
+- [ ] Configurar envio automático via WhatsApp às 20:00
+- [ ] Criar scheduler para relatórios automáticos
+- [ ] Adicionar opção de personalizar horário de envio
