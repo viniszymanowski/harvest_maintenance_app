@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO machines (id, nome, tipo, modelo, chassi, ano, hmMotorAtual, hmTrilhaAtual, intervaloRevisao50hHm, intervaloTrocaOleoHm) VALUES\n('205', 'Colheitadeira 205', 'Colheitadeira', 'STS 9670', '1CQ9670AVA0090326', 2011, 0, 0, 50, 250),\n('206', 'Colheitadeira 206', 'Colheitadeira', 'STS 9570', '1CQ9570AJC0091236', 2012, 0, 0, 50, 250),\n('211', 'Colheitadeira 211', 'Colheitadeira', 'STS 9770', '1CQ9770AKD0091909', 2013, 0, 0, 50, 250),\n('214', 'Colheitadeira 214', 'Colheitadeira', 'STS 9770', '1CQ9770AAC0091560', 2012, 0, 0, 50, 250);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ruJXLSSweE35aq.6882b3916471 --database ZDM3DDMJiRQQq8vQvfd3Sg --execute INSERT INTO machines (id, nome, tipo, modelo, chassi, ano, hmMotorAtual, hmTrilhaAtual, intervaloRevisao50hHm, intervaloTrocaOleoHm) VALUES\n('205', 'Colheitadeira 205', 'Colheitadeira', 'STS 9670', '1CQ9670AVA0090326', 2011, 0, 0, 50, 250),\n('206', 'Colheitadeira 206', 'Colheitadeira', 'STS 9570', '1CQ9570AJC0091236', 2012, 0, 0, 50, 250),\n('211', 'Colheitadeira 211', 'Colheitadeira', 'STS 9770', '1CQ9770AKD0091909', 2013, 0, 0, 50, 250),\n('214', 'Colheitadeira 214', 'Colheitadeira', 'STS 9770', '1CQ9770AAC0091560', 2012, 0, 0, 50, 250);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 65
+}
