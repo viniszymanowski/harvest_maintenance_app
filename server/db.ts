@@ -149,11 +149,11 @@ export async function deleteMachine(id: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  // Verificar se é uma das máquinas padrão
-  if (["M1", "M2", "M3", "M4"].includes(id)) {
-    throw new Error("Não é possível excluir máquinas padrão");
-  }
+  // Primeiro excluir registros vinculados (daily_logs, maintenance)
+  await db.delete(dailyLogs).where(eq(dailyLogs.maquinaId, id));
+  await db.delete(maintenance).where(eq(maintenance.maquinaId, id));
   
+  // Depois excluir a máquina
   await db.delete(machines).where(eq(machines.id, id));
 }
 
