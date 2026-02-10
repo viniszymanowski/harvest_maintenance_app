@@ -646,3 +646,14 @@
 - [ ] Configurar envio automático via WhatsApp às 20:00
 - [ ] Criar scheduler para relatórios automáticos
 - [ ] Adicionar opção de personalizar horário de envio
+
+## Configuração MySQL Local
+- [ ] Comentar código OAuth temporariamente para desenvolvimento local
+- [ ] Reiniciar servidor e verificar conexão com MySQL local
+- [ ] Testar CRUD de máquinas no banco local
+
+## Exportação e Documentação
+- [x] Criar ENV_TEMPLATE.md sem credenciais reais
+- [x] Criar README_COMPLETO.md com instruções de setup
+- [x] Gerar arquivo ZIP do projeto completo (1.1MB)
+- [x] Entregar ZIP para download
