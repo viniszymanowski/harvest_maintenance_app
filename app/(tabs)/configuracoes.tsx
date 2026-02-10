@@ -1297,13 +1297,20 @@ function TalhoesTab() {
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Add Button */}
-      <Pressable
+      <TouchableOpacity
         onPress={handleAdd}
-        className="bg-primary rounded-2xl p-5 mb-6 active:opacity-80"
-        style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+        style={{
+          backgroundColor: '#367C2B',
+          borderRadius: 16,
+          padding: 20,
+          marginBottom: 24,
+        }}
+        activeOpacity={0.8}
       >
-        <Text className="text-xl font-bold text-white text-center">➕ Adicionar Talhão</Text>
-      </Pressable>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+          ➥ Adicionar Talhão
+        </Text>
+      </TouchableOpacity>
 
       {/* Talhão List */}
       {!talhoes || talhoes.length === 0 ? (

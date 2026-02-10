@@ -29,8 +29,8 @@ export default function LancamentoScreen() {
   const [data, setData] = useState("");
   const [fazenda, setFazenda] = useState("");
   const [talhao, setTalhao] = useState("");
-  const [maquinaId, setMaquinaId] = useState<"M1" | "M2" | "M3" | "M4">(
-    (params.maquina as any) || "M1"
+  const [maquinaId, setMaquinaId] = useState<string>(
+    (params.maquina as any) || ""
   );
   const [operador, setOperador] = useState("");
   const [saidaProgramada, setSaidaProgramada] = useState("");
@@ -330,26 +330,22 @@ export default function LancamentoScreen() {
             </View>
 
             <View className="gap-2">
-              <Text className="text-sm font-medium text-muted">Máquina</Text>
-              <View className="flex-row gap-2">
-                {(["M1", "M2", "M3", "M4"] as const).map((m) => (
-                  <Pressable
-                    key={m}
-                    onPress={() => setMaquinaId(m)}
-                    style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-                    className={`flex-1 py-3 rounded-xl items-center ${
-                      maquinaId === m ? "bg-primary" : "bg-background border border-border"
-                    }`}
-                  >
-                    <Text
-                      className={`font-semibold ${
-                        maquinaId === m ? "text-white" : "text-foreground"
-                      }`}
-                    >
-                      {m}
-                    </Text>
-                  </Pressable>
-                ))}
+              <Text className="text-sm font-medium text-muted">Máquina *</Text>
+              <View className="bg-background border border-border rounded-xl overflow-hidden">
+                <Picker
+                  selectedValue={maquinaId}
+                  onValueChange={(value) => setMaquinaId(value as any)}
+                  style={{ color: '#11181C' }}
+                >
+                  <Picker.Item label="Selecione uma máquina" value="" />
+                  {(machines || []).map((machine) => (
+                    <Picker.Item
+                      key={machine.id}
+                      label={`${machine.id} - ${machine.nome} (${machine.tipo})`}
+                      value={machine.id}
+                    />
+                  ))}
+                </Picker>
               </View>
             </View>
 

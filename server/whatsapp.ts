@@ -133,26 +133,73 @@ export async function sendDailyReportWhatsApp(
       return false;
     }
 
-    // Gerar mensagem de texto
-    const message = `
-🚜 *Relatório Diário de Colheita*
+    // Buscar detalhes das máquinas
+    const machines = await db.getAllMachines();
+    const machineMap = new Map(machines.map(m => [m.id, m]));
+
+    // Gerar mensagem de texto detalhada
+    let message = `
+🚜 *[TESTE] Relatório Diário de Colheita*
 📅 ${new Date(date).toLocaleDateString("pt-BR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
 
-📊 *Resumo Geral:*
+📊 *Resumo:*
 • Máquinas operando: ${report.maquinasOperando}
-• Divergências: ${report.maquinasComDivergencia}
 • Total horas motor: ${report.totalHorasMotor.toFixed(1)}h
-• Total horas produção: ${report.totalHorasProd.toFixed(1)}h
 • Área colhida: ${report.totalArea.toFixed(2)} ha
-• Produtividade média: ${report.produtividadeMedia.toFixed(2)} ha/h
 
-📋 *Detalhamento:*
-${report.logs.map((log: any) => 
-  `${log.maquinaId} - ${log.operador || "Sem operador"}: ${log.horasMotorDia?.toFixed(1) || "0.0"}h motor, ${log.areaHa?.toFixed(2) || "0.00"} ha${log.divergente ? " ⚠️" : ""}`
-).join("\n")}
+`;
 
-${pdfUrl ? "\n📄 PDF anexado" : ""}
-    `.trim();
+    // Adicionar detalhes de cada máquina
+    if (report.logs && report.logs.length > 0) {
+      message += `📋 *Detalhamento por Máquina:*\n\n`;
+      
+      for (const log of report.logs) {
+        const machine = machineMap.get(log.maquinaId);
+        const machineName = machine ? `${machine.nome} (${machine.tipo})` : log.maquinaId;
+        const modelo = machine?.modelo ? ` - ${machine.modelo}` : "";
+        
+        message += `🚜 *${log.maquinaId}*: ${machineName}${modelo}\n`;
+        message += `👨‍🌾 Operador: ${log.operador || "Não informado"}\n`;
+        message += `🌾 Fazenda: ${log.fazenda || "Não informado"}\n`;
+        message += `🗺️ Talhão: ${log.talhao || "Não informado"}\n`;
+        
+        // Horários
+        if (log.saidaProgramada || log.saidaReal || log.chegadaLavoura || log.saidaLavoura) {
+          message += `\n⏰ *Horários:*\n`;
+          if (log.saidaProgramada) message += `  • Saída programada: ${log.saidaProgramada}\n`;
+          if (log.saidaReal) message += `  • Saída real: ${log.saidaReal}\n`;
+          if (log.chegadaLavoura) message += `  • Chegada lavoura: ${log.chegadaLavoura}\n`;
+          if (log.saidaLavoura) message += `  • Saída lavoura: ${log.saidaLavoura}\n`;
+        }
+        
+        // Horímetros
+        message += `\n⏱️ *Horímetros:*\n`;
+        if (log.hmMotorInicial !== null && log.hmMotorFinal !== null) {
+          message += `  • Motor: ${log.hmMotorInicial?.toFixed(1)}h → ${log.hmMotorFinal?.toFixed(1)}h (${(log.hmMotorFinal - log.hmMotorInicial).toFixed(1)}h trabalhadas)\n`;
+        }
+        if (log.hmTrilhaInicial !== null && log.hmTrilhaFinal !== null) {
+          message += `  • Trilha: ${log.hmTrilhaInicial?.toFixed(1)}h → ${log.hmTrilhaFinal?.toFixed(1)}h (${(log.hmTrilhaFinal - log.hmTrilhaInicial).toFixed(1)}h trabalhadas)\n`;
+        }
+        
+        // Estatísticas
+        message += `\n📊 *Estatísticas:*\n`;
+        message += `  • Área colhida: ${log.areaHa?.toFixed(2) || "0.00"} ha\n`;
+        const horasTrabalhadas = log.horasMotorDia || 0;
+        if (horasTrabalhadas > 0 && log.areaHa) {
+          const eficiencia = log.areaHa / horasTrabalhadas;
+          message += `  • Eficiência: ${eficiencia.toFixed(2)} ha/h\n`;
+        }
+        
+        if (log.divergente) {
+          message += `\n⚠️ *ATENÇÃO: Divergência detectada!*\n`;
+        }
+        
+        message += `\n${"-".repeat(35)}\n\n`;
+      }
+    }
+
+    message += `${pdfUrl ? "\n📄 PDF anexado" : ""}`;
+    message = message.trim();
 
     // Enviar com ou sem PDF
     let result;
@@ -187,18 +234,73 @@ export async function sendTestReportWhatsApp(
       };
     }
 
-    // Gerar mensagem de teste
-    const message = `
+    // Buscar detalhes das máquinas
+    const machines = await db.getAllMachines();
+    const machineMap = new Map(machines.map(m => [m.id, m]));
+
+    // Gerar mensagem de teste detalhada
+    let message = `
 🧪 *[TESTE] Relatório Diário de Colheita*
-📅 ${new Date(today).toLocaleDateString("pt-BR")}
+📅 ${new Date(today).toLocaleDateString("pt-BR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
 
 📊 *Resumo:*
 • Máquinas operando: ${report.maquinasOperando}
 • Total horas motor: ${report.totalHorasMotor.toFixed(1)}h
 • Área colhida: ${report.totalArea.toFixed(2)} ha
 
-✅ Sistema de notificações WhatsApp configurado com sucesso!
-    `.trim();
+`;
+
+    // Adicionar detalhes de cada máquina
+    if (report.logs && report.logs.length > 0) {
+      message += `📋 *Detalhamento por Máquina:*\n\n`;
+      
+      for (const log of report.logs) {
+        const machine = machineMap.get(log.maquinaId);
+        const machineName = machine ? `${machine.nome} (${machine.tipo})` : log.maquinaId;
+        const modelo = machine?.modelo ? ` - ${machine.modelo}` : "";
+        
+        message += `🚜 *${log.maquinaId}*: ${machineName}${modelo}\n`;
+        message += `👨‍🌾 Operador: ${log.operador || "Não informado"}\n`;
+        message += `🌾 Fazenda: ${log.fazenda || "Não informado"}\n`;
+        message += `🗺️ Talhão: ${log.talhao || "Não informado"}\n`;
+        
+        // Horários
+        if (log.saidaProgramada || log.saidaReal || log.chegadaLavoura || log.saidaLavoura) {
+          message += `\n⏰ *Horários:*\n`;
+          if (log.saidaProgramada) message += `  • Saída programada: ${log.saidaProgramada}\n`;
+          if (log.saidaReal) message += `  • Saída real: ${log.saidaReal}\n`;
+          if (log.chegadaLavoura) message += `  • Chegada lavoura: ${log.chegadaLavoura}\n`;
+          if (log.saidaLavoura) message += `  • Saída lavoura: ${log.saidaLavoura}\n`;
+        }
+        
+        // Horímetros
+        message += `\n⏱️ *Horímetros:*\n`;
+        if (log.hmMotorInicial !== null && log.hmMotorFinal !== null) {
+          message += `  • Motor: ${log.hmMotorInicial?.toFixed(1)}h → ${log.hmMotorFinal?.toFixed(1)}h (${(log.hmMotorFinal - log.hmMotorInicial).toFixed(1)}h trabalhadas)\n`;
+        }
+        if (log.hmTrilhaInicial !== null && log.hmTrilhaFinal !== null) {
+          message += `  • Trilha: ${log.hmTrilhaInicial?.toFixed(1)}h → ${log.hmTrilhaFinal?.toFixed(1)}h (${(log.hmTrilhaFinal - log.hmTrilhaInicial).toFixed(1)}h trabalhadas)\n`;
+        }
+        
+        // Estatísticas
+        message += `\n📊 *Estatísticas:*\n`;
+        message += `  • Área colhida: ${log.areaHa?.toFixed(2) || "0.00"} ha\n`;
+        const horasTrabalhadas = log.horasMotorDia || 0;
+        if (horasTrabalhadas > 0 && log.areaHa) {
+          const eficiencia = log.areaHa / horasTrabalhadas;
+          message += `  • Eficiência: ${eficiencia.toFixed(2)} ha/h\n`;
+        }
+        
+        if (log.divergente) {
+          message += `\n⚠️ *ATENÇÃO: Divergência detectada!*\n`;
+        }
+        
+        message += `\n${"-".repeat(35)}\n\n`;
+      }
+    }
+
+    message += `\n✅ Sistema de notificações WhatsApp configurado com sucesso!`;
+    message = message.trim();
 
     const result = await sendWhatsAppMessage(phoneNumber, message);
 

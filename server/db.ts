@@ -578,33 +578,30 @@ export async function getOperatorReport(from: string, to: string) {
     string,
     {
       operador: string;
-      diasTrabalhados: number;
-      totalSaidas: number;
-      saidasPontuais: number;
-      totalProdH: number;
-      totalManH: number;
+      totalDias: number;
+      totalHorasMotor: number;
+      totalHorasProd: number;
+      totalArea: number;
+      totalDivergencias: number;
     }
   >();
 
   for (const log of logs) {
     const existing = operatorMap.get(log.operador) || {
       operador: log.operador,
-      diasTrabalhados: 0,
-      totalSaidas: 0,
-      saidasPontuais: 0,
-      totalProdH: 0,
-      totalManH: 0,
+      totalDias: 0,
+      totalHorasMotor: 0,
+      totalHorasProd: 0,
+      totalArea: 0,
+      totalDivergencias: 0,
     };
 
-    existing.diasTrabalhados += 1;
-    existing.totalProdH += log.prodH || 0;
-    existing.totalManH += log.manH || 0;
-
-    if (log.atrasoMin != null) {
-      existing.totalSaidas += 1;
-      if (log.atrasoMin <= 5) {
-        existing.saidasPontuais += 1;
-      }
+    existing.totalDias += 1;
+    existing.totalHorasMotor += log.horasMotorDia || 0;
+    existing.totalHorasProd += log.prodH || 0;
+    existing.totalArea += log.areaHa || 0;
+    if (log.divergente) {
+      existing.totalDivergencias += 1;
     }
 
     operatorMap.set(log.operador, existing);
@@ -613,14 +610,16 @@ export async function getOperatorReport(from: string, to: string) {
   // Calcular métricas finais
   const operators = Array.from(operatorMap.values()).map((op) => ({
     operador: op.operador,
-    diasTrabalhados: op.diasTrabalhados,
-    pontualidade: op.totalSaidas > 0 ? (op.saidasPontuais / op.totalSaidas) * 100 : 0,
-    mediaProdH: op.diasTrabalhados > 0 ? op.totalProdH / op.diasTrabalhados : 0,
-    mediaManH: op.diasTrabalhados > 0 ? op.totalManH / op.diasTrabalhados : 0,
+    totalDias: op.totalDias,
+    totalHorasMotor: op.totalHorasMotor,
+    totalHorasProd: op.totalHorasProd,
+    totalArea: op.totalArea,
+    produtividadeMedia: op.totalHorasProd > 0 ? op.totalArea / op.totalHorasProd : 0,
+    taxaDivergencia: op.totalDias > 0 ? (op.totalDivergencias / op.totalDias) * 100 : 0,
   }));
 
-  // Ordenar por pontualidade (decrescente)
-  operators.sort((a, b) => b.pontualidade - a.pontualidade);
+  // Ordenar por produtividade (decrescente)
+  operators.sort((a, b) => b.produtividadeMedia - a.produtividadeMedia);
 
   return operators;
 }

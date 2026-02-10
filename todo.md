@@ -500,3 +500,39 @@
 - [x] Verificar se o problema está no formulário, no handleSave ou no router
 - [x] Corrigir salvamento do campo tipo (adicionado no handleSave)
 - [x] Corrigir schema do router para aceitar tipo, modelo, chassi, ano e fabricante
+
+## Melhorias no Relatório WhatsApp
+- [x] Adicionar detalhes completos de cada máquina (modelo, chassi, ano, fabricante, tipo)
+- [x] Incluir informações detalhadas de cada lançamento (fazenda, talhão, operador)
+- [x] Adicionar horários completos (saída programada, saída real, chegada/saída lavoura)
+- [x] Mostrar horímetros inicial e final (motor e trilha) de cada lançamento
+- [x] Incluir estatísticas por máquina (horas trabalhadas, área colhida)
+- [x] Adicionar totais gerais do dia (todas as máquinas)
+- [x] Melhorar formatação com emojis e seções organizadas
+- [x] Incluir eficiência de cada máquina (ha/h)
+
+## BUG CRÍTICO - Botão Adicionar Talhão Não Clicável
+- [ ] Investigar por que o botão "Adicionar Talhão" não está clicável
+- [ ] Aplicar mesma correção usada em outros botões (TouchableOpacity com style)
+- [ ] Verificar se o modal está sendo renderizado corretamente
+- [ ] Testar funcionamento completo do CRUD de Talhões
+
+## BUG CRÍTICO - Botão Adicionar Talhão Não Clicável
+- [x] Investigar por que o botão "Adicionar Talhão" não está clicável
+- [x] Aplicar mesma correção usada em outros botões (TouchableOpacity com style)
+- [x] Verificar se o modal está sendo renderizado corretamente
+- [x] Confirmar que dropdown de Fazenda está funcionando no formulário
+- [ ] Testar funcionamento completo do CRUD de Talhões
+
+## BUG CRÍTICO - Máquinas Não Aparecem no Lançamento
+- [x] Investigar por que as máquinas cadastradas não aparecem na tela de Lançamento
+- [x] Substituir botões fixos M1-M4 por Picker dinâmico
+- [x] Alterar tipo de maquinaId de enum para string
+- [x] Atualizar schema do servidor para aceitar qualquer ID de máquina
+- [x] Testar após correção
+
+## BUG CRÍTICO - App Crasha ao Clicar em Operador nos Relatórios
+- [x] Investigar crash na aba de Relatórios ao clicar em "Operador"
+- [x] Corrigir função getOperatorReport para retornar dados esperados pelo frontend
+- [x] Atualizar campos retornados (totalDias, totalHorasMotor, totalArea, produtividadeMedia, taxaDivergencia)
+- [x] Testar após correção

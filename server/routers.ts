@@ -109,7 +109,7 @@ export const appRouter = router({
           data: z.string(),
           fazenda: z.string().min(1),
           talhao: z.string().min(1),
-          maquinaId: z.enum(["M1", "M2", "M3", "M4"]),
+          maquinaId: z.string().min(1),
           operador: z.string().min(1),
           saidaProgramada: z.string().optional(),
           saidaReal: z.string().optional(),
@@ -151,7 +151,7 @@ export const appRouter = router({
               data: z.string().optional(),
               fazenda: z.string().optional(),
               talhao: z.string().optional(),
-              maquinaId: z.enum(["M1", "M2", "M3", "M4"]).optional(),
+              maquinaId: z.string().optional(),
               operador: z.string().optional(),
               saidaProgramada: z.string().optional(),
               saidaReal: z.string().optional(),
@@ -278,7 +278,7 @@ export const appRouter = router({
           updateData: z
             .object({
               data: z.string().optional(),
-              maquinaId: z.enum(["M1", "M2", "M3", "M4"]).optional(),
+              maquinaId: z.string().optional(),
               tipo: z.enum(["preventiva", "corretiva_leve", "corretiva_pesada"]).optional(),
               hmMotorNoServico: z.number().optional(),
               tempoParadoH: z.number().optional(),
