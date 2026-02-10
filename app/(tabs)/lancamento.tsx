@@ -16,7 +16,9 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect, useMemo } from "react";
 import * as Haptics from "expo-haptics";
 import { useSync } from "@/hooks/use-sync";
-import { addToSyncQueue } from "@/lib/sqlite";
+import { addToSyncQueue, saveDailyLogLocal } from "@/lib/sqlite";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function LancamentoScreen() {
   const router = useRouter();
@@ -304,7 +306,11 @@ export default function LancamentoScreen() {
   };
 
   const salvarLancamento = async (saveAndNew: boolean) => {
+    // Gerar UUID único para o lançamento
+    const lancamentoId = uuidv4();
+    
     const payload = {
+      id: lancamentoId,
       data,
       fazenda,
       talhao,
@@ -328,10 +334,14 @@ export default function LancamentoScreen() {
       observacoes: observacoes || undefined,
     };
 
-    // Se offline, adicionar à fila de sincronização
+    // Se offline, salvar localmente e adicionar à fila de sincronização
     if (!isOnline) {
       try {
-        addToSyncQueue('daily_log', null, payload);
+        // Salvar no SQLite local
+        saveDailyLogLocal(payload);
+        
+        // Adicionar à fila de sincronização com ID correto
+        addToSyncQueue('daily_log', lancamentoId, payload);
         updatePendingCount();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         Alert.alert(

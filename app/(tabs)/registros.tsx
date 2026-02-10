@@ -12,15 +12,18 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { DatePicker } from "@/components/date-picker";
 import { trpc } from "@/lib/trpc";
 import { router } from "expo-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Modal, ScrollView } from "react-native";
 import * as Haptics from "expo-haptics";
+import { getLocalDailyLogs } from "@/lib/sqlite";
+import { useSync } from "@/hooks/use-sync";
 
 export default function RegistrosScreen() {
   const [selectedDate, setSelectedDate] = useState("");
   const [editingLog, setEditingLog] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const utils = trpc.useUtils();
+  const { isOnline } = useSync();
 
   useEffect(() => {
     const today = new Date();
@@ -28,10 +31,29 @@ export default function RegistrosScreen() {
     setSelectedDate(formatted);
   }, []);
 
-  const { data: dailyLogs, isLoading } = trpc.dailyLogs.getByDate.useQuery(
+  const { data: dailyLogsOnline, isLoading } = trpc.dailyLogs.getByDate.useQuery(
     { date: selectedDate },
-    { enabled: !!selectedDate }
+    { enabled: !!selectedDate && isOnline }
   );
+
+  // Buscar registros locais offline
+  const [localLogs, setLocalLogs] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (selectedDate) {
+      const logs = getLocalDailyLogs(selectedDate, true); // Incluir sincronizados para visualização
+      setLocalLogs(logs);
+    }
+  }, [selectedDate]);
+
+  // Combinar registros online e offline (priorizar online se duplicado)
+  const dailyLogs = useMemo(() => {
+    if (isOnline && dailyLogsOnline) {
+      return dailyLogsOnline;
+    }
+    // Se offline, mostrar apenas registros locais
+    return localLogs;
+  }, [isOnline, dailyLogsOnline, localLogs]);
 
   const updateMutation = trpc.dailyLogs.update.useMutation({
     onSuccess: () => {

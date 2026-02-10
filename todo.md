@@ -657,3 +657,13 @@
 - [x] Criar README_COMPLETO.md com instruções de setup
 - [x] Gerar arquivo ZIP do projeto completo (1.1MB)
 - [x] Entregar ZIP para download
+
+## Correção Sistema Offline Real
+- [x] Gerar UUID único para cada lançamento offline (uuid v4)
+- [x] Salvar payload com ID no SQLite local (saveDailyLogLocal)
+- [x] Adicionar à fila de sincronização com ID correto (addToSyncQueue)
+- [x] Ajustar getLocalDailyLogs para listar registros offline (includeSynced param)
+- [x] use-sync.ts já estava correto (markDailyLogSynced)
+- [x] Atualizar tela Registros para exibir lançamentos offline
+- [x] Instalar dependências: react-native-get-random-values, uuid, @types/uuid
+- [ ] Testar: 3 lançamentos offline → aparecem em Registros → sincronizam ao reconectar

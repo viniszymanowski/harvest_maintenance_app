@@ -68,6 +68,7 @@
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "~2.28.0",
+    "react-native-get-random-values": "^2.0.0",
     "react-native-reanimated": "~4.1.6",
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.16.0",
@@ -77,6 +78,7 @@
     "superjson": "^1.13.3",
     "tailwind-merge": "^2.6.0",
     "twilio": "^5.12.1",
+    "uuid": "^13.0.0",
     "zod": "^4.2.1"
   },
   "devDependencies": {
@@ -86,6 +88,7 @@
     "@types/node": "^22.19.3",
     "@types/qrcode": "^1.5.6",
     "@types/react": "~19.1.17",
+    "@types/uuid": "^11.0.0",
     "concurrently": "^9.2.1",
     "cross-env": "^7.0.3",
     "drizzle-kit": "^0.31.8",

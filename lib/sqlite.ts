@@ -319,16 +319,28 @@ export const saveDailyLogLocal = (log: any) => {
 };
 
 /**
- * Buscar daily logs locais não sincronizados
+ * Buscar daily logs locais (incluindo sincronizados quando includeSynced=true)
  */
-export const getLocalDailyLogs = (date?: string) => {
+export const getLocalDailyLogs = (date?: string, includeSynced: boolean = false) => {
   try {
-    let query = `SELECT * FROM daily_logs_local WHERE synced = 0`;
+    let query = `SELECT * FROM daily_logs_local`;
     const params: any[] = [];
+    const conditions: string[] = [];
     
+    // Filtrar por synced se necessário
+    if (!includeSynced) {
+      conditions.push('synced = 0');
+    }
+    
+    // Filtrar por data se fornecida
     if (date) {
-      query += ` AND data = ?`;
+      conditions.push('data = ?');
       params.push(date);
+    }
+    
+    // Adicionar condições à query
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
     }
     
     query += ` ORDER BY updated_at DESC`;
