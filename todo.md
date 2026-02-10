@@ -572,3 +572,13 @@
 - [x] Implementar modal de edição de manutenção (reutiliza modal existente)
 - [x] Implementar confirmação de exclusão
 - [x] Atualizar lista após edição/exclusão
+
+## Filtro de Data nos Relatórios
+- [x] Adicionar componente de seleção de período na tela de relatórios (Semana, Mês, Safra, Personalizado)
+- [x] Adicionar interface para período personalizado (data inicial e final)
+- [x] Implementar cálculo de datas para cada opção (últimos 7 dias, últimos 30 dias, safra)
+- [x] Atualizar query getMachineReport para aceitar dataInicio e dataFim (já existia)
+- [x] Atualizar query getOperatorReport para aceitar dataInicio e dataFim (já existia)
+- [x] Filtrar dados no servidor baseado no período selecionado (getDailyLogsByPeriod)
+- [x] Exibir período selecionado na interface (card com datas)
+- [x] Sistema completo: filtros funcionando para Semana, Mês, Safra e Personalizado

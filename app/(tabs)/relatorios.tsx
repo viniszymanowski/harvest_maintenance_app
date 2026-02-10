@@ -7,10 +7,33 @@ import * as Sharing from "expo-sharing";
 
 export default function RelatoriosScreen() {
   const [tipoRelatorio, setTipoRelatorio] = useState<"diario" | "maquina" | "operador" | "manutencao">("diario");
+  const [tipoPeriodo, setTipoPeriodo] = useState<"semana" | "mes" | "safra" | "personalizado">("semana");
   const [periodo, setPeriodo] = useState({
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
     to: new Date().toISOString().split("T")[0],
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [editingDate, setEditingDate] = useState<"from" | "to">("from");
+
+  // Atualizar período baseado no tipo selecionado
+  const handlePeriodoChange = (tipo: typeof tipoPeriodo) => {
+    setTipoPeriodo(tipo);
+    const hoje = new Date();
+    const hojStr = hoje.toISOString().split("T")[0];
+
+    if (tipo === "semana") {
+      const semanaAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      setPeriodo({ from: semanaAtras.toISOString().split("T")[0], to: hojStr });
+    } else if (tipo === "mes") {
+      const mesAtras = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      setPeriodo({ from: mesAtras.toISOString().split("T")[0], to: hojStr });
+    } else if (tipo === "safra") {
+      // Safra: janeiro a dezembro do ano atual
+      const anoAtual = hoje.getFullYear();
+      setPeriodo({ from: `${anoAtual}-01-01`, to: hojStr });
+    }
+    // Para "personalizado", mantém o período atual
+  };
 
   // Buscar relatório diário
   const dailyReport = trpc.reports.daily.useQuery(
@@ -229,6 +252,111 @@ export default function RelatoriosScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Filtro de Período */}
+        {tipoRelatorio !== "diario" && (
+          <View className="mb-6">
+            <Text className="text-sm font-semibold text-foreground mb-2">📅 Período</Text>
+            <View className="flex-row gap-2 flex-wrap mb-3">
+              <TouchableOpacity
+                onPress={() => handlePeriodoChange("semana")}
+                className={`px-4 py-2 rounded-full ${
+                  tipoPeriodo === "semana" ? "bg-primary" : "bg-surface border border-border"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    tipoPeriodo === "semana" ? "text-white" : "text-foreground"
+                  }`}
+                >
+                  Últimos 7 dias
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handlePeriodoChange("mes")}
+                className={`px-4 py-2 rounded-full ${
+                  tipoPeriodo === "mes" ? "bg-primary" : "bg-surface border border-border"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    tipoPeriodo === "mes" ? "text-white" : "text-foreground"
+                  }`}
+                >
+                  Últimos 30 dias
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handlePeriodoChange("safra")}
+                className={`px-4 py-2 rounded-full ${
+                  tipoPeriodo === "safra" ? "bg-primary" : "bg-surface border border-border"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    tipoPeriodo === "safra" ? "text-white" : "text-foreground"
+                  }`}
+                >
+                  Safra {new Date().getFullYear()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setTipoPeriodo("personalizado");
+                }}
+                className={`px-4 py-2 rounded-full ${
+                  tipoPeriodo === "personalizado" ? "bg-primary" : "bg-surface border border-border"
+                }`}
+              >
+                <Text
+                  className={`text-sm font-semibold ${
+                    tipoPeriodo === "personalizado" ? "text-white" : "text-foreground"
+                  }`}
+                >
+                  Personalizado
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Exibir datas do período */}
+            <View className="bg-surface border border-border rounded-xl p-4">
+              <Text className="text-sm text-muted mb-2">Período selecionado:</Text>
+              <View className="flex-row items-center gap-2">
+                <TouchableOpacity
+                  onPress={() => {
+                    if (tipoPeriodo === "personalizado") {
+                      setEditingDate("from");
+                      setShowDatePicker(true);
+                    }
+                  }}
+                  disabled={tipoPeriodo !== "personalizado"}
+                  className="flex-1 bg-background border border-border rounded-lg p-3"
+                >
+                  <Text className="text-xs text-muted mb-1">De:</Text>
+                  <Text className="text-base font-semibold text-foreground">
+                    {new Date(periodo.from).toLocaleDateString("pt-BR")}
+                  </Text>
+                </TouchableOpacity>
+                <Text className="text-muted">→</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (tipoPeriodo === "personalizado") {
+                      setEditingDate("to");
+                      setShowDatePicker(true);
+                    }
+                  }}
+                  disabled={tipoPeriodo !== "personalizado"}
+                  className="flex-1 bg-background border border-border rounded-lg p-3"
+                >
+                  <Text className="text-xs text-muted mb-1">Até:</Text>
+                  <Text className="text-base font-semibold text-foreground">
+                    {new Date(periodo.to).toLocaleDateString("pt-BR")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* Relatório Diário */}
         {tipoRelatorio === "diario" && dailyReport.data && (
