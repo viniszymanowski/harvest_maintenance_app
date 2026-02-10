@@ -10,15 +10,19 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { ScreenContainer } from "@/components/screen-container";
+import { SyncIndicator } from "@/components/sync-indicator";
 import { trpc } from "@/lib/trpc";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect, useMemo } from "react";
 import * as Haptics from "expo-haptics";
+import { useSync } from "@/hooks/use-sync";
+import { addToSyncQueue } from "@/lib/sqlite";
 
 export default function LancamentoScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const utils = trpc.useUtils();
+  const { isOnline, updatePendingCount } = useSync();
 
   // Buscar dados dos cadastros
   const { data: fazendas } = trpc.fazendas.list.useQuery();
@@ -233,6 +237,42 @@ export default function LancamentoScreen() {
 
   const updateMachineMutation = trpc.machines.updateName.useMutation();
 
+  const limparFormularioMantendoContexto = () => {
+    const fazendaAtual = fazenda;
+    const operadorAtual = operador;
+    
+    setTalhao("");
+    setSaidaProgramada("");
+    setSaidaReal("");
+    setChegadaLavoura("");
+    setSaidaLavoura("");
+    setHmMotorInicial("");
+    setHmMotorFinal("");
+    setHmTrilhaInicial("");
+    setHmTrilhaFinal("");
+    setProdH("");
+    setManH("");
+    setChuvaH("");
+    setDeslocH("");
+    setEsperaH("");
+    setAbasteceu(false);
+    setAreaHa("");
+    setObservacoes("");
+    
+    // Manter fazenda e operador
+    setFazenda(fazendaAtual);
+    setOperador(operadorAtual);
+    
+    // Pré-preencher horímetros da máquina selecionada
+    if (maquinaId && machines) {
+      const maquinaSelecionada = machines.find((m) => m.id === maquinaId);
+      if (maquinaSelecionada) {
+        setHmMotorInicial(maquinaSelecionada.hmMotorAtual?.toString() || "0");
+        setHmTrilhaInicial(maquinaSelecionada.hmTrilhaAtual?.toString() || "0");
+      }
+    }
+  };
+
   const repetirUltimo = () => {
     if (!lastLog) {
       Alert.alert("Aviso", "Nenhum lançamento anterior encontrado");
@@ -264,7 +304,7 @@ export default function LancamentoScreen() {
   };
 
   const salvarLancamento = async (saveAndNew: boolean) => {
-    await createMutation.mutateAsync({
+    const payload = {
       data,
       fazenda,
       talhao,
@@ -286,7 +326,35 @@ export default function LancamentoScreen() {
       abasteceu,
       areaHa: areaHa ? parseFloat(areaHa) : undefined,
       observacoes: observacoes || undefined,
-    });
+    };
+
+    // Se offline, adicionar à fila de sincronização
+    if (!isOnline) {
+      try {
+        addToSyncQueue('daily_log', null, payload);
+        updatePendingCount();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert(
+          "📵 Salvo Offline",
+          "Lançamento salvo localmente. Será sincronizado quando houver conexão."
+        );
+        
+        // Limpar formulário se for "Salvar e Novo"
+        if (saveAndNew) {
+          limparFormularioMantendoContexto();
+        } else {
+          router.back();
+        }
+        return;
+      } catch (error) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert("Erro", "Falha ao salvar offline");
+        return;
+      }
+    }
+
+    // Se online, salvar diretamente no servidor
+    await createMutation.mutateAsync(payload);
 
     // Atualizar horímetros da máquina automaticamente
     if (hmMotorFinal || hmTrilhaFinal) {
@@ -314,40 +382,7 @@ export default function LancamentoScreen() {
     }
 
     if (saveAndNew) {
-      // Salvar e Novo: limpar apenas horímetros, manter fazenda e operador
-      const fazendaAtual = fazenda;
-      const operadorAtual = operador;
-      
-      setTalhao("");
-      setSaidaProgramada("");
-      setSaidaReal("");
-      setChegadaLavoura("");
-      setSaidaLavoura("");
-      setHmMotorInicial("");
-      setHmMotorFinal("");
-      setHmTrilhaInicial("");
-      setHmTrilhaFinal("");
-      setProdH("");
-      setManH("");
-      setChuvaH("");
-      setDeslocH("");
-      setEsperaH("");
-      setAbasteceu(false);
-      setAreaHa("");
-      setObservacoes("");
-      
-      // Manter fazenda e operador
-      setFazenda(fazendaAtual);
-      setOperador(operadorAtual);
-      
-      // Pré-preencher horímetros da máquina selecionada
-      if (maquinaId && machines) {
-        const maquinaSelecionada = machines.find((m) => m.id === maquinaId);
-        if (maquinaSelecionada) {
-          setHmMotorInicial(maquinaSelecionada.hmMotorAtual?.toString() || "0");
-          setHmTrilhaInicial(maquinaSelecionada.hmTrilhaAtual?.toString() || "0");
-        }
-      }
+      limparFormularioMantendoContexto();
     } else {
       router.back();
     }
@@ -359,11 +394,14 @@ export default function LancamentoScreen() {
         <View className="gap-6">
           {/* Header */}
           <View className="gap-3">
-            <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center justify-between mb-2">
               <View className="flex-1">
                 <Text className="text-3xl font-bold text-foreground">Lançamento Rápido</Text>
                 <Text className="text-base text-muted">Registre as informações da colheita</Text>
               </View>
+              <SyncIndicator />
+            </View>
+            <View className="flex-row items-center justify-end">
               {lastLog && (
                 <Pressable
                   onPress={repetirUltimo}

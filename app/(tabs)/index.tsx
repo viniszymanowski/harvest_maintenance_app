@@ -1,5 +1,6 @@
 import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
+import { SyncIndicator } from "@/components/sync-indicator";
 import { trpc } from "@/lib/trpc";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -81,7 +82,10 @@ export default function HomeScreen() {
       <View className="flex-1 gap-6">
         {/* Header - Otimizado para Tablet */}
         <View className="gap-3">
-          <Text className="text-4xl font-bold text-foreground">Controle de Colheita</Text>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-4xl font-bold text-foreground">Controle de Colheita</Text>
+            <SyncIndicator />
+          </View>
           <Text className="text-base text-muted">
             {new Date().toLocaleDateString("pt-BR", {
               weekday: "long",
