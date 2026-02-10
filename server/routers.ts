@@ -54,6 +54,11 @@ export const appRouter = router({
         z.object({
           id: z.string(),
           nome: z.string().min(1),
+          tipo: z.enum(["Colheitadeira", "Plataforma", "Trator", "Pulverizador"]).optional(),
+          modelo: z.string().optional(),
+          chassi: z.string().optional(),
+          ano: z.number().optional(),
+          fabricante: z.string().optional(),
           intervaloTrocaOleoHm: z.number().optional(),
           intervaloRevisao50hHm: z.number().optional(),
           hmMotorAtual: z.number().optional(),
@@ -71,6 +76,11 @@ export const appRouter = router({
         z.object({
           id: z.string().min(1).max(10),
           nome: z.string().min(1),
+          tipo: z.enum(["Colheitadeira", "Plataforma", "Trator", "Pulverizador"]).default("Colheitadeira"),
+          modelo: z.string().optional(),
+          chassi: z.string().optional(),
+          ano: z.number().optional(),
+          fabricante: z.string().optional(),
           intervaloTrocaOleoHm: z.number().positive().default(250),
           intervaloRevisao50hHm: z.number().positive().default(50),
           hmMotorAtual: z.number().default(0),

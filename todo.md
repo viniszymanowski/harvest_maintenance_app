@@ -493,3 +493,10 @@
 - [x] Adicionar validação: alertar se HT Final < HT Atual da máquina
 - [x] Implementar atualização automática de hmMotorAtual da máquina após salvar lançamento
 - [x] Implementar atualização automática de hmTrilhaAtual da máquina após salvar lançamento
+
+## BUG CRÍTICO - Campo Tipo da Máquina
+- [x] Investigar por que o campo "Tipo" não está sendo salvo corretamente
+- [x] Usuário seleciona "Plataforma" mas sistema exibe "Colheitadeira"
+- [x] Verificar se o problema está no formulário, no handleSave ou no router
+- [x] Corrigir salvamento do campo tipo (adicionado no handleSave)
+- [x] Corrigir schema do router para aceitar tipo, modelo, chassi, ano e fabricante

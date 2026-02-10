@@ -235,6 +235,11 @@ function MaquinasTab() {
       updateMutation.mutate({
         id: formData.id,
         nome: formData.nome,
+        tipo: formData.tipo,
+        modelo: formData.modelo || undefined,
+        chassi: formData.chassi || undefined,
+        ano: formData.ano ? parseInt(formData.ano) : undefined,
+        fabricante: formData.fabricante || undefined,
         intervaloTrocaOleoHm: parseFloat(formData.intervaloTrocaOleoHm) || 250,
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
         hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
@@ -244,6 +249,11 @@ function MaquinasTab() {
       createMutation.mutate({
         id: formData.id,
         nome: formData.nome,
+        tipo: formData.tipo,
+        modelo: formData.modelo || undefined,
+        chassi: formData.chassi || undefined,
+        ano: formData.ano ? parseInt(formData.ano) : undefined,
+        fabricante: formData.fabricante || undefined,
         intervaloTrocaOleoHm: parseFloat(formData.intervaloTrocaOleoHm) || 250,
         intervaloRevisao50hHm: parseFloat(formData.intervaloRevisao50hHm) || 50,
         hmMotorAtual: parseFloat(formData.hmMotorAtual) || 0,
