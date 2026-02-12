@@ -667,3 +667,15 @@
 - [x] Atualizar tela Registros para exibir lançamentos offline
 - [x] Instalar dependências: react-native-get-random-values, uuid, @types/uuid
 - [ ] Testar: 3 lançamentos offline → aparecem em Registros → sincronizam ao reconectar
+
+## Transformação em Site Web
+- [x] Analisar arquitetura atual (Expo já suporta web nativamente)
+- [x] Desabilitar SQLite na web (usar apenas API online)
+- [x] Adicionar guards em todas as funções SQLite para web
+- [x] Configurar PWA no app.config.ts (manifest, theme)
+- [x] Criar metro.config.js customizado para resolver expo-sqlite
+- [x] Testar site web funcionando sem erros (100% operacional)
+- [x] Criar GUIA_DEPLOY_WEB.md com instruções completas
+- [x] Documentar deploy em Vercel, Netlify e GitHub Pages
+- [x] Documentar opções de backend (Railway, Render, Heroku)
+- [x] Documentar opções de banco de dados (PlanetScale, Railway MySQL)

@@ -1,11 +1,23 @@
-const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+// Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
 
+/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 
-module.exports = withNativeWind(config, {
-  input: "./global.css",
-  // Force write CSS to file system instead of virtual modules
-  // This fixes iOS styling issues in development mode
-  forceWriteFileSystem: true,
-});
+// Resolver para ignorar expo-sqlite na web
+config.resolver = {
+  ...config.resolver,
+  resolveRequest: (context, moduleName, platform) => {
+    // Ignorar expo-sqlite/web na plataforma web
+    if (platform === 'web' && moduleName.includes('expo-sqlite')) {
+      return {
+        type: 'empty',
+      };
+    }
+    
+    // Default resolver
+    return context.resolveRequest(context, moduleName, platform);
+  },
+};
+
+module.exports = config;

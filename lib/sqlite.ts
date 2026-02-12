@@ -3,17 +3,35 @@
  * 
  * Armazenamento local para operação offline
  * Sincronização automática quando online
+ * 
+ * IMPORTANTE: SQLite funciona apenas no mobile (iOS/Android)
+ * Na web, as funções retornam valores vazios e usam apenas API online
  */
 
-import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
 
-// Abrir banco de dados local
-export const db = SQLite.openDatabaseSync('harvest_app.db');
+// Abrir banco de dados local (apenas mobile)
+const isWeb = Platform.OS === 'web';
+
+let db: any = null;
+
+if (!isWeb) {
+  // Importar SQLite apenas no mobile
+  const SQLite = require('expo-sqlite');
+  db = SQLite.openDatabaseSync('harvest_app.db');
+}
+
+export { db };
 
 /**
  * Inicializar tabelas locais
  */
 export const initDatabase = () => {
+  if (isWeb) {
+    console.log('✅ Web mode: SQLite disabled, using API only');
+    return;
+  }
+  
   try {
     // Tabela de fila de sincronização
     db.execSync(`
@@ -102,6 +120,8 @@ export const addToSyncQueue = (
   entityId: string | null,
   payload: any
 ) => {
+  if (isWeb || !db) return 0;
+  
   try {
     const payloadJson = JSON.stringify(payload);
     
@@ -147,6 +167,8 @@ export const addToSyncQueue = (
  * Cooldown: 30 segundos entre tentativas
  */
 export const getPendingSyncItems = () => {
+  if (isWeb || !db) return [];
+  
   try {
     const items = db.getAllSync<{
       id: number;
@@ -175,6 +197,8 @@ export const getPendingSyncItems = () => {
  * Marcar item como sincronizado
  */
 export const markAsSynced = (id: number) => {
+  if (isWeb || !db) return;
+  
   try {
     db.runSync(
       `UPDATE sync_queue 
@@ -192,6 +216,8 @@ export const markAsSynced = (id: number) => {
  * Marcar item como erro e incrementar tentativas
  */
 export const markAsError = (id: number, error: string) => {
+  if (isWeb || !db) return;
+  
   try {
     db.runSync(
       `UPDATE sync_queue 
@@ -213,6 +239,8 @@ export const markAsError = (id: number, error: string) => {
  * Contar itens pendentes e erros separadamente
  */
 export const countPendingItems = (): { pending: number; errors: number } => {
+  if (isWeb || !db) return { pending: 0, errors: 0 };
+  
   try {
     const pendingResult = db.getFirstSync<{ count: number }>(
       `SELECT COUNT(*) as count FROM sync_queue WHERE status = 'pending'`
@@ -236,6 +264,8 @@ export const countPendingItems = (): { pending: number; errors: number } => {
  * Limpar itens sincronizados antigos (mais de 7 dias)
  */
 export const cleanupOldSyncedItems = () => {
+  if (isWeb || !db) return;
+  
   try {
     db.runSync(
       `DELETE FROM sync_queue 
@@ -251,6 +281,8 @@ export const cleanupOldSyncedItems = () => {
  * Resetar itens com erro para pending (retry manual)
  */
 export const retryFailedItems = () => {
+  if (isWeb || !db) return 0;
+  
   try {
     const result = db.runSync(
       `UPDATE sync_queue 
@@ -272,6 +304,8 @@ export const retryFailedItems = () => {
  * Limpar todos os erros permanentemente
  */
 export const clearErrorItems = () => {
+  if (isWeb || !db) return 0;
+  
   try {
     const result = db.runSync(
       `DELETE FROM sync_queue WHERE status = 'error'`
@@ -291,6 +325,8 @@ export const clearErrorItems = () => {
  * Salvar daily log localmente
  */
 export const saveDailyLogLocal = (log: any) => {
+  if (isWeb || !db) return log.id || `web_${Date.now()}`;
+  
   try {
     const id = log.id || `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
@@ -322,6 +358,8 @@ export const saveDailyLogLocal = (log: any) => {
  * Buscar daily logs locais (incluindo sincronizados quando includeSynced=true)
  */
 export const getLocalDailyLogs = (date?: string, includeSynced: boolean = false) => {
+  if (isWeb || !db) return [];
+  
   try {
     let query = `SELECT * FROM daily_logs_local`;
     const params: any[] = [];
@@ -356,6 +394,8 @@ export const getLocalDailyLogs = (date?: string, includeSynced: boolean = false)
  * Marcar daily log como sincronizado
  */
 export const markDailyLogSynced = (id: string) => {
+  if (isWeb || !db) return;
+  
   try {
     db.runSync(
       `UPDATE daily_logs_local SET synced = 1, updated_at = datetime('now') WHERE id = ?`,
@@ -374,6 +414,8 @@ export const markDailyLogSynced = (id: string) => {
  * Salvar maintenance localmente
  */
 export const saveMaintenanceLocal = (maintenance: any) => {
+  if (isWeb || !db) return maintenance.id || `web_${Date.now()}`;
+  
   try {
     const id = maintenance.id || `local_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
@@ -398,6 +440,8 @@ export const saveMaintenanceLocal = (maintenance: any) => {
  * Buscar maintenances locais não sincronizados
  */
 export const getLocalMaintenances = () => {
+  if (isWeb || !db) return [];
+  
   try {
     return db.getAllSync(
       `SELECT * FROM maintenance_local WHERE synced = 0 ORDER BY updated_at DESC`
@@ -412,6 +456,8 @@ export const getLocalMaintenances = () => {
  * Marcar maintenance como sincronizado
  */
 export const markMaintenanceSynced = (id: string) => {
+  if (isWeb || !db) return;
+  
   try {
     db.runSync(
       `UPDATE maintenance_local SET synced = 1, updated_at = datetime('now') WHERE id = ?`,

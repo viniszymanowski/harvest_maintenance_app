@@ -82,6 +82,17 @@ const config: ExpoConfig = {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
+    // PWA Configuration
+    themeColor: "#10B981",
+    backgroundColor: "#ffffff",
+    display: "standalone",
+    orientation: "any",
+    startUrl: "/",
+    scope: "/",
+    lang: "pt-BR",
+    name: "Controle de Colheita",
+    shortName: "Colheita",
+    description: "Sistema de controle de colheita e manutenção de máquinas agrícolas",
   },
   plugins: [
     "expo-router",
