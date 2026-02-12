@@ -39,7 +39,6 @@ const config: ExpoConfig = {
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
 
-  // 🔥 EAS PROJECT LINK (OBRIGATÓRIO)
   extra: {
     eas: {
       projectId: "6a3757a5-f51f-4868-9596-d9a175cd58e7",
@@ -87,7 +86,6 @@ const config: ExpoConfig = {
     bundler: "metro",
     output: "static",
     favicon: "./assets/images/favicon.png",
-    // PWA Configuration
     themeColor: "#10B981",
     backgroundColor: "#ffffff",
     display: "standalone",
@@ -97,11 +95,16 @@ const config: ExpoConfig = {
     lang: "pt-BR",
     name: "Controle de Colheita",
     shortName: "Colheita",
-    description: "Sistema de controle de colheita e manutenção de máquinas agrícolas",
+    description:
+      "Sistema de controle de colheita e manutenção de máquinas agrícolas",
   },
 
   plugins: [
     "expo-router",
+
+    // ✅ ADICIONADO
+    "@react-native-community/datetimepicker",
+
     [
       "expo-audio",
       {
