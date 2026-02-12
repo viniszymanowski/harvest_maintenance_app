@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, Text, View, useWindowDimensions, Platform } from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { SyncIndicator } from "@/components/sync-indicator";
 import { trpc } from "@/lib/trpc";
@@ -18,6 +18,8 @@ interface MachineStatus {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
   const [todayDate, setTodayDate] = useState("");
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <ScreenContainer className="p-6">
+    <ScreenContainer className="p-6" style={isDesktop ? { marginLeft: 240 } : {}}>
       <View className="flex-1 gap-6">
         {/* Header - Otimizado para Tablet */}
         <View className="gap-3">
@@ -147,10 +149,16 @@ export default function HomeScreen() {
         <FlatList
           data={machineStatuses}
           keyExtractor={(item) => item.maquinaId}
+          numColumns={isDesktop ? 3 : 1}
+          key={isDesktop ? 'desktop-3col' : 'mobile-1col'}
+          columnWrapperStyle={isDesktop ? { gap: 16 } : undefined}
           renderItem={({ item }) => (
             <Pressable
               onPress={() => router.push(`/(tabs)/lancamento?maquina=${item.maquinaId}` as any)}
-              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+              style={({ pressed }) => [
+                { opacity: pressed ? 0.7 : 1 },
+                isDesktop ? { flex: 1 / 3, maxWidth: '32%' } : { flex: 1 }
+              ]}
               className="bg-surface rounded-2xl p-6 mb-4 border-2 border-border shadow-sm"
             >
               <View className="flex-row items-center justify-between mb-3">

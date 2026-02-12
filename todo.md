@@ -679,3 +679,10 @@
 - [x] Documentar deploy em Vercel, Netlify e GitHub Pages
 - [x] Documentar opções de backend (Railway, Render, Heroku)
 - [x] Documentar opções de banco de dados (PlanetScale, Railway MySQL)
+
+## Otimização Layout Desktop
+- [x] Criar sidebar lateral com navegação (esconde em mobile)
+- [x] Ajustar grid de máquinas para 3 colunas em desktop (1 coluna em mobile)
+- [x] Adicionar detecção de largura de tela (useWindowDimensions)
+- [x] Configurar marginLeft para conteúdo quando sidebar visível
+- [x] Layout responsivo pronto para desktop (>= 1024px)

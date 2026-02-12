@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View, useWindowDimensions } from "react-native";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -9,6 +10,8 @@ import { useColors } from "@/hooks/use-colors";
 export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === 'web' && width >= 1024;
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 56 + bottomPadding;
 
@@ -18,7 +21,23 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.tint,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarStyle: {
+        tabBarStyle: isDesktop ? {
+          // Sidebar para desktop
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: 240,
+          height: '100%',
+          flexDirection: 'column',
+          paddingTop: 24,
+          paddingBottom: 24,
+          backgroundColor: colors.surface,
+          borderRightColor: colors.border,
+          borderRightWidth: 1,
+          borderTopWidth: 0,
+        } : {
+          // Tab bar para mobile
           paddingTop: 8,
           paddingBottom: bottomPadding,
           height: tabBarHeight,
