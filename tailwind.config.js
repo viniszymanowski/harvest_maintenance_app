@@ -15,35 +15,49 @@ const tailwindColors = Object.fromEntries(
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "class",
-  // Scan all component and app files for Tailwind classes
-  content: ["./app/**/*.{js,ts,tsx}", "./components/**/*.{js,ts,tsx}", "./lib/**/*.{js,ts,tsx}", "./hooks/**/*.{js,ts,tsx}"],
-
+  content: [
+    "./app/**/*.{js,ts,tsx}",
+    "./components/**/*.{js,ts,tsx}",
+    "./lib/**/*.{js,ts,tsx}",
+    "./hooks/**/*.{js,ts,tsx}",
+  ],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: tailwindColors,
+
       fontSize: {
-        // Tipografia otimizada para tablet
-        'xs': ['14px', { lineHeight: '20px' }],
-        'sm': ['16px', { lineHeight: '24px' }],
-        'base': ['18px', { lineHeight: '28px' }], // Aumentado de 16px
-        'lg': ['20px', { lineHeight: '30px' }],
-        'xl': ['24px', { lineHeight: '32px' }],
-        '2xl': ['28px', { lineHeight: '36px' }],
-        '3xl': ['32px', { lineHeight: '40px' }],
-        '4xl': ['40px', { lineHeight: '48px' }],
+        xs: ["13px", { lineHeight: "18px" }],
+        sm: ["15px", { lineHeight: "22px" }],
+        base: ["17px", { lineHeight: "26px" }],
+        lg: ["20px", { lineHeight: "28px" }],
+        xl: ["24px", { lineHeight: "32px" }],
+        "2xl": ["28px", { lineHeight: "36px" }],
+        "3xl": ["34px", { lineHeight: "42px" }],
+        "4xl": ["42px", { lineHeight: "50px" }],
       },
+
       spacing: {
-        // Espaçamentos generosos para toque preciso
-        '18': '4.5rem',  // 72px
-        '22': '5.5rem',  // 88px
-        '26': '6.5rem',  // 104px
+        18: "4.5rem",
+        22: "5.5rem",
+        26: "6.5rem",
       },
-      minHeight: {
-        'touch': '56px', // Altura mínima para botões touch-friendly
-      },
+
       borderRadius: {
-        '4xl': '2rem',
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
+        "4xl": "2.5rem",
+      },
+
+      minHeight: {
+        touch: "56px",
+      },
+
+      // sombras com cara de app moderno
+      boxShadow: {
+        soft: "0 6px 18px rgba(0,0,0,0.08)",
+        card: "0 10px 30px rgba(0,0,0,0.10)",
       },
     },
   },

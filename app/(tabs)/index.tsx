@@ -38,18 +38,15 @@ export default function HomeScreen() {
   }, []);
 
   const { data: machines } = trpc.machines.list.useQuery();
-
   const { data: dailyLogs, isLoading } = trpc.dailyLogs.getByDate.useQuery(
     { date: todayDate },
     { enabled: !!todayDate }
   );
-
   const { data: dailyReport } = trpc.reports.daily.useQuery(
     { date: todayDate },
     { enabled: !!todayDate }
   );
 
-  // Status manutenção (queries fixas)
   const m1Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M1" });
   const m2Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M2" });
   const m3Status = trpc.maintenance.getMaintenanceStatus.useQuery({ maquinaId: "M3" });
@@ -78,8 +75,7 @@ export default function HomeScreen() {
         currentHm: maintenanceStatus?.currentHm || null,
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [machines, dailyLogs, m1Status.data, m2Status.data, m3Status.data, m4Status.data]);
+  }, [machines, dailyLogs, maintenanceStatusMap]);
 
   const completeCount = useMemo(
     () => machineStatuses.filter((m) => m.status === "completo").length,
@@ -92,48 +88,43 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <ScreenContainer className="items-center justify-center">
-        <ActivityIndicator size="large" color="#10B981" />
+      <ScreenContainer className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" color="#22C55E" />
+        <Text className="text-sm text-muted mt-3">Carregando…</Text>
       </ScreenContainer>
     );
   }
 
   return (
-    <ScreenContainer
-      className="pt-4"
-      style={isDesktop ? { marginLeft: 240 } : {}}
-    >
+    <ScreenContainer className="flex-1 bg-background" style={isDesktop ? { marginLeft: 240 } : {}}>
       <FlatList
         data={machineStatuses}
         keyExtractor={(item) => item.maquinaId}
         numColumns={isDesktop ? 3 : 1}
         key={isDesktop ? "desktop-3col" : "mobile-1col"}
         columnWrapperStyle={isDesktop ? { gap: 14 } : undefined}
-        contentContainerStyle={{
-          gap: 14,
-          paddingBottom: 28,
-        }}
+        contentContainerStyle={{ padding: 16, gap: 14, paddingBottom: 28 }}
         ListHeaderComponent={
           <View className="gap-4">
             {/* Header */}
-            <View className="flex-row items-start justify-between">
-              <View className="flex-1 pr-3">
-                <Text className="text-3xl font-bold text-foreground">
-                  Controle de Colheita
-                </Text>
-                <Text className="text-sm text-muted mt-1">
-                  {new Date().toLocaleDateString("pt-BR", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
-              </View>
-
-              {/* Sync compacto */}
-              <View className="scale-95 mt-1">
-                <SyncIndicator />
+            <View className="bg-surface rounded-3xl p-5 border border-border shadow-soft">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-1 pr-3">
+                  <Text className="text-2xl font-extrabold text-foreground">
+                    Controle de Colheita
+                  </Text>
+                  <Text className="text-sm text-muted mt-1">
+                    {new Date().toLocaleDateString("pt-BR", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                </View>
+                <View className="scale-90">
+                  <SyncIndicator />
+                </View>
               </View>
             </View>
 
@@ -141,63 +132,53 @@ export default function HomeScreen() {
             {dailyReport ? (
               <View className="gap-3">
                 <View className="flex-row gap-3">
-                  <View className="flex-1 bg-primary/10 rounded-2xl p-5 border border-primary/25 shadow-sm">
-                    <Text className="text-2xl font-bold text-primary">
+                  <View className="flex-1 bg-primary/10 rounded-3xl p-5 border border-primary/25 shadow-soft">
+                    <Text className="text-3xl font-extrabold text-primary">
                       {dailyReport.maquinasOperando}
                     </Text>
-                    <Text className="text-xs text-muted mt-1">
-                      Máquinas ativas
-                    </Text>
+                    <Text className="text-sm text-muted mt-1">Máquinas ativas</Text>
                   </View>
 
-                  <View className="flex-1 bg-success/10 rounded-2xl p-5 border border-success/25 shadow-sm">
-                    <Text className="text-2xl font-bold text-success">
+                  <View className="flex-1 bg-success/10 rounded-3xl p-5 border border-success/25 shadow-soft">
+                    <Text className="text-3xl font-extrabold text-success">
                       {dailyReport.totalHorasProd.toFixed(1)}h
                     </Text>
-                    <Text className="text-xs text-muted mt-1">
-                      Horas produtivas
-                    </Text>
+                    <Text className="text-sm text-muted mt-1">Horas produtivas</Text>
                   </View>
                 </View>
 
                 <View className="flex-row gap-3">
-                  <View className="flex-1 bg-warning/10 rounded-2xl p-5 border border-warning/25 shadow-sm">
-                    <Text className="text-2xl font-bold text-warning">
+                  <View className="flex-1 bg-warning/10 rounded-3xl p-5 border border-warning/25 shadow-soft">
+                    <Text className="text-3xl font-extrabold text-warning">
                       {dailyReport.totalArea.toFixed(1)} ha
                     </Text>
-                    <Text className="text-xs text-muted mt-1">
-                      Área colhida hoje
-                    </Text>
+                    <Text className="text-sm text-muted mt-1">Área colhida</Text>
                   </View>
 
                   <View
-                    className={`flex-1 rounded-2xl p-5 border shadow-sm ${
+                    className={`flex-1 rounded-3xl p-5 border shadow-soft ${
                       dailyReport.eficienciaMedia >= 70
                         ? "bg-success/10 border-success/25"
                         : "bg-error/10 border-error/25"
                     }`}
                   >
                     <Text
-                      className={`text-2xl font-bold ${
+                      className={`text-3xl font-extrabold ${
                         dailyReport.eficienciaMedia >= 70 ? "text-success" : "text-error"
                       }`}
                     >
                       {dailyReport.eficienciaMedia.toFixed(0)}%
                     </Text>
-                    <Text className="text-xs text-muted mt-1">
-                      Eficiência média
-                    </Text>
+                    <Text className="text-sm text-muted mt-1">Eficiência média</Text>
                   </View>
                 </View>
               </View>
             ) : (
-              <View className="bg-surface rounded-2xl p-5 border border-border shadow-sm">
-                <Text className="text-base font-semibold text-foreground">
+              <View className="bg-surface rounded-3xl p-5 border border-border shadow-soft">
+                <Text className="text-base font-bold text-foreground">
                   Carregando resumo do dia…
                 </Text>
-                <Text className="text-sm text-muted mt-1">
-                  Aguarde alguns segundos.
-                </Text>
+                <Text className="text-sm text-muted mt-1">Aguarde alguns segundos.</Text>
               </View>
             )}
 
@@ -205,58 +186,45 @@ export default function HomeScreen() {
             <Pressable
               onPress={handleNavigateToLancamento}
               style={({ pressed }) => [
-                { opacity: pressed ? 0.92 : 1, transform: [{ scale: pressed ? 0.99 : 1 }] },
+                { opacity: pressed ? 0.9 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] },
               ]}
-              className="bg-primary rounded-3xl p-5 items-center justify-center shadow-sm"
+              className="bg-primary rounded-3xl p-5 items-center justify-center shadow-card"
             >
-              <Text className="text-base font-bold text-white">
-                + Novo lançamento
-              </Text>
+              <Text className="text-base font-extrabold text-white">+ Novo lançamento</Text>
+              <Text className="text-xs text-white/80 mt-1">Registrar horas, área e ocorrências</Text>
             </Pressable>
 
-            {/* Seção */}
+            {/* Título seção */}
             <View className="flex-row items-center justify-between pt-1">
-              <Text className="text-lg font-bold text-foreground">
-                Máquinas
+              <Text className="text-lg font-extrabold text-foreground">Máquinas</Text>
+              <Text className="text-sm text-muted">
+                {completeCount}/{machineStatuses.length} completas
               </Text>
-              <View className="bg-muted/10 border border-border rounded-full px-3 py-1">
-                <Text className="text-xs font-semibold text-muted">
-                  {completeCount}/{machineStatuses.length} completas
-                </Text>
-              </View>
             </View>
           </View>
         }
         renderItem={({ item }) => (
           <Pressable
-            onPress={() =>
-              router.push(`/(tabs)/lancamento?maquina=${item.maquinaId}` as any)
-            }
+            onPress={() => router.push(`/(tabs)/lancamento?maquina=${item.maquinaId}` as any)}
             style={({ pressed }) => [
-              { opacity: pressed ? 0.88 : 1 },
+              { opacity: pressed ? 0.9 : 1 },
               isDesktop ? { flex: 1 / 3, maxWidth: "32%" } : { flex: 1 },
             ]}
-            className="bg-surface rounded-2xl p-5 border border-border shadow-sm"
+            className="bg-surface rounded-3xl p-5 border border-border shadow-soft"
           >
-            <View className="flex-row items-start justify-between mb-3">
-              <View className="flex-1 pr-2">
-                <Text className="text-2xl font-bold text-foreground">
-                  {item.maquinaId}
-                </Text>
-                <Text className="text-sm text-muted mt-1">
-                  {item.nome || "Sem nome"}
-                </Text>
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-1">
+                <Text className="text-2xl font-extrabold text-foreground">{item.maquinaId}</Text>
+                <Text className="text-sm text-muted mt-1">{item.nome || "Sem nome"}</Text>
               </View>
 
               <View
-                className={`px-3 py-2 rounded-full border ${
-                  item.status === "completo"
-                    ? "bg-success/10 border-success/25"
-                    : "bg-warning/10 border-warning/25"
+                className={`px-3 py-2 rounded-full ${
+                  item.status === "completo" ? "bg-success/15" : "bg-warning/15"
                 }`}
               >
                 <Text
-                  className={`text-xs font-bold ${
+                  className={`text-xs font-extrabold ${
                     item.status === "completo" ? "text-success" : "text-warning"
                   }`}
                 >
@@ -265,66 +233,71 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            <View className="gap-2">
-              {item.operador ? (
-                <View className="gap-1">
+            {item.operador ? (
+              <View className="gap-2">
+                <View>
                   <Text className="text-xs text-muted">Operador</Text>
-                  <Text className="text-base font-semibold text-foreground">
-                    {item.operador}
-                  </Text>
-
-                  {item.horasMotorDia !== null && (
-                    <View className="mt-2">
-                      <Text className="text-xs text-muted">
-                        Horas motor (dia)
-                      </Text>
-                      <Text className="text-base font-semibold text-foreground">
-                        {item.horasMotorDia.toFixed(1)}h
-                      </Text>
-                    </View>
-                  )}
+                  <Text className="text-base font-bold text-foreground">{item.operador}</Text>
                 </View>
-              ) : (
-                <Text className="text-sm text-muted">
-                  Nenhum lançamento hoje
-                </Text>
-              )}
 
-              {(item.needsOilChange || item.needs50hRevision) && (
-                <View className="flex-row flex-wrap gap-2 mt-2">
-                  {item.needsOilChange && (
-                    <View className="bg-error/10 border border-error/20 px-3 py-2 rounded-full">
-                      <Text className="text-xs font-semibold text-error">
-                        ⚠️ Troca óleo
-                      </Text>
-                    </View>
-                  )}
-                  {item.needs50hRevision && (
-                    <View className="bg-warning/10 border border-warning/20 px-3 py-2 rounded-full">
-                      <Text className="text-xs font-semibold text-warning">
-                        ⚠️ Revisão 50h
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              )}
+                {item.horasMotorDia !== null && (
+                  <View>
+                    <Text className="text-xs text-muted">Horas motor (dia)</Text>
+                    <Text className="text-base font-bold text-foreground">
+                      {item.horasMotorDia.toFixed(1)}h
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <Text className="text-sm text-muted">Nenhum lançamento hoje</Text>
+            )}
 
-              {item.currentHm !== null && item.currentHm !== undefined && (
-                <Text className="text-xs text-muted mt-2">
-                  Horímetro atual: {item.currentHm.toFixed(1)}h
-                </Text>
-              )}
-            </View>
+            {(item.needsOilChange || item.needs50hRevision) && (
+              <View className="flex-row flex-wrap gap-2 mt-3">
+                {item.needsOilChange && (
+                  <View className="bg-error/15 px-3 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-error">⚠️ Troca óleo</Text>
+                  </View>
+                )}
+                {item.needs50hRevision && (
+                  <View className="bg-warning/15 px-3 py-2 rounded-full">
+                    <Text className="text-xs font-bold text-warning">⚠️ Revisão 50h</Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {item.currentHm !== null && item.currentHm !== undefined && (
+              <Text className="text-xs text-muted mt-3">
+                Horímetro atual: {item.currentHm.toFixed(1)}h
+              </Text>
+            )}
           </Pressable>
         )}
         ListEmptyComponent={
-          <View className="bg-surface rounded-2xl p-6 border border-border items-center shadow-sm">
-            <Text className="text-base font-semibold text-foreground">
-              Sem máquinas cadastradas
-            </Text>
-            <Text className="text-sm text-muted mt-1 text-center">
-              Cadastre as máquinas para começar a registrar lançamentos.
-            </Text>
+          <View className="mt-10 px-2">
+            <View className="bg-surface rounded-3xl p-7 border border-border shadow-card items-center">
+              <Text className="text-5xl mb-3">🚜</Text>
+              <Text className="text-xl font-extrabold text-foreground text-center">
+                Sem máquinas cadastradas
+              </Text>
+              <Text className="text-sm text-muted mt-2 text-center leading-5">
+                Cadastre suas máquinas (M1, M2, M3, M4) para liberar lançamentos,
+                relatórios e manutenção.
+              </Text>
+
+              <Pressable
+                onPress={() => router.push("/(tabs)/configuracoes" as any)}
+                className="bg-primary mt-6 px-6 py-3 rounded-2xl shadow-soft"
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.9 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                })}
+              >
+                <Text className="text-white font-extrabold text-sm">Cadastrar máquinas</Text>
+              </Pressable>
+            </View>
           </View>
         }
       />
