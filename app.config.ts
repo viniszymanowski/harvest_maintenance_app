@@ -3,36 +3,30 @@ import "./scripts/load-env.js";
 import type { ExpoConfig } from "expo/config";
 
 // Bundle ID format: space.manus.<project_name_dots>.<timestamp>
-// e.g., "my-app" created at 2024-01-15 10:30:45 -> "space.manus.my.app.t20240115103045"
-// Bundle ID can only contain letters, numbers, and dots
-// Android requires each dot-separated segment to start with a letter
 const rawBundleId = "space.manus.harvest_maintenance_app.t20260207210711";
+
 const bundleId =
   rawBundleId
-    .replace(/[-_]/g, ".") // Replace hyphens/underscores with dots
-    .replace(/[^a-zA-Z0-9.]/g, "") // Remove invalid chars
-    .replace(/\.+/g, ".") // Collapse consecutive dots
-    .replace(/^\.+|\.+$/g, "") // Trim leading/trailing dots
+    .replace(/[-_]/g, ".")
+    .replace(/[^a-zA-Z0-9.]/g, "")
+    .replace(/\.+/g, ".")
+    .replace(/^\.+|\.+$/g, "")
     .toLowerCase()
     .split(".")
-    .map((segment) => {
-      // Android requires each segment to start with a letter
-      // Prefix with 'x' if segment starts with a digit
-      return /^[a-zA-Z]/.test(segment) ? segment : "x" + segment;
-    })
+    .map((segment) =>
+      /^[a-zA-Z]/.test(segment) ? segment : "x" + segment
+    )
     .join(".") || "space.manus.app";
-// Extract timestamp from bundle ID and prefix with "manus" for deep link scheme
-// e.g., "space.manus.my.app.t20240115103045" -> "manus20240115103045"
+
 const timestamp = bundleId.split(".").pop()?.replace(/^t/, "") ?? "";
 const schemeFromBundleId = `manus${timestamp}`;
 
 const env = {
-  // App branding - update these values directly (do not use env vars)
   appName: "Controle de Colheita",
   appSlug: "harvest_maintenance_app",
-  // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
-  // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "https://private-us-east-1.manuscdn.com/sessionFile/qWkUJwTvVOMEaG1vhJxdMc/sandbox/8giB3gsEJiufS9ISHhWbui-img-1_1770559953000_na1fn_am9obi1kZWVyZS1hcHAtaWNvbg.png?x-oss-process=image/resize,w_1920,h_1920/format,webp/quality,q_80&Expires=1798761600&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvcVdrVUp3VHZWT01FYUcxdmhKeGRNYy9zYW5kYm94LzhnaUIzZ3NFSml1ZlM5SVNIaFdidWktaW1nLTFfMTc3MDU1OTk1MzAwMF9uYTFmbl9hbTlvYmkxa1pXVnlaUzFoY0hBdGFXTnZiZy5wbmc~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xOTIwLGhfMTkyMC9mb3JtYXQsd2VicC9xdWFsaXR5LHFfODAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE3OTg3NjE2MDB9fX1dfQ__&Key-Pair-Id=K2HSFNDJXOU9YS&Signature=v9Q3Q1GS5AaJU7jqbsWXRXO2VAqX5ZVw1aXq2g07i5Wn4jl01jThbyYtMJvCfAteQy43A9hT8OSp8ogMbD~b4Z9Qmc8BNOTG97Vc3V~ql3jLaXd~N1JcSqFhLcR9t6Hx7Gx9IwS4Ixe-hq99F6CVaIDqLfCKUppNyTabWW354KIrAyQJ-ymX5t~vU5en1OJNxGLhXyNkuGsZT-Tn04xQT76FzCYrZZbg2d1hDv35Tz4GElWYsLoG8MP5Mc1jcetvU-TiOGFTx1P4JAgGaOiX5LPxNw3dWjRzHKaD5s0Sgy3iAUbrdZ8DGWHzYj-NrVMiZ1n14GVpIWrM0mHkvD4VFw__",  scheme: schemeFromBundleId,
+  logoUrl:
+    "https://private-us-east-1.manuscdn.com/sessionFile/qWkUJwTvVOMEaG1vhJxdMc/sandbox/8giB3gsEJiufS9ISHhWbui-img-1_1770559953000_na1fn_am9obi1kZWVyZS1hcHAtaWNvbg.png",
+  scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
 };
@@ -44,15 +38,25 @@ const config: ExpoConfig = {
   orientation: "portrait",
   icon: "./assets/images/icon.png",
   scheme: env.scheme,
+
+  // 🔥 EAS PROJECT LINK (OBRIGATÓRIO)
+  extra: {
+    eas: {
+      projectId: "6a3757a5-f51f-4868-9596-d9a175cd58e7",
+    },
+  },
+
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
+
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
-    "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
   },
+
   android: {
     adaptiveIcon: {
       backgroundColor: "#E6F4FE",
@@ -78,6 +82,7 @@ const config: ExpoConfig = {
       },
     ],
   },
+
   web: {
     bundler: "metro",
     output: "static",
@@ -94,12 +99,14 @@ const config: ExpoConfig = {
     shortName: "Colheita",
     description: "Sistema de controle de colheita e manutenção de máquinas agrícolas",
   },
+
   plugins: [
     "expo-router",
     [
       "expo-audio",
       {
-        microphonePermission: "Allow $(PRODUCT_NAME) to access your microphone.",
+        microphonePermission:
+          "Allow $(PRODUCT_NAME) to access your microphone.",
       },
     ],
     [
@@ -131,6 +138,7 @@ const config: ExpoConfig = {
       },
     ],
   ],
+
   experiments: {
     typedRoutes: true,
     reactCompiler: true,
