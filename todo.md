@@ -1,0 +1,688 @@
+# Project TODO
+
+## Backend - Database Schema
+- [x] Criar tabela machines (M1, M2, M3, M4) com intervalos de manutenção
+- [x] Criar tabela daily_logs com todos os campos de lançamento
+- [x] Criar tabela maintenance com controle de óleo e revisão 50h
+- [x] Criar tabela maintenance_parts para peças utilizadas
+- [x] Executar migrations no banco de dados
+
+## Backend - API Routes
+- [x] Implementar rotas CRUD para daily_logs
+- [x] Implementar rotas CRUD para maintenance
+- [x] Implementar rotas CRUD para maintenance_parts
+- [x] Implementar rota GET /daily-logs?date=YYYY-MM-DD
+- [x] Implementar rota GET /maintenance com filtros de máquina e período
+- [x] Implementar rotas de relatórios por máquina
+- [x] Implementar rotas de relatórios por operador
+- [x] Implementar rotas para configuração de máquinas
+- [x] Adicionar validações e cálculos automáticos (horas_motor_dia, atraso_min, divergente)
+
+## Frontend - Navegação e Estrutura
+- [x] Configurar tab bar com 5 tabs (Home, Lançamento, Registros, Manutenção, Relatórios)
+- [x] Adicionar mapeamento de ícones em icon-symbol.tsx
+- [x] Atualizar paleta de cores no theme.config.js
+
+## Frontend - Tela Home
+- [x] Criar componente MachineCard para exibir resumo de máquina
+- [x] Implementar tela Home com 4 cards (M1, M2, M3, M4)
+- [x] Adicionar botão flutuante "+" para novo lançamento
+- [x] Integrar com API para buscar dados do dia atual
+
+## Frontend - Lançamento Rápido
+- [x] Criar formulário vertical de lançamento rápido
+- [x] Implementar inputs para informações básicas (data, fazenda, talhão, máquina, operador)
+- [x] Implementar inputs para horários (saída programada, real, chegada)
+- [x] Implementar inputs para horímetros (motor e trilha inicial/final)
+- [x] Implementar inputs para horas do dia (prod, man, chuva, desloc, espera)
+- [x] Implementar toggle abasteceu e input área (ha)
+- [x] Adicionar cálculos em tempo real (horas_motor_dia, horas_trilha_dia, atraso_min)
+- [x] Adicionar validação de divergência com alerta visual
+- [x] Implementar botões "Salvar" e "Salvar e Novo"
+- [x] Integrar com API para salvar dados
+
+## Frontend - Registros do Dia
+- [x] Criar seletor de data
+- [x] Implementar lista de 4 cards com dados do dia selecionado
+- [x] Adicionar ações de editar e apagar em cada card
+- [ ] Implementar navegação para edição de registro
+- [x] Integrar com API para buscar, editar e deletar registros
+
+## Frontend - Manutenção
+- [ ] Criar lista de manutenções com filtros
+- [ ] Implementar botão "+" para nova manutenção
+- [ ] Criar formulário de manutenção com todos os campos
+- [ ] Implementar checkboxes para troca de óleo e revisão 50h
+- [ ] Criar lista dinâmica de peças com cálculo automático de valor total
+- [ ] Adicionar botões "+" e "-" para adicionar/remover peças
+- [ ] Implementar cálculo automático de próximas manutenções
+- [ ] Integrar com API para CRUD de manutenções e peças
+
+## Frontend - Relatórios
+- [ ] Criar seletor de período (data inicial e final)
+- [ ] Implementar aba "Por Máquina" com métricas e gráficos
+- [ ] Implementar aba "Por Operador" com ranking
+- [ ] Adicionar visualização de próximas manutenções previstas
+- [ ] Integrar com API para buscar dados de relatórios
+
+## Frontend - Configurações
+- [ ] Criar tela de configurações de máquinas
+- [ ] Implementar edição de intervalos de troca de óleo e revisão 50h
+- [ ] Adicionar opção de exportar dados para CSV
+- [ ] Integrar com API para salvar configurações
+
+## Funcionalidades Adicionais
+- [ ] Implementar exportação CSV (daily_logs, maintenance, maintenance_parts)
+- [x] Criar seed de dados de exemplo (M1..M4 + 1 semana de dados)
+- [x] Adicionar testes básicos de validação
+
+## Branding e Finalização
+- [x] Gerar logo personalizado para o app
+- [x] Atualizar app.config.ts com nome e logo
+- [x] Testar fluxos completos end-to-end
+- [x] Criar checkpoint final
+
+## Correção de Build
+- [x] Corrigir arquivos de ícone para resolver erro de build Android
+- [x] Verificar que todos os ícones estão válidos e não vazios
+- [x] Testar build novamente
+
+## Melhorias - Gerenciamento de Máquinas
+- [x] Atualizar schema machines para adicionar campo nome personalizado
+- [x] Criar migration para adicionar coluna nome
+- [x] Atualizar funções do banco para suportar nomes personalizados
+- [x] Criar rota API para editar nome da máquina
+- [x] Criar rota API para cadastrar nova máquina
+- [x] Criar tela de Configurações com lista de máquinas
+- [x] Adicionar formulário de edição de nome de máquina
+- [x] Adicionar formulário de cadastro de nova máquina
+- [x] Atualizar tela Home para exibir nomes personalizados
+- [x] Testar funcionalidades de edição e cadastro
+
+## Implementação - Tela de Manutenção
+- [x] Criar lista de manutenções com cards informativos
+- [x] Adicionar filtro por máquina
+- [ ] Adicionar filtro por período (data inicial e final)
+- [x] Criar modal de nova manutenção
+- [x] Implementar seletor de máquina
+- [x] Implementar campos de data, tipo, horímetro, tempo parado
+- [x] Adicionar checkboxes para troca de óleo e revisão 50h
+- [x] Criar lista dinâmica de peças com botões +/-
+- [x] Implementar cálculo automático de valor total das peças
+- [x] Adicionar campo de observações
+- [x] Integrar com API para salvar manutenção e peças
+- [ ] Exibir próximas manutenções previstas
+
+## Integração e Melhorias Finais
+- [x] Adicionar campos de edição de intervalos de manutenção na tela de Configurações
+- [x] Implementar atualização de intervalos de troca de óleo
+- [x] Implementar atualização de intervalos de revisão 50h
+- [x] Integrar cálculo de próxima manutenção com horímetro dos lançamentos diários
+- [x] Exibir indicador de próxima manutenção na tela Home
+- [x] Testar fluxo completo: lançamento → atualização horímetro → cálculo próxima manutenção
+- [x] Testar edição de intervalos e recálculo automático
+- [x] Validar consistência de dados entre todos os módulos
+
+## Sistema de Relatórios
+- [x] Criar funções de agregação de dados para relatórios
+- [x] Implementar relatório diário consolidado (resumo de todas as máquinas)
+- [x] Implementar relatório por máquina (produtividade, horas, manutenções)
+- [x] Implementar relatório por operador (ranking, performance)
+- [x] Implementar relatório de manutenções (custos, peças, tempo parado)
+- [x] Criar função de exportação CSV
+
+## Envio Automático de Email
+- [x] Configurar serviço de envio de email no backend
+- [x] Criar template HTML de relatório diário
+- [x] Implementar agendamento automático (cron job) para envio diário
+- [x] Adicionar configuração de email do destinatário
+- [ ] Testar envio automático de relatório
+
+## Tela de Relatórios
+- [x] Criar interface de seleção de tipo de relatório
+- [x] Implementar filtros (período, máquina, operador)
+- [x] Exibir métricas principais (cards com totais)
+- [ ] Criar visualizações de dados (gráficos)
+- [x] Adicionar botão de exportação CSV
+- [ ] Adicionar botão de envio manual por email
+
+## Funcionalidades Extras
+- [x] Implementar edição de lançamentos diários
+- [ ] Adicionar dashboard com gráficos de produtividade
+- [ ] Implementar filtros avançados em todas as telas
+- [ ] Adicionar histórico de alterações (audit log)
+- [ ] Implementar backup automático de dados
+- [ ] Adicionar modo offline com sincronização
+- [ ] Criar sistema de notificações push para alertas
+- [ ] Implementar comparação de períodos (mês atual vs anterior)
+
+## Tema John Deere
+- [x] Atualizar paleta de cores para verde e amarelo John Deere
+- [x] Redesenhar logo com identidade John Deere
+- [x] Atualizar ícones e elementos visuais
+- [x] Ajustar contraste e acessibilidade das cores
+
+## Melhorias de Software
+- [x] Adicionar validação de formulários com feedback visual
+- [x] Implementar loading states em todas as operações
+- [x] Adicionar animações suaves de transição
+- [ ] Otimizar queries do banco de dados
+- [ ] Implementar cache local de dados frequentes
+- [ ] Adicionar modo escuro (opcional)
+- [ ] Melhorar feedback de erros com mensagens claras
+- [ ] Adicionar confirmações antes de ações destrutivas
+- [ ] Implementar busca/filtro em listas longas
+- [ ] Adicionar indicadores de progresso em uploads
+
+## Configuração de Email e WhatsApp
+- [x] Criar schema de configurações no banco de dados
+- [x] Criar tela de Configurações de Notificações
+- [x] Adicionar formulário de cadastro de email
+- [x] Adicionar toggle para ativar/desativar envio automático
+- [x] Adicionar seletor de horário de envio
+- [x] Adicionar formulário de cadastro de número WhatsApp
+- [x] Adicionar toggle para ativar/desativar WhatsApp
+- [ ] Implementar botão de teste de envio
+
+## Exportação PDF
+- [x] Instalar biblioteca de geração de PDF (jsPDF ou PDFKit)
+- [x] Criar template de relatório em PDF
+- [x] Adicionar logo John Deere no cabeçalho do PDF
+- [x] Implementar exportação de relatório diário em PDF
+- [x] Implementar exportação de relatório de operadores em PDF
+- [x] Implementar exportação de relatório de manutenções em PDF
+- [ ] Adicionar anexo PDF no email automático
+
+## Integração WhatsApp
+- [ ] Escolher método de integração (Twilio ou Baileys)
+- [ ] Configurar credenciais da API
+- [ ] Implementar envio de mensagem via WhatsApp
+- [ ] Implementar envio de PDF via WhatsApp
+- [ ] Adicionar agendamento automático para WhatsApp
+- [ ] Testar envio automático
+
+## Botão de Teste de Envio
+- [x] Criar rota API para envio de teste de relatório
+- [x] Atualizar serviço de email para suportar envio manual
+- [x] Adicionar botão "Enviar Teste" na tela de Notificações
+- [x] Implementar feedback visual de sucesso/erro
+- [x] Testar envio de email com PDF anexado
+
+## Correção de Envio de Email
+- [x] Corrigir implementação do serviço de email (remover chamada HTTP incorreta)
+- [x] Configurar Nodemailer corretamente
+- [x] Testar envio de email de teste
+
+## Configuração SMTP Personalizável
+- [x] Adicionar variáveis de ambiente SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS
+- [x] Atualizar server/email.ts para usar variáveis de ambiente
+- [x] Adicionar fallback para Ethereal quando variáveis não estiverem configuradas
+- [x] Documentar como configurar Gmail/Outlook/SendGrid
+- [x] Testar envio com credenciais reais
+
+## Integração de PDF
+- [x] Criar rota API para gerar PDF de relatório diário
+- [x] Criar rota API para gerar PDF de relatório de operadores
+- [x] Criar rota API para gerar PDF de relatório de manutenções
+- [x] Adicionar botão "Exportar PDF" na tela de Relatórios
+- [x] Implementar download de PDF no mobile
+- [x] Integrar PDF como anexo nos emails automáticos
+- [ ] Testar geração e visualização de PDF
+
+## Integração WhatsApp com Twilio
+- [x] Instalar biblioteca twilio
+- [x] Criar serviço whatsapp.ts para envio de mensagens
+- [x] Configurar variáveis de ambiente TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM
+- [x] Implementar função de envio de mensagem de texto
+- [x] Implementar função de envio de mensagem com mídia (PDF)
+- [x] Criar rota API para teste de envio WhatsApp
+- [x] Adicionar botão "Enviar Teste WhatsApp" na tela de Notificações
+- [x] Integrar envio automático de relatório via WhatsApp
+- [x] Testar envio com credenciais reais do Twilio
+- [x] Documentar processo de configuração do Twilio WhatsApp Sandbox
+
+## Campo Horário de Saída da Lavoura
+- [x] Adicionar coluna horarioSaida na tabela registros (migration)
+- [x] Atualizar schema do banco de dados (db.ts)
+- [x] Adicionar campo "Horário de Saída" no formulário de lançamento
+- [x] Exibir horário de saída na lista de registros
+- [x] Incluir horário de saída nos relatórios (diário, operadores)
+- [x] Adicionar horário de saída na exportação CSV
+- [x] Adicionar horário de saída na exportação PDF
+- [x] Testar criação e edição de registros com horário de saída
+
+## Correção de Exportação PDF de Manutenções
+- [x] Investigar erro na exportação de PDF do relatório de manutenções
+- [x] Corrigir função generateMaintenanceReportPDF (substituir fetch por tRPC)
+- [x] Testar exportação de PDF de manutenções
+
+## Upload para GitHub
+- [x] Configurar repositório Git local
+- [x] Criar repositório no GitHub
+- [x] Fazer commit de todos os arquivos
+- [x] Fazer push para GitHub
+- [x] Entregar URL do repositório
+
+## Cálculo Automático de Horas do Dia
+- [x] Implementar cálculo automático de Produção (h) = HM Motor Final - HM Motor Inicial
+- [x] Implementar cálculo automático de Manutenção/Chuva/Deslocamento/Espera baseado em HM Trilha
+- [x] Adicionar useEffect para recalcular quando horímetros mudarem
+- [x] Manter campos editáveis para ajustes manuais
+- [x] Testar cálculos com diferentes valores
+
+## Reestruturação: Análise Completa de Tempo e Produtividade (Visão ERP)
+- [x] Adicionar cálculo de Tempo de Deslocamento (Chegada Lavoura - Saída Real)
+- [x] Adicionar cálculo de Tempo Produtivo na Lavoura (Saída Lavoura - Chegada Lavoura)
+- [x] Calcular % de Eficiência (Tempo Produtivo / Horas Motor Total)- [x] Criar dashboard na tela inicial com KPIs visuais (cards coloridos)
+- [x] Adicionar indicadores: Total Máquinas Ativas, Horas Produtivas Hoje, Área Colhida Hoje
+- [x] Atualizar relatório diário com análise de tempo completa
+- [x] Adicionar detalhamento por máquina com eficiência, tempo deslocamento e tempo na lavoura
+- [x] Melhorar visualização de dados nos relatórios (cards coloridos e badges)
+- [x] Adicionar alertas visuais para baixa eficiência (<70%)
+
+## Transformação em ERP Agrícola Profissional
+
+### Sistema de Cadastros
+- [x] Criar tabela `fazendas` (id, nome, localizacao)
+- [x] Criar tabela `talhoes` (id, fazendaId, nome, areaHa)
+- [x] Criar tabela `operadores` (id, nome, cpf, telefone)
+- [x] Executar migration no banco de dados
+- [x] Criar tela de Configurações com abas: Fazendas, Talhões, Máquinas, Operadores
+- [x] Implementar CRUD completo para Fazendas (criar, editar, excluir)
+- [x] Adicionar rotas tRPC e funções de banco para todas as entidades
+- [ ] Implementar abas de Talhões, Máquinas e Operadores
+- [x] Adicionar validações e feedback visual
+
+### Redesign Tema Agrícola Profissional
+- [ ] Atualizar paleta de cores (verde John Deere moderno + gradientes)
+- [ ] Criar tema escuro otimizado para uso externo
+- [ ] Aumentar tamanho de botões e áreas de toque (tablet-friendly)
+- [ ] Adicionar ícones personalizados para cada seção
+- [ ] Implementar animações suaves de transição
+- [ ] Redesign completo da tela inicial (dashboard executivo)
+- [ ] Melhorar hierarquia visual e espaçamento
+
+### Lançamento Ultra-Rápido
+- [ ] Transformar formulário em wizard com etapas (Máquina → Operador → Horímetros → Tempos → Produção)
+- [ ] Implementar dropdowns para Fazenda, Talhão, Máquina, Operador
+- [ ] Salvar "Último Lançamento" em AsyncStorage
+- [ ] Adicionar botão "Repetir Último Lançamento"
+- [ ] Implementar autocomplete inteligente
+- [ ] Adicionar teclado numérico otimizado para horímetros
+- [ ] Validação em tempo real com feedback visual
+- [ ] Atalhos visuais para máquinas mais usadas
+
+### Dashboard Executivo e Gráficos
+- [ ] Adicionar gráfico de barras: Produtividade por Máquina (últimos 7 dias)
+- [ ] Adicionar gráfico de linha: Evolução de Eficiência Semanal
+- [ ] Criar ranking visual de operadores com avatares
+- [ ] Adicionar comparativo: Hoje vs Ontem vs Média Semanal
+- [ ] Implementar filtros de período (Hoje, Semana, Mês)
+- [ ] Adicionar cards de alertas inteligentes (manutenção, baixa eficiência)
+
+## Redesign Tema John Deere + Otimização Tablet
+- [x] Atualizar theme.config.js com paleta John Deere (#367C2B verde, #FFDE00 amarelo)
+- [x] Configurar modo escuro otimizado
+- [x] Aumentar tamanhos de fonte para tablet (base 16px → 18px)
+- [x] Aumentar altura mínima de botões (48px → 56px)
+- [x] Aumentar espaçamentos e padding para toque preciso
+- [x] Redesenhar tela inicial com cards maiores
+- [ ] Redesenhar formulário de lançamento (inputs maiores, labels claros)
+- [ ] Redesenhar tela de registros com lista otimizada
+- [ ] Redesenhar tela de relatórios com visualização ampla
+- [ ] Adicionar ícones grandes e visuais em todos os botões
+- [ ] Testar em diferentes tamanhos de tablet
+
+## Sistema Totalmente Funcional (CRUD Completo + UX Profissional)
+
+### Calendário e Filtros de Data
+- [x] Instalar biblioteca de date picker (react-native-calendars ou similar)
+- [x] Criar componente DatePicker reutilizável
+- [x] Adicionar calendário suspenso na tela de Registros
+- [ ] Adicionar calendário suspenso na tela de Relatórios
+- [x] Adicionar botões rápidos: Hoje, Ontem, 7 dias atrás
+- [ ] Implementar filtro por período (data inicial e final)
+- [x] Mostrar contador de registros encontrados
+
+### Edição de Registros
+- [x] Criar modal de edição de registro
+- [x] Implementar rota tRPC dailyLogs.update (já existia)
+- [x] Adicionar função updateDailyLog no db.ts (já existia)
+- [x] Tornar registros clicáveis (onPress abre modal de edição)
+- [x] Preencher modal com dados do registro selecionado
+- [x] Validar campos antes de salvar
+- [x] Feedback visual de salvamento (loading + sucesso)
+- [x] Atualizar lista automaticamente após edição
+
+### Exclusão de Registros
+- [x] Implementar rota tRPC dailyLogs.delete (já existia)
+- [x] Adicionar função deleteDailyLog no db.ts (já existia)
+- [x] Adicionar botão de excluir em cada registro
+- [x] Modal de confirmação antes de excluir
+- [x] Feedback háptico ao excluir
+- [x] Atualizar lista automaticamente após exclusão
+
+### Funcionalidades Avançadas
+- [ ] Botão "Duplicar Registro" (copiar dados para novo lançamento)
+- [ ] Filtro por máquina (dropdown)
+- [ ] Filtro por operador (dropdown)
+- [ ] Busca por texto (operador, fazenda, observações)
+- [ ] Ordenação: Mais recente, Mais antigo, Por máquina
+- [ ] Exportar registros filtrados (CSV/PDF)
+- [ ] Contador de registros: "Mostrando X de Y registros"
+
+### Melhorias de UX
+- [ ] Swipe para editar/excluir (react-native-swipeable)
+- [ ] Long press para menu contextual
+- [ ] Animações de transição suaves
+- [ ] Estados de loading em todas as operações
+- [ ] Mensagens de erro amigáveis
+- [ ] Empty state quando não há registros
+- [ ] Pull to refresh na lista de registros
+
+## Melhoria da Tela de Configurações - Gerenciamento Completo
+
+### Gerenciamento de Máquinas
+- [x] Adicionar campos na tabela machines: tipo (enum), modelo, chassi, ano, fabricante
+- [x] Executar migration para atualizar tabela machines
+- [x] Criar modal de criação/edição de máquina com todos os campos
+- [x] Implementar validação de chassi único
+- [x] Adicionar dropdown de tipo: Colheitadeira, Plataforma, Trator, Pulverizador
+- [x] Exibir lista de máquinas com cards informativos
+- [x] Adicionar botões de editar e excluir em cada máquina
+- [x] Implementar confirmação antes de excluir máquina
+
+### Gerenciamento de Operadores
+- [ ] Criar modal de criação/edição de operador
+- [ ] Adicionar validação de CPF
+- [ ] Formatar telefone automaticamente
+- [ ] Exibir lista de operadores com cards
+- [ ] Adicionar status ativo/inativo
+- [ ] Implementar busca por nome
+
+### Gerenciamento de Talhões
+- [ ] Criar modal de criação/edição de talhão
+- [ ] Adicionar dropdown de fazenda (vinculação)
+- [ ] Validar área em hectares
+- [ ] Exibir lista de talhões agrupados por fazenda
+- [ ] Adicionar campo cultura plantada
+
+### Melhorias de UX
+- [ ] Redesenhar layout das abas (mais visual e intuitivo)
+- [ ] Adicionar ícones nas abas
+- [ ] Implementar empty state quando não há registros
+- [ ] Adicionar contador de registros em cada aba
+- [ ] Feedback visual ao salvar/excluir
+- [ ] Animações suaves de transição
+
+## Implementação Completa de Operadores e Talhões
+
+### Operadores
+- [ ] Substituir placeholder por componente funcional
+- [ ] Criar modal de criação/edição de operador
+- [ ] Adicionar campos: nome, CPF, telefone, whatsappNumero
+- [ ] Implementar validação de CPF
+- [ ] Formatar telefone automaticamente (XX) XXXXX-XXXX
+- [ ] Exibir lista de operadores com cards
+- [ ] Adicionar botões de editar e excluir
+- [ ] Implementar confirmação antes de excluir
+
+### Talhões
+- [ ] Substituir placeholder por componente funcional
+- [ ] Criar modal de criação/edição de talhão
+- [ ] Adicionar dropdown de fazenda (vinculação)
+- [ ] Adicionar campo área em hectares
+- [ ] Adicionar campo cultura plantada
+- [ ] Exibir lista de talhões com cards
+- [ ] Agrupar talhões por fazenda na visualização
+- [ ] Adicionar botões de editar e excluir
+- [ ] Implementar confirmação antes de excluir
+
+## Sistema de Horímetros nas Máquinas
+
+### Correções
+- [x] Corrigir erros de TypeScript no componente Operadores (remover whatsappNumero)
+- [x] Usar campo telefone para WhatsApp
+
+### Horímetros
+- [x] Adicionar campos hmMotorAtual e hmTrilhaAtual na tabela machines
+- [x] Executar migration para adicionar colunas
+- [x] Exibir horímetros atuais nos cards de máquinas
+- [x] Implementar atualização automática de horímetros ao criar lançamento
+- [x] Validar que horímetros finais sejam maiores que os atuais (implementado no cálculo automático)
+
+## Correção Botão Adicionar Operador
+- [x] Investigar por que o botão "Adicionar Operador" não abre o modal
+- [x] Corrigir estado e handler do modal de Operadores (alterado de transparent para pageSheet)
+- [x] Testar abertura e fechamento do modal
+- [x] Testar criação de novo operador
+
+## Correções Urgentes Reportadas pelo Usuário (Fase 2)
+- [x] Corrigir botão "Adicionar Operador" - Modal reorganizado fora do ScrollView
+- [x] Implementar CRUD completo de Talhões na aba de Configurações
+- [x] Verificar e corrigir problemas gerais no sistema de cadastro
+
+## Correção Urgente - Modal de Operadores Não Abre
+- [ ] Investigar por que o botão "Adicionar Operador" não abre o modal (usuário confirmou que ainda não funciona)
+- [ ] Adicionar console.log para debug do estado showModal
+- [ ] Testar com TouchableOpacity em vez de Pressable
+- [ ] Verificar se há conflito de eventos ou z-index
+- [ ] Validar que handleAdd está sendo chamado corretamente
+
+## PROBLEMA CRÍTICO - Botão Não Clicável
+- [ ] Botão "Adicionar Operador" não está clicável (usuário confirmou com screenshot)
+- [ ] Verificar se há sobreposição de elementos (z-index)
+- [ ] Verificar se ScrollView está bloqueando o toque
+- [ ] Verificar se há View com pointerEvents="none" ou similar
+- [ ] Testar remover className e usar apenas style
+
+## Adicionar Campos de Horímetro nas Máquinas
+- [x] Adicionar campo "horaMotor" (decimal) no schema de machines (já existia como hmMotorAtual)
+- [x] Adicionar campo "horaTrilha" (decimal) no schema de machines (já existia como hmTrilhaAtual)
+- [x] Executar migration do banco de dados (schema já estava correto)
+- [x] Atualizar formulário de cadastro de máquinas com os novos campos
+- [x] Atualizar exibição de máquinas para mostrar Hora Motor e Hora Trilha (já estava implementado)
+- [x] Atualizar router tRPC para aceitar os novos campos
+
+## Melhorias no Formulário de Lançamento
+- [x] Substituir campo "Fazenda" por Picker com lista de fazendas cadastradas
+- [x] Substituir campo "Talhão" por Picker com lista de talhões da fazenda selecionada (filtrado)
+- [ ] Substituir campo "Máquina" por Picker com lista de máquinas cadastradas (mantém botões atuais)
+- [x] Substituir campo "Operador" por Picker com lista de operadores cadastrados
+- [x] Adicionar validação: alertar se HM Final < HM Atual da máquina
+- [x] Adicionar validação: alertar se HT Final < HT Atual da máquina
+- [x] Implementar atualização automática de hmMotorAtual da máquina após salvar lançamento
+- [x] Implementar atualização automática de hmTrilhaAtual da máquina após salvar lançamento
+
+## BUG CRÍTICO - Campo Tipo da Máquina
+- [x] Investigar por que o campo "Tipo" não está sendo salvo corretamente
+- [x] Usuário seleciona "Plataforma" mas sistema exibe "Colheitadeira"
+- [x] Verificar se o problema está no formulário, no handleSave ou no router
+- [x] Corrigir salvamento do campo tipo (adicionado no handleSave)
+- [x] Corrigir schema do router para aceitar tipo, modelo, chassi, ano e fabricante
+
+## Melhorias no Relatório WhatsApp
+- [x] Adicionar detalhes completos de cada máquina (modelo, chassi, ano, fabricante, tipo)
+- [x] Incluir informações detalhadas de cada lançamento (fazenda, talhão, operador)
+- [x] Adicionar horários completos (saída programada, saída real, chegada/saída lavoura)
+- [x] Mostrar horímetros inicial e final (motor e trilha) de cada lançamento
+- [x] Incluir estatísticas por máquina (horas trabalhadas, área colhida)
+- [x] Adicionar totais gerais do dia (todas as máquinas)
+- [x] Melhorar formatação com emojis e seções organizadas
+- [x] Incluir eficiência de cada máquina (ha/h)
+
+## BUG CRÍTICO - Botão Adicionar Talhão Não Clicável
+- [ ] Investigar por que o botão "Adicionar Talhão" não está clicável
+- [ ] Aplicar mesma correção usada em outros botões (TouchableOpacity com style)
+- [ ] Verificar se o modal está sendo renderizado corretamente
+- [ ] Testar funcionamento completo do CRUD de Talhões
+
+## BUG CRÍTICO - Botão Adicionar Talhão Não Clicável
+- [x] Investigar por que o botão "Adicionar Talhão" não está clicável
+- [x] Aplicar mesma correção usada em outros botões (TouchableOpacity com style)
+- [x] Verificar se o modal está sendo renderizado corretamente
+- [x] Confirmar que dropdown de Fazenda está funcionando no formulário
+- [ ] Testar funcionamento completo do CRUD de Talhões
+
+## BUG CRÍTICO - Máquinas Não Aparecem no Lançamento
+- [x] Investigar por que as máquinas cadastradas não aparecem na tela de Lançamento
+- [x] Substituir botões fixos M1-M4 por Picker dinâmico
+- [x] Alterar tipo de maquinaId de enum para string
+- [x] Atualizar schema do servidor para aceitar qualquer ID de máquina
+- [x] Testar após correção
+
+## BUG CRÍTICO - App Crasha ao Clicar em Operador nos Relatórios
+- [x] Investigar crash na aba de Relatórios ao clicar em "Operador"
+- [x] Corrigir função getOperatorReport para retornar dados esperados pelo frontend
+- [x] Atualizar campos retornados (totalDias, totalHorasMotor, totalArea, produtividadeMedia, taxaDivergencia)
+- [x] Testar após correção
+
+## Sistema de Agregação de Implementos
+- [x] Adicionar campo "implementoAgregadoId" no schema de machines (string opcional)
+- [x] Executar migration do banco de dados
+- [x] Adicionar dropdown "Implemento Agregado" no formulário de máquinas (apenas para Colheitadeiras)
+- [x] Filtrar apenas Plataformas no dropdown
+- [x] Atualizar router para aceitar implementoAgregadoId em create e updateName
+- [x] Sistema completo: colheitadeiras podem ser vinculadas a plataformas
+- [ ] Adicionar dropdown "Implemento Agregado" no formulário de máquinas
+- [ ] Filtrar apenas plataformas disponíveis (não agregadas a outras máquinas)
+- [ ] Ao selecionar colheitadeira no lançamento, mostrar plataforma agregada automaticamente
+- [ ] Adicionar opção de "desagregar" implemento
+- [ ] Validar que uma plataforma só pode estar agregada a uma colheitadeira por vez
+
+## Pré-preenchimento de Horímetros
+- [x] Ao selecionar máquina no lançamento, buscar hmMotorAtual e hmTrilhaAtual
+- [x] Preencher automaticamente HM Motor Inicial e HM Trilha Inicial
+- [x] Permitir edição manual caso necessário
+- [x] Aplicar mesmo pré-preenchimento na tela de Manutenções
+
+## Botão Repetir Último Lançamento
+- [x] Criar query para buscar último lançamento do usuário
+- [x] Adicionar botão "Repetir Último" na tela de lançamento
+- [x] Preencher todos os campos com valores do último lançamento
+- [x] Manter data atual (não copiar data antiga)
+
+## Corrigir Botão Adicionar Operador
+- [x] Investigar por que o modal não abre (ScrollView bloqueando toque)
+- [x] Mover botão para fora do ScrollView
+- [x] Botão agora deve estar clicável
+
+## Editar e Excluir Manutenções
+- [x] Adicionar botões Editar e Excluir nos cards de manutenções
+- [x] Implementar modal de edição de manutenção (reutiliza modal existente)
+- [x] Implementar confirmação de exclusão
+- [x] Atualizar lista após edição/exclusão
+
+## Filtro de Data nos Relatórios
+- [x] Adicionar componente de seleção de período na tela de relatórios (Semana, Mês, Safra, Personalizado)
+- [x] Adicionar interface para período personalizado (data inicial e final)
+- [x] Implementar cálculo de datas para cada opção (últimos 7 dias, últimos 30 dias, safra)
+- [x] Atualizar query getMachineReport para aceitar dataInicio e dataFim (já existia)
+- [x] Atualizar query getOperatorReport para aceitar dataInicio e dataFim (já existia)
+- [x] Filtrar dados no servidor baseado no período selecionado (getDailyLogsByPeriod)
+- [x] Exibir período selecionado na interface (card com datas)
+- [x] Sistema completo: filtros funcionando para Semana, Mês, Safra e Personalizado
+
+## MELHORIAS PROFISSIONAIS - SISTEMA DE GESTÃO DE COLHEITA TERCEIRIZADA
+
+### 1) Melhorar Tela "Lançamento Rápido" ✅ CONCLUÍDA
+- [x] Data automática (default: hoje)
+- [x] Auto-preencher operador com último usado
+- [x] Auto-preencher fazenda com último usado
+- [x] Botões grandes para seleção de máquina (Picker dinâmico)
+- [x] Cálculo automático: horas_trabalhadas = horimetro_final - horimetro_inicial
+- [x] Validação: impedir salvar se horimetro_final < horimetro_inicial
+- [x] Validação: impedir salvar se campos obrigatórios vazios
+- [x] Botão "Salvar e Novo": salva, limpa apenas horímetro, mantém fazenda e operador
+
+### 2) Sistema Offline com Sincronização
+- [ ] Instalar e configurar SQLite local (expo-sqlite)
+- [ ] Criar schema SQLite espelhando schema do servidor
+- [ ] Implementar fila de sincronização (tabela sync_queue)
+- [ ] Detectar status online/offline (NetInfo)
+- [ ] Salvar registros localmente quando offline
+- [ ] Sincronizar automaticamente ao reconectar
+- [ ] Resolver conflitos por "última atualização vence"
+- [ ] Criar indicador visual de status (Offline/Sincronizado/Pendências: X)
+
+### 3) Alertas Automáticos de Manutenção
+- [ ] Criar tabela maintenance_plans no schema
+- [ ] Campos: machine_id, tipo, intervalo_horas, intervalo_dias, alerta_antecipado_horas
+- [ ] Implementar lógica de cálculo de status (VENCIDO/ALERTA/OK)
+- [ ] Criar tela "Manutenção Pendente"
+- [ ] Ordenar por: Vencido → Próximo → OK
+- [ ] Adicionar badge de notificação no menu
+
+### 4) Dashboard Principal
+- [ ] Criar nova tela Dashboard
+- [ ] Card: Horas hoje por máquina
+- [ ] Card: Horas semana
+- [ ] Card: Máquina com maior parada
+- [ ] Card: Próximas manutenções
+- [ ] Card: Total horas produtivas
+- [ ] Card: Total horas improdutivas
+- [ ] Calcular e exibir eficiência: horas_produtivas / (horas_produtivas + horas_improdutivas)
+
+### 5) Controle de Custo
+- [ ] Criar tabela maintenance_costs
+- [ ] Campos: maintenance_id, valor_pecas, valor_mao_obra, valor_combustivel, valor_total
+- [ ] Calcular valor_total automaticamente
+- [ ] Adicionar campos de custo no formulário de manutenção
+- [ ] Criar indicador: custo_por_hora = total_custos_mes / total_horas_mes
+- [ ] Exibir custos no dashboard
+
+### 6) Permissões de Usuário
+- [ ] Criar tabela users com campo role (ADMIN/OPERADOR/MECANICO)
+- [ ] Implementar middleware de autenticação
+- [ ] Restringir rotas por role
+- [ ] Operador: apenas lançar produção
+- [ ] Mecânico: registrar manutenção
+- [ ] Admin: controle total
+- [ ] Criar tela de gerenciamento de usuários (apenas Admin)
+
+### 7) Relatórios Automáticos
+- [ ] Gerar PDF diário automaticamente
+- [ ] Implementar exportação Excel
+- [ ] Configurar envio automático via WhatsApp às 20:00
+- [ ] Criar scheduler para relatórios automáticos
+- [ ] Adicionar opção de personalizar horário de envio
+
+## Configuração MySQL Local
+- [ ] Comentar código OAuth temporariamente para desenvolvimento local
+- [ ] Reiniciar servidor e verificar conexão com MySQL local
+- [ ] Testar CRUD de máquinas no banco local
+
+## Exportação e Documentação
+- [x] Criar ENV_TEMPLATE.md sem credenciais reais
+- [x] Criar README_COMPLETO.md com instruções de setup
+- [x] Gerar arquivo ZIP do projeto completo (1.1MB)
+- [x] Entregar ZIP para download
+
+## Correção Sistema Offline Real
+- [x] Gerar UUID único para cada lançamento offline (uuid v4)
+- [x] Salvar payload com ID no SQLite local (saveDailyLogLocal)
+- [x] Adicionar à fila de sincronização com ID correto (addToSyncQueue)
+- [x] Ajustar getLocalDailyLogs para listar registros offline (includeSynced param)
+- [x] use-sync.ts já estava correto (markDailyLogSynced)
+- [x] Atualizar tela Registros para exibir lançamentos offline
+- [x] Instalar dependências: react-native-get-random-values, uuid, @types/uuid
+- [ ] Testar: 3 lançamentos offline → aparecem em Registros → sincronizam ao reconectar
+
+## Transformação em Site Web
+- [x] Analisar arquitetura atual (Expo já suporta web nativamente)
+- [x] Desabilitar SQLite na web (usar apenas API online)
+- [x] Adicionar guards em todas as funções SQLite para web
+- [x] Configurar PWA no app.config.ts (manifest, theme)
+- [x] Criar metro.config.js customizado para resolver expo-sqlite
+- [x] Testar site web funcionando sem erros (100% operacional)
+- [x] Criar GUIA_DEPLOY_WEB.md com instruções completas
+- [x] Documentar deploy em Vercel, Netlify e GitHub Pages
+- [x] Documentar opções de backend (Railway, Render, Heroku)
+- [x] Documentar opções de banco de dados (PlanetScale, Railway MySQL)
+
+## Otimização Layout Desktop
+- [x] Criar sidebar lateral com navegação (esconde em mobile)
+- [x] Ajustar grid de máquinas para 3 colunas em desktop (1 coluna em mobile)
+- [x] Adicionar detecção de largura de tela (useWindowDimensions)
+- [x] Configurar marginLeft para conteúdo quando sidebar visível
+- [x] Layout responsivo pronto para desktop (>= 1024px)

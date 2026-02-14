@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM daily_logs; DELETE FROM machines;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 2ruJXLSSweE35aq.6882b3916471 --database ZDM3DDMJiRQQq8vQvfd3Sg --execute DELETE FROM daily_logs; DELETE FROM machines;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 120
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `machines` ADD `implementoAgregadoId` varchar(10);
