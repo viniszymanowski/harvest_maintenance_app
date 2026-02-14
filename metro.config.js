@@ -3,10 +3,7 @@ const { withNativeWind } = require("nativewind/metro");
 
 const config = getDefaultConfig(__dirname);
 
-// expo-sqlite (web) uses a .wasm asset; ensure Metro treats it as an asset on web.
-config.resolver.assetExts = config.resolver.assetExts || [];
-if (!config.resolver.assetExts.includes("wasm")) {
-  config.resolver.assetExts.push("wasm");
-}
+// expo-sqlite (web) ships a .wasm file; Metro needs to treat it as an asset.
+config.resolver.assetExts = Array.from(new Set([...(config.resolver.assetExts ?? []), "wasm"]));
 
 module.exports = withNativeWind(config, { input: "./global.css" });
